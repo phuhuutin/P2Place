@@ -12,11 +12,23 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Threads REQUIRED)
 
-# Lab 01 source files only
 add_library(p2place STATIC
+    # Lab 01
     src/net/socket.cpp
     src/net/protocol.cpp
     src/util/logger.cpp
+
+    # Lab 02 - Stage 1
+    src/net/protocol_codec.cpp
+    src/net/event_loop.cpp
+    src/net/tcp_client.cpp
+    src/net/tcp_connection.cpp
+    src/net/tcp_server.cpp
+    src/core/peer_table.cpp
+    src/peer/config.cpp
+    src/peer/peer_node.cpp
+    src/messages/message.cpp
+
 )
 
 target_include_directories(p2place PUBLIC
@@ -29,12 +41,25 @@ target_compile_options(p2place PRIVATE
 
 target_link_libraries(p2place PUBLIC Threads::Threads)
 
+# Peer CLI executable (labs 02+): run a single node from the command line.
+add_executable(p2place-peer
+    src/peer/main.cpp
+)
+
+target_link_libraries(p2place-peer PRIVATE
+    p2place
+)
+
+target_compile_options(p2place-peer PRIVATE
+    -Wall -Wextra -Wpedantic
+)
+
 # Lab 01 tests only
 include(CTest)
 
 if(BUILD_TESTING)
-    find_package(GTest REQUIRED)
-
+    find_package(GTest REQUIRED)    
+    # Lab 01
     add_executable(p2place-test-lab01
         tests/test_lab01.cpp
     )
@@ -51,5 +76,24 @@ if(BUILD_TESTING)
 
     set_tests_properties(lab01 PROPERTIES
         LABELS "lab01;through-lab01"
+    )
+
+    # Lab 02
+    add_executable(p2place-test-lab02
+        tests/test_lab02.cpp
+    )
+
+    target_link_libraries(p2place-test-lab02 PRIVATE
+        p2place
+        GTest::gtest_main
+    )
+
+    add_test(
+        NAME lab02
+        COMMAND p2place-test-lab02
+    )
+
+    set_tests_properties(lab02 PROPERTIES
+        LABELS "lab02;through-lab02"
     )
 endif()
