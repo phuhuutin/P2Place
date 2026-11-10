@@ -128,6 +128,12 @@ Config Config::parse_args(int argc, char* argv[]) {
             has_port = true;
         }
         else if (option == "--ws-port") {
+            if (config.port == config.ws_port) {
+                throw std::invalid_argument(
+                    "Peer port and WebSocket port must differ"
+                );
+            }
+
             config.ws_port = static_cast<std::uint16_t>(
                 parse_number(value, 1, 65535)
             );

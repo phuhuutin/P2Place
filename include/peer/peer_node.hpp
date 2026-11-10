@@ -5,6 +5,7 @@
 #include "net/event_loop.hpp"
 #include "net/tcp_server.hpp"
 #include "peer/config.hpp"
+#include "ui/websocket_server.hpp"
 
 #include <chrono>
 #include <cstdint>
@@ -40,6 +41,7 @@ private:
     std::unique_ptr<net::TcpServer> server_;
 
     // Non-owning connection bookkeeping: EventLoop owns TcpConnection objects.
+    std::unique_ptr<ui::WebSocketServer> ws_server_;
     std::map<int, core::NodeId> node_by_fd_;
     std::map<core::NodeId, int> fd_by_node_;
     std::map<core::NodeId, std::chrono::steady_clock::time_point> last_pong_;

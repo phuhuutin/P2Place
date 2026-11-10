@@ -28,7 +28,13 @@ add_library(p2place STATIC
     src/peer/config.cpp
     src/peer/peer_node.cpp
     src/messages/message.cpp
-
+    # Lab 03
+    src/core/region.cpp
+    src/core/region_store.cpp
+    src/ui/websocket_server.cpp
+    src/net/websocket_codec.cpp
+    src/util/sha1.cpp
+    src/util/base64.cpp
 )
 
 target_include_directories(p2place PUBLIC
@@ -95,5 +101,22 @@ if(BUILD_TESTING)
 
     set_tests_properties(lab02 PROPERTIES
         LABELS "lab02;through-lab02"
+    )
+
+    # Lab 03
+    add_executable(p2place-test-lab03
+        tests/test_lab03.cpp
+    )
+
+    target_link_libraries(p2place-test-lab03 PRIVATE
+        p2place
+        GTest::gtest_main
+    )
+    add_test(
+        NAME lab03
+        COMMAND p2place-test-lab03
+    )
+    set_tests_properties(lab03 PROPERTIES
+        LABELS "lab03;through-lab03"
     )
 endif()

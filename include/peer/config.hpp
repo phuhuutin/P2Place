@@ -12,10 +12,10 @@ struct Config {
     core::NodeId id = 0;
 
     // Port used for peer-to-peer TCP communication.
-    std::uint16_t port = 0;
+    std::uint16_t port = 9000;
 
     // Reserved for the browser WebSocket interface.
-    std::uint16_t ws_port = 0;
+    std::uint16_t ws_port = 9001;
 
     // Addresses of other known peers.
     std::vector<core::NodeInfo> peers;

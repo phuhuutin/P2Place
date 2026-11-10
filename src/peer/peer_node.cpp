@@ -183,14 +183,26 @@ void PeerNode::run() {
     server_ = std::make_unique<net::TcpServer>(config_.port);
     // register this function to eventloop,
     // which will be called when Incoming connections on listener.
-    loop_.register_listener(server_->fd(), [this] {
+    loop_.register_listener(server_->fd(),
 
+        [this] {
         // Accept all pending connections in tcp_server.cpp, 
         //then transfer the ownership back to the PeerNode.
         server_->accept_ready([this](net::Socket socket) {
             on_accepted(std::move(socket));
         });
     });
+    // New Lab 03 browser listener.
+    ws_server_ = std::make_unique<ui::WebSocketServer>(
+        loop_,
+        config_.ws_port,
+        [this](std::string_view json) {
+            // TODO(L3.14):
+            // Handle browser commands.
+            (void)json;
+        }
+    );
+
 
          // 3. Connect to configured peers
     for (const auto& peer : config_.peers) {
