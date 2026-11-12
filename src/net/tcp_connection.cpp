@@ -1,4 +1,8 @@
 
+/**
+ * @file net/tcp_connection.cpp
+ * @brief Implementation of the per-connection buffers and flushing.
+ */
 #include "net/tcp_connection.hpp"
 
 #include <cerrno>
@@ -12,9 +16,12 @@ namespace p2place::net {
 
 namespace {
 
+/** Receive buffer cap: exceeding it closes the connection. */
 constexpr std::size_t MAX_READ_BUFFER = 64 * 1024;
+/** Send buffer cap for queued outgoing frames. */
 constexpr std::size_t MAX_SEND_BUFFER = 64 * 1024;
-constexpr std::size_t READ_CHUNK_SIZE = 4096; // Read in 4 KiB chunks.
+/** Read in 4 KiB chunks. */
+constexpr std::size_t READ_CHUNK_SIZE = 4096;
 
 } // namespace
 

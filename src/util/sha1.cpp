@@ -1,3 +1,7 @@
+/**
+ * @file util/sha1.cpp
+ * @brief Implementation of SHA-1 and the WebSocket accept key.
+ */
 #include "util/sha1.hpp"
 #include "util/base64.hpp"
 #include <bit>

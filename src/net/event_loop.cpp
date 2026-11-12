@@ -1,4 +1,8 @@
 
+/**
+ * @file net/event_loop.cpp
+ * @brief Implementation of the single-threaded epoll event loop.
+ */
 #include "net/event_loop.hpp"
 #include "net/tcp_connection.hpp"
 
@@ -19,9 +23,17 @@ namespace p2place::net {
 
 namespace {
 
+/** Maximum number of epoll events processed per dispatch batch. */
 constexpr int MAX_EVENTS = 64;
+/** On-tick period: PeerNode PINGs peers at this cadence. */
 constexpr auto TICK_INTERVAL = std::chrono::milliseconds(500);
 
+/**
+ * @brief Throw std::system_error if an epoll call failed.
+ * @param result Return value of the epoll_* call.
+ * @param operation Name of the failing operation, for the error text.
+ * @throws std::system_error if result == -1.
+ */
 void check_epoll(int result, const char* operation) {
     if (result == -1) {
         throw std::system_error(
@@ -945,7 +957,7 @@ void EventLoop::handle_raw_event(
         auto& conn = *it->second;
 
         constexpr std::size_t MAX_PENDING_OUTPUT =
-            1024 * 1024; // 1 MiB per browser
+            8*1024 * 1024; // 1 MiB per browser
 
         const std::size_t pending =
             conn.output.size() - conn.output_offset;

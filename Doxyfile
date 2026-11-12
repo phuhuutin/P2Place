@@ -1,0 +1,73 @@
+# Doxyfile for P2Place
+# Standard Doxygen configuration; run `doxygen Doxyfile` from the repo root.
+# HTML output: docs/doxygen/html/index.html
+# Requires Doxygen >= 1.9. For call graphs, install Graphviz and set HAVE_DOT = YES.
+
+#---------------------------------------------------------------------------
+# Project
+#---------------------------------------------------------------------------
+PROJECT_NAME           = "P2Place"
+PROJECT_BRIEF          = "Dynamo-inspired decentralized collaborative pixel canvas (r/place style)"
+PROJECT_NUMBER         = "Labs 1-3"
+OUTPUT_DIRECTORY       = docs/doxygen
+OUTPUT_LANGUAGE        = English
+CREATE_SUBDIRS         = NO
+
+#---------------------------------------------------------------------------
+# Input files
+#---------------------------------------------------------------------------
+INPUT                  = include \
+                         src \
+                         docs/mainpage.md
+FILE_PATTERNS          = *.hpp \
+                         *.cpp \
+                         *.md
+RECURSIVE              = YES
+EXCLUDE                = build
+USE_MDFILE_AS_MAINPAGE = docs/mainpage.md
+
+#---------------------------------------------------------------------------
+# Extraction — document everything
+#---------------------------------------------------------------------------
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_ANON_NSPACES   = YES
+HIDE_UNDOC_MEMBERS     = NO
+HIDE_UNDOC_CLASSES     = NO
+HIDE_FRIEND_COMPOUNDS  = NO
+SORT_MEMBER_DOCS       = NO
+SORT_BRIEF_DOCS        = NO
+
+#---------------------------------------------------------------------------
+# Warnings
+#---------------------------------------------------------------------------
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = NO
+
+#---------------------------------------------------------------------------
+# HTML output
+#---------------------------------------------------------------------------
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+GENERATE_LATEX         = NO
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+SEARCHENGINE           = YES
+
+#---------------------------------------------------------------------------
+# Diagrams — enabled only when Graphviz 'dot' is installed
+#---------------------------------------------------------------------------
+HAVE_DOT               = NO
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_IMAGE_FORMAT       = svg

@@ -1,3 +1,7 @@
+/**
+ * @file net/tcp_server.cpp
+ * @brief Implementation of the non-blocking TCP listener.
+ */
 #include "net/tcp_server.hpp"
 
 #include <cerrno>

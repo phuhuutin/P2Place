@@ -1,3 +1,7 @@
+/**
+ * @file util/base64.cpp
+ * @brief Implementation of Base64 encoding.
+ */
 #include "util/base64.hpp"
 namespace p2place::util {
     std::string base64_encode(std::span<const std::uint8_t> data) {

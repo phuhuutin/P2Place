@@ -1,0 +1,318 @@
+/* P2Place Lab 03 — r/place-style dark UI: full-viewport canvas with
+   zoom/pan, pixel-art rendering, palette, overlays. */
+
+:root {
+  --bg: #10131a;
+  --panel: #191d28;
+  --panel-border: #2a3040;
+  --text: #e8ebf2;
+  --text-dim: #9aa3b5;
+  --accent: #367f63;
+  --ok: #4cc38a;
+  --warn: #d9a23f;
+  --danger: #e05a5a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.4;
+}
+
+/* ---------- Top bar ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.05em;
+  display: inline-block;
+}
+
+.brand .subtitle {
+  display: none;
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+}
+
+@media (min-width: 720px) {
+  .brand .subtitle {
+    display: block;
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ---------- Buttons and inputs ---------- */
+
+button {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+input[type="color"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Status (text carries the state) ---------- */
+
+.status {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.status::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  margin-right: 0.45em;
+  background: var(--text-dim);
+}
+
+.status.connected {
+  color: var(--ok);
+}
+
+.status.connected::before {
+  background: var(--ok);
+}
+
+.status.connecting,
+.status.reconnecting {
+  color: var(--warn);
+}
+
+.status.connecting::before,
+.status.reconnecting::before {
+  background: var(--warn);
+}
+
+.status.disconnected {
+  color: var(--danger);
+}
+
+.status.disconnected::before {
+  background: var(--danger);
+}
+
+/* ---------- Palette ---------- */
+
+#palette {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--panel-border);
+  overflow-x: auto;
+}
+
+.swatch {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.swatch.selected {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}
+
+.custom-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 8px;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+input[type="color"] {
+  width: 40px;
+  height: 26px;
+  padding: 2px;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  background: var(--panel);
+  cursor: pointer;
+}
+
+/* ---------- Viewport (canvas + overlays) ---------- */
+
+#viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  background: #0b0d12;
+}
+
+#canvas {
+  /* Base display size = logical size (1:1). All zooming/panning happens
+     through the transform below; the 256x256 pixel grid never resizes. */
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 256px;
+  height: 256px;
+  transform-origin: 0 0;
+  background: #fff;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges; /* older fallback */
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: crosshair;
+}
+
+#canvas.panning {
+  cursor: grabbing;
+}
+
+#coords-overlay {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  pointer-events: none;
+  background: rgba(16, 19, 26, 0.78);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: ui-monospace, Consolas, "Courier New", monospace;
+  font-size: 0.85rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+#zoom-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 19, 26, 0.85);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 4px 8px;
+  pointer-events: none;
+}
+
+#zoom-controls button {
+  pointer-events: auto;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1.15rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#zoom-label {
+  min-width: 52px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Footer / hint / diagnostics ---------- */
+
+.hintbar {
+  padding: 4px 12px 8px;
+  background: var(--panel);
+  border-top: 1px solid var(--panel-border);
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.hintbar p {
+  margin: 2px 0;
+}
+
+details {
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+pre#response {
+  margin: 6px 0 2px;
+  max-height: 140px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, Consolas, "Courier New", monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 8px;
+}

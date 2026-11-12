@@ -11,6 +11,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Threads REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
 
 add_library(p2place STATIC
     # Lab 01
@@ -46,7 +47,9 @@ target_compile_options(p2place PRIVATE
 )
 
 target_link_libraries(p2place PUBLIC Threads::Threads)
-
+target_link_libraries(p2place PRIVATE
+    nlohmann_json::nlohmann_json
+)
 # Peer CLI executable (labs 02+): run a single node from the command line.
 add_executable(p2place-peer
     src/peer/main.cpp

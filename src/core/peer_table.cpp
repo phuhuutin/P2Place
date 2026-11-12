@@ -1,4 +1,8 @@
 
+/**
+ * @file core/peer_table.cpp
+ * @brief Implementation of the membership table.
+ */
 #include "core/peer_table.hpp"
 
 namespace p2place::core {

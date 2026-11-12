@@ -1,3 +1,7 @@
+/**
+ * @file net/protocol.cpp
+ * @brief Implementation of 2-byte big-endian length framing.
+ */
 #include "net/protocol.hpp"
 #include <arpa/inet.h>
 #include <cerrno>

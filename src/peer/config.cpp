@@ -1,4 +1,8 @@
 
+/**
+ * @file peer/config.cpp
+ * @brief Implementation of command-line argument parsing.
+ */
 #include "peer/config.hpp"
 
 #include <charconv>
@@ -13,8 +17,17 @@ namespace p2place::peer {
 
 namespace {
 
-// Convert an argument to a positive unsigned integer.
-// Reject invalid input, overflow, and trailing characters.
+/**
+ * @brief Convert an argument to a positive unsigned integer.
+ *
+ * Rejects invalid input, overflow, and trailing characters.
+ * @param text The argument text.
+ * @param min_value Smallest allowed value.
+ * @param max_value Largest allowed value.
+ * @return The parsed value.
+ * @throws std::invalid_argument if the text is not a valid integer in
+ *         [min_value, max_value].
+ */
 std::uint32_t parse_number(
     std::string_view text,
     std::uint32_t min_value,
@@ -40,11 +53,15 @@ std::uint32_t parse_number(
     return value;
 }
 
-// Parse a peer specification:
-// NodeId:IPv4:Port
-//
-// Example:
-// 2:127.0.0.1:9002
+/**
+ * @brief Parse a peer specification of the form NodeId:IPv4:Port.
+ *
+ * Example: 2:127.0.0.1:9002
+ * @param spec The seed specification text.
+ * @return The peer record (status Suspect: address known, but
+ *         availability not yet confirmed by HELLO).
+ * @throws std::invalid_argument if the specification is malformed.
+ */
 core::NodeInfo parse_peer(std::string_view spec) {
     const auto first = spec.find(':');
     const auto last = spec.rfind(':');

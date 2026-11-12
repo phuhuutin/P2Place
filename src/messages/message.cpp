@@ -1,3 +1,7 @@
+/**
+ * @file messages/message.cpp
+ * @brief Implementation of the 6-byte message envelope codec.
+ */
 #include "messages/message.hpp"
 #include <stdexcept>
 namespace p2place::messages {

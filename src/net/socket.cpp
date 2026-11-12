@@ -1,3 +1,7 @@
+/**
+ * @file net/socket.cpp
+ * @brief Implementation of the RAII move-only socket wrapper.
+ */
 #include "net/socket.hpp"
 #include <unistd.h>
 namespace p2place::net {

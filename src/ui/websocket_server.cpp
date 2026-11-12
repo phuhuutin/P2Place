@@ -1,3 +1,7 @@
+/**
+ * @file ui/websocket_server.cpp
+ * @brief Implementation of the browser WebSocket server.
+ */
 #include "ui/websocket_server.hpp"
 #include <iostream>
 namespace p2place::ui {
@@ -7,7 +11,7 @@ namespace p2place::ui {
         CommandHandler handler
     )
         : loop_(loop),
-        listener_(port),
+        listener_(port), // <-- TCP server starts listening HERE
         on_command_(std::move(handler)) {
 
         loop_.register_listener(
@@ -17,8 +21,8 @@ namespace p2place::ui {
             }
         );
         std::cerr
-        << "[WebSocket] Listening on port "
-        << port << '\n';
+            << "[WebSocket] Listening on port "
+            << port << '\n';
     }
 
     WebSocketServer::~WebSocketServer() {
@@ -29,7 +33,7 @@ namespace p2place::ui {
     // 2. Transfer socket ownership.
     // 3. Create BrowserSession.
     // 4. Install read/write/disconnect callbacks.
-    
+    // This is called when a new browser connection is accepted. 
     void WebSocketServer::accept_ready() {
         listener_.accept_ready(
             [this](net::Socket socket) {
@@ -265,7 +269,7 @@ namespace p2place::ui {
                     << json << '\n';
 
                 if (on_command_) {
-                    on_command_(json);
+                    on_command_(fd, json);
                 }
 
                 break;
@@ -543,6 +547,13 @@ namespace p2place::ui {
                 loop_.close_connection(fd);
             }
         }
+    }
+
+    void WebSocketServer::send_to(
+        int fd,
+        std::string_view json
+    ) {
+        send_text(fd, json);
     }
 
 

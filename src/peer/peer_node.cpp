@@ -1,9 +1,14 @@
+/**
+ * @file peer/peer_node.cpp
+ * @brief Implementation of the PeerNode composition root.
+ */
 #include "peer/peer_node.hpp"
 
 #include "net/protocol_codec.hpp"
 #include "net/tcp_client.hpp"
 #include "net/tcp_connection.hpp"
-
+#include <nlohmann/json.hpp>
+#include "core/versioned_pixel.hpp"
 #include <chrono>
 #include <cstdint>
 #include <iostream>
@@ -11,30 +16,105 @@
 #include <system_error>
 #include <utility>
 #include <vector>
+#include <charconv>
+
+using json = nlohmann::json;
 
 namespace p2place::peer {
+constexpr auto CANVAS_SIZE = core::RegionStore::CANVAS_SIDE;
 namespace {
     using namespace std::chrono_literals;
-    //16bits to  8 bits each. big-endian: big | small
+
+    /**
+     * @brief Append a 16-bit value in big-endian byte order.
+     * @param b Output byte vector.
+     * @param v The value to append.
+     */
     void put_u16(std::vector<std::uint8_t>& b, std::uint16_t v) {
         b.push_back(static_cast<std::uint8_t>(v >> 8));
         b.push_back(static_cast<std::uint8_t>(v));
     }
+    /**
+     * @brief Append a 32-bit value in big-endian byte order.
+     * @param b Output byte vector.
+     * @param v The value to append.
+     */
     void put_u32(std::vector<std::uint8_t>& b, std::uint32_t v) {
         b.push_back(static_cast<std::uint8_t>(v >> 24));
         b.push_back(static_cast<std::uint8_t>(v >> 16));
         b.push_back(static_cast<std::uint8_t>(v >> 8));
         b.push_back(static_cast<std::uint8_t>(v));
     }
-std::uint16_t get_u16(const std::vector<std::uint8_t>& b, std::size_t off) {
+    /**
+     * @brief Read a 16-bit big-endian value from a byte vector.
+     * @param b The byte vector.
+     * @param off Offset of the value's first byte.
+     * @return The decoded value.
+     */
+    std::uint16_t get_u16(const std::vector<std::uint8_t>& b, std::size_t off) {
         return (std::uint16_t(b[off]) << 8) | b[off + 1];
     }
+    /**
+     * @brief Read a 32-bit big-endian value from a byte vector.
+     * @param b The byte vector.
+     * @param off Offset of the value's first byte.
+     * @return The decoded value.
+     */
     std::uint32_t get_u32(const std::vector<std::uint8_t>& b, std::size_t off) {
         return (std::uint32_t(b[off]) << 24) |
             (std::uint32_t(b[off + 1]) << 16) |
             (std::uint32_t(b[off + 2]) << 8) | b[off + 3];
     }
-} // namespace
+
+    /**
+     * @brief Parse a "#RRGGBB" color string into 0xRRGGBB.
+     * @param color The color text.
+     * @return The 24-bit color value.
+     * @throws std::invalid_argument if the format is invalid.
+     */
+    std::uint32_t parse_color(std::string_view color) {
+        if (color.size() != 7 || color[0] != '#') {
+            throw std::invalid_argument(
+                "Expected #RRGGBB color"
+            );
+        }
+
+        std::uint32_t value = 0;
+
+        const auto* first = color.data() + 1;
+        const auto* last = color.data() + color.size();
+
+        auto [ptr, ec] = std::from_chars(
+            first, last, value, 16
+        );
+
+        if (ec != std::errc{} || ptr != last) {
+            throw std::invalid_argument(
+                "Invalid hexadecimal color"
+            );
+        }
+
+        return value;
+    }
+    
+    /**
+     * @brief Format a 24-bit color as "#RRGGBB" text.
+     * @param color The color value (upper 8 bits ignored).
+     * @return The hex color string.
+     */
+    std::string color_to_hex(std::uint32_t color) {
+        constexpr char digits[] = "0123456789ABCDEF";
+
+        std::string result = "#000000";
+
+        for (int i = 6; i >= 1; --i) {
+            result[i] = digits[color & 0xF];
+            color >>= 4;
+        }
+
+        return result;
+    }
+} // anonymous namespace 
 
 PeerNode::PeerNode(Config config) : config_(std::move(config)) {
     register_handlers();
@@ -90,8 +170,10 @@ void PeerNode::on_message(net::TcpConnection& conn,
         handler->second(conn, msg, sender);
     }
 }
-//summary:registers callback functions
-// for different message types so PeerNode knows what to do when a message arrives.
+/**
+ * @brief Registers callback functions for different message types so
+ *        PeerNode knows what to do when a message arrives.
+ */
 void PeerNode::register_handlers() {
     handlers_[messages::Type::HELLO] = [this](
         net::TcpConnection& conn, const messages::Message& msg, core::NodeId sender) {
@@ -147,13 +229,17 @@ void PeerNode::register_handlers() {
         peers_.mark(sender, core::NodeStatus::Alive);
     };
 }
-//this is called when a new connection is accepted. 
-//It creates a TcpConnection object, registers it with the EventLoop, 
-//and sends a HELLO message to the new peer.
+/**
+ * @brief Called when a new connection is accepted: creates a
+ *        TcpConnection object, registers it with the EventLoop, and
+ *        sends a HELLO message to the new peer.
+ */
 void PeerNode::on_accepted(net::Socket client) {
     auto conn = std::make_unique<net::TcpConnection>(
         std::move(client),
         std::make_unique<net::ProtocolCodec>(),
+        //this callback is called inside drain_and_process()
+        //drain and extract one frame callback(this, bytes )
         [this](net::TcpConnection& c, std::span<const std::uint8_t> bytes) {
             on_message(c, bytes);
         }
@@ -188,18 +274,23 @@ void PeerNode::run() {
         [this] {
         // Accept all pending connections in tcp_server.cpp, 
         //then transfer the ownership back to the PeerNode.
+        //this callback will be called when the listener is readable.
+        //a new connection is accepted
+        // accept and create a new client socket, then transfer ownership to PeerNode.
+        //via on_accepted
         server_->accept_ready([this](net::Socket socket) {
             on_accepted(std::move(socket));
         });
     });
     // New Lab 03 browser listener.
+    // inside ws_port will be registered to eventloop,
+    // which will be called when Incoming connections on listener.
+    // WebSocketServer 
     ws_server_ = std::make_unique<ui::WebSocketServer>(
         loop_,
         config_.ws_port,
-        [this](std::string_view json) {
-            // TODO(L3.14):
-            // Handle browser commands.
-            (void)json;
+        [this](int fd, std::string_view json) {
+            on_browser_command(fd, json);
         }
     );
 
@@ -253,4 +344,223 @@ void PeerNode::run() {
     loop_.run([this] { on_tick(); });
 }
 
+
+void PeerNode::on_browser_command(
+    int fd,
+    std::string_view message
+) {
+    try {
+        const auto command = json::parse(message);
+
+        if (!command.is_object()) {
+            throw std::invalid_argument(
+                "Command must be a JSON object"
+            );
+        }
+
+        const std::string op =
+            command.at("op").get<std::string>();
+
+        if (op == "put") {
+            // Parse into signed/wider integers first
+            // so out-of-range values cannot wrap.
+            const auto x =
+                command.at("x").get<std::int64_t>();
+
+            const auto y =
+                command.at("y").get<std::int64_t>();
+
+            const auto color_string =
+                command.at("color").get<std::string>();
+
+            if (x < 0 || x >= CANVAS_SIZE  ||
+                y < 0 || y >= CANVAS_SIZE ) {
+                throw std::out_of_range(
+                    "Pixel coordinates out of range"
+                );
+            }
+
+            const auto color =
+                parse_color(color_string);
+
+            handle_put(
+                fd,
+                static_cast<std::uint16_t>(x),
+                static_cast<std::uint16_t>(y),
+                color
+            );
+        }
+        else if (op == "get_canvas") {
+            handle_get_canvas(fd);
+        }
+        else {
+            ws_server_->send_to(
+                fd,
+                json{
+                    {"op", "error"},
+                    {"message", "Unsupported operation"}
+                }.dump()
+            );
+        }
+    }
+    catch (const std::exception& e) {
+        ws_server_->send_to(
+            fd,
+            json{
+                {"op", "error"},
+                {"message", e.what()}
+            }.dump()
+        );
+    }
+}
+
+
+    void PeerNode::handle_put(
+        int fd,
+        std::uint16_t x,
+        std::uint16_t y,
+        std::uint32_t color
+    ) {
+        // 1. Find the region containing this pixel.
+        const auto region_key =
+            core::RegionStore::region_key(x, y);
+
+        // 2. Find its index inside the 16×16 region.
+        const auto pixel_index =
+            core::RegionStore::pixel_index(x, y);
+
+        // 3. Generate the new pixel version.
+        core::VersionedPixel pixel{
+            color,
+            lamport_clock_.tick(),
+            config_.id
+        };
+
+        // 4. Apply using Last-Write-Wins.
+        const bool accepted =
+            region_store_.apply_pixel(
+                region_key,
+                pixel_index,
+                pixel
+            );
+
+        if (!accepted) {
+            ws_server_->send_to(
+                fd,
+                json{
+                    {"op", "error"},
+                    {"message", "Pixel update rejected"}
+                }.dump()
+            );
+
+            return;
+        }
+
+        // 5. Create the browser update message.
+        const json update = {
+            {"op", "pixel"},
+            {"x", x},
+            {"y", y},
+            {"color", color_to_hex(color)}
+        };
+
+        // 6. Broadcast to every connected browser.
+        ws_server_->broadcast(update.dump());
+    }
+
+
+    void PeerNode::handle_get_canvas(int fd) {
+        constexpr std::uint32_t REGIONS_PER_ROW =
+            core::RegionStore::REGIONS_SIDE;
+
+        constexpr std::size_t CHUNK_SIZE = 100;
+
+        // Tell browser to reset the canvas.
+        ws_server_->send_to(
+            fd,
+            R"({"op":"canvas_begin"})"
+        );
+
+        json pixels = json::array();
+
+        // Enumerate regions currently stored locally.
+        for (const auto region_key :
+            region_store_.all_keys()) {
+
+            const auto region =
+                region_store_.get_region(region_key);
+
+            if (!region) {
+                continue;
+            }
+
+            const std::uint32_t rx =
+                region_key % REGIONS_PER_ROW;
+
+            const std::uint32_t ry =
+                region_key / REGIONS_PER_ROW;
+
+            for (std::size_t i = 0;
+                i < core::Region::COUNT;
+                ++i) {
+
+                const auto& pixel = region->pixel(i);
+
+                // Lamport 0 means no write has occurred.
+                if (pixel.lamport == 0) {
+                    continue;
+                }
+
+                const auto x =
+                    rx * core::Region::SIDE +
+                    i % core::Region::SIDE;
+
+                const auto y =
+                    ry * core::Region::SIDE +
+                    i / core::Region::SIDE;
+
+                pixels.push_back({
+                    {"x", x},
+                    {"y", y},
+                    {"color", color_to_hex(pixel.color)}
+                });
+
+                // Send one bounded chunk.
+                if (pixels.size() >= CHUNK_SIZE) {
+                    ws_server_->send_to(
+                        fd,
+                        json{
+                            {"op", "canvas_chunk"},
+                            {"pixels", pixels}
+                        }.dump()
+                    );
+
+                    pixels = json::array();
+                }
+            }
+        }
+
+        // Send any remaining pixels.
+        if (!pixels.empty()) {
+            ws_server_->send_to(
+                fd,
+                json{
+                    {"op", "canvas_chunk"},
+                    {"pixels", pixels}
+                }.dump()
+            );
+        }
+
+        // Snapshot complete.
+        ws_server_->send_to(
+            fd,
+            R"({"op":"canvas_end"})"
+        );
+    }
+
+
+
+
 } // namespace p2place::peer
+
+

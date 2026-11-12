@@ -1,3 +1,7 @@
+/**
+ * @file util/logger.cpp
+ * @brief Implementation of the synchronous timestamped logger.
+ */
 #include "util/logger.hpp"
 #include <chrono>
 #include <ctime>

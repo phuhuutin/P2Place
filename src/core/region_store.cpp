@@ -1,3 +1,7 @@
+/**
+ * @file core/region_store.cpp
+ * @brief Implementation of the memory-only canvas store.
+ */
 #include "core/region_store.hpp"
 #include <stdexcept>
 namespace p2place::core {

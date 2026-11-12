@@ -1,3 +1,7 @@
+/**
+ * @file core/region.cpp
+ * @brief Implementation of the 16x16 canvas region.
+ */
 #include "core/region.hpp"
 #include <stdexcept>
 #include <algorithm>

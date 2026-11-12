@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>P2Place</title>
+  <meta name="description" content="P2Place — collaborative pixel canvas">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>P2Place</h1>
+      <p class="subtitle">A collaborative pixel canvas — draw together on the peer's shared canvas.</p>
+    </div>
+    <div class="controls">
+      <span id="status" class="status connecting" aria-live="polite">Connecting</span>
+      <button id="refresh" type="button" disabled>Refresh Canvas</button>
+    </div>
+  </header>
+
+  <div id="palette" role="toolbar" aria-label="Color palette">
+    <label class="custom-color" for="color">Custom
+      <input type="color" id="color" value="#367f63" aria-label="Custom color">
+    </label>
+  </div>
+
+  <main id="viewport" aria-label="Shared canvas viewport">
+    <!-- Intrinsic 256x256 matches core::RegionStore::CANVAS_SIDE; CSS may
+         enlarge the display only (transform-based zoom/pan, never resizes
+         the logical pixel grid). -->
+    <canvas id="canvas" width="256" height="256">
+      Your browser does not support the HTML canvas element.
+    </canvas>
+
+    <div id="coords-overlay" aria-hidden="true">
+      <span id="coordinates">&#8212;</span>
+    </div>
+
+    <div id="zoom-controls">
+      <button id="zoom-out" type="button" aria-label="Zoom out">&#8722;</button>
+      <span id="zoom-label">&#215;1.0</span>
+      <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+      <button id="zoom-fit" type="button" aria-label="Fit canvas to viewport" title="Fit (0)">&#9974;</button>
+    </div>
+  </main>
+
+  <footer class="hintbar">
+    <p>
+      Click / tap places a pixel &middot; drag pans &middot;
+      Shift+drag paints &middot; wheel or pinch zooms &middot;
+      middle / right drag pans
+    </p>
+    <details id="diagnostics">
+      <summary>Diagnostics / log</summary>
+      <pre id="response"></pre>
+    </details>
+  </footer>
+</body>
+</html>

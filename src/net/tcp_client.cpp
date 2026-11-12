@@ -1,4 +1,8 @@
 
+/**
+ * @file net/tcp_client.cpp
+ * @brief Implementation of the non-blocking outbound connect.
+ */
 #include "net/tcp_client.hpp"
 
 #include <cerrno>

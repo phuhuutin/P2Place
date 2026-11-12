@@ -1,4 +1,8 @@
 
+/**
+ * @file net/websocket_codec.cpp
+ * @brief Implementation of the RFC 6455 handshake and framing.
+ */
 #include "net/websocket_codec.hpp"
 #include "util/sha1.hpp"
 
@@ -11,6 +15,11 @@ namespace p2place::net {
 
 namespace {
 
+/**
+ * @brief Trim spaces and tabs from both ends of a string view.
+ * @param value The text to trim.
+ * @return The trimmed substring (possibly empty).
+ */
 std::string trim(std::string_view value) {
     const auto first = value.find_first_not_of(" \t");
     if (first == std::string_view::npos)
@@ -20,6 +29,11 @@ std::string trim(std::string_view value) {
     return std::string(value.substr(first, last - first + 1));
 }
 
+/**
+ * @brief Lowercase a string.
+ * @param value The text to lowercase.
+ * @return The lowercased copy.
+ */
 std::string lowercase(std::string_view value) {
     std::string result(value);
 
@@ -33,6 +47,13 @@ std::string lowercase(std::string_view value) {
     return result;
 }
 
+/**
+ * @brief Check whether a comma-separated header value contains a token
+ *        (case-insensitive).
+ * @param value The header value.
+ * @param expected The token to look for.
+ * @return true if the token is present.
+ */
 bool contains_token(
     std::string_view value,
     std::string_view expected
@@ -53,6 +74,14 @@ bool contains_token(
     return false;
 }
 
+/**
+ * @brief Validate a Sec-WebSocket-Key value.
+ *
+ * RFC 6455: the Base64 encoding of exactly 16 bytes, canonical (the
+ * final data character's 4 unused bits must be zero).
+ * @param key The header value.
+ * @return true if the key is well-formed.
+ */
 bool valid_websocket_key(std::string_view key) {
     // RFC 6455: Base64 encoding of exactly 16 bytes.
     if (key.size() != 24 || key.substr(22) != "==")
@@ -184,10 +213,12 @@ std::string WebSocketCodec::handshake_response(
 
 
 
-//A server-to-browser text frame format is  
-// 0x81 <payload length> <payload data>
-//for examnple, a 3-byte payload of "abc" is encoded as
-// 0x81 0x03 0x61 0x62 0x63
+/**
+ * @brief A server-to-browser text frame has the form
+ *        0x81, payload length, payload data.
+ *
+ * Example: a 3-byte payload "abc" encodes as 0x81 0x03 0x61 0x62 0x63.
+ */
 bool WebSocketCodec::append_frame(
     std::vector<std::uint8_t>& out,
     std::span<const std::uint8_t> text
@@ -227,9 +258,6 @@ bool WebSocketCodec::append_frame(
 
     return true;
 }
-//converts a WebSocket frame received from the browser into the original text message.
-//browser-to-server frames are masked, 
-//so the payload must be unmasked using the 4-byte XOR key.
 bool WebSocketCodec::extract_frame(
     std::vector<std::uint8_t>& in,
     std::vector<std::uint8_t>& text

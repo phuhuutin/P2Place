@@ -1,3 +1,7 @@
+/**
+ * @file net/protocol_codec.cpp
+ * @brief Implementation of the peer-channel length-prefix codec.
+ */
 #include "net/protocol_codec.hpp"
 #include <stdexcept>
 bool p2place::net::ProtocolCodec::append_frame(
