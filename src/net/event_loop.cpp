@@ -662,20 +662,25 @@ void EventLoop::handle_raw_event(
             while (running_.load()) {
                 const auto now = Clock::now();
 
-                const auto remaining =
-                    std::chrono::duration_cast<
-                        std::chrono::milliseconds
-                    >(next_tick - now);
+                const int heartbeat_timeout =
+                    (now >= next_tick)
+                        ? 0
+                        : static_cast<int>(
+                            std::chrono::ceil<
+                                std::chrono::milliseconds
+                            >(next_tick - now).count()
+                        );
 
-                // Round upward so we don't continually
-                // wake slightly before the deadline.
-                int timeout = 0;
+                const int timer_timeout =
+                    timers_.next_timeout_ms(now);
 
-                if (remaining.count() > 0) { //dealine is still in the fututer
-                    timeout = static_cast<int>(
-                        remaining.count()
-                    );
-                }
+                const int timeout =
+                    (timer_timeout < 0)
+                        ? heartbeat_timeout
+                        : std::min(
+                            heartbeat_timeout,
+                            timer_timeout
+                        );
 
                 const int count = ::epoll_wait(
                     epfd_.get(),
@@ -813,6 +818,11 @@ void EventLoop::handle_raw_event(
 
                 dispatching_ = false;
                 process_removals();
+
+                // Lab 04: Execute all expired timer callbacks.
+                // Take a fresh timestamp because socket
+                // callbacks may have consumed time.
+                timers_.pop_due(Clock::now());
 
                 // Periodic heartbeat / maintenance callback.
                 const auto current = Clock::now();
@@ -1035,6 +1045,25 @@ void EventLoop::handle_raw_event(
 
         // send_raw() has already enabled EPOLLOUT.
         // The write handler will close after flushing.
+    }
+
+
+    TimerQueue::Token EventLoop::schedule_timer(
+        TimerQueue::Clock::time_point due,
+        std::function<void()> callback
+    ) {
+        const auto token = timers_.schedule(
+            due,
+            std::move(callback)
+        );
+
+        return token;
+    }
+
+    bool EventLoop::cancel_timer(
+        TimerQueue::Token token
+    ) {
+        return timers_.cancel(token);
     }
 
 

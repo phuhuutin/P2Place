@@ -70,4 +70,9 @@ std::vector<NodeInfo> PeerTable::alive_set() const {
     return result;
 }
 
+std::vector<NodeInfo> PeerTable::all() const {
+    std::vector<NodeInfo> items;
+    for(const auto& [id,info]:nodes_) { (void)id;items.push_back(info); }
+    return items;
+}
 } // namespace p2place::core

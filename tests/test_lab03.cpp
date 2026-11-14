@@ -3,6 +3,11 @@
 #include "core/region_store.hpp"
 #include "peer/peer_node.hpp"
 #include "net/event_loop.hpp"
+#include <chrono>
+#include <stdexcept>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <unistd.h>
 using namespace p2place;
 TEST(Lab03Region, MergeIndependentPixels) {
     core::Region a, b;
@@ -44,21 +49,17 @@ TEST(EventLoop, MultipleListenerRegistration) {
     int peer_calls = 0;
     int browser_calls = 0;
 
-    // Use two valid, nonblocking listening sockets.
-    // For example, port 9000 and port 9001.
-    net::TcpServer peer_server(9000);
-    net::TcpServer browser_server(9001);
+    // Port 0 lets the OS assign free ports.
+    net::TcpServer peer_server(0);
+    net::TcpServer browser_server(0);
 
     loop.register_listener(
         peer_server.fd(),
         [&] {
             ++peer_calls;
-
-            peer_server.accept_ready(
-                [](net::Socket socket) {
-                    // Socket closes via RAII.
-                }
-            );
+            peer_server.accept_ready([](net::Socket socket) {
+                // Accepted socket closes via RAII.
+            });
         }
     );
 
@@ -66,17 +67,58 @@ TEST(EventLoop, MultipleListenerRegistration) {
         browser_server.fd(),
         [&] {
             ++browser_calls;
-
-            browser_server.accept_ready(
-                [](net::Socket socket) {
-                    // Socket closes via RAII.
-                }
-            );
+            browser_server.accept_ready([](net::Socket socket) {
+            });
         }
     );
 
-    // TODO: Launch loop, connect one client to
-    // each listener, and stop the loop.
+    // Connect one client to each listener.
+    auto connect_client = [](int listener_fd) -> net::Socket {
+        sockaddr_in address{};
+        socklen_t length = sizeof(address);
+
+        if (::getsockname(
+                listener_fd,
+                reinterpret_cast<sockaddr*>(&address),
+                &length
+            ) != 0) {
+            throw std::runtime_error("getsockname failed");
+        }
+
+        const int fd = ::socket(AF_INET, SOCK_STREAM, 0);
+        if (fd < 0) {
+            throw std::runtime_error("socket failed");
+        }
+
+        net::Socket client(fd);
+
+        address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+
+        if (::connect(
+                fd,
+                reinterpret_cast<sockaddr*>(&address),
+                sizeof(address)
+            ) != 0) {
+            throw std::runtime_error("connect failed");
+        }
+
+        return client;
+    };
+
+    auto peer_client = connect_client(peer_server.fd());
+    auto browser_client = connect_client(browser_server.fd());
+
+    // Run until both callbacks execute, with a timeout.
+    const auto deadline =
+        std::chrono::steady_clock::now() +
+        std::chrono::seconds(2);
+
+    loop.run([&] {
+        if ((peer_calls >= 1 && browser_calls >= 1) ||
+            std::chrono::steady_clock::now() >= deadline) {
+            loop.stop();
+        }
+    });
 
     EXPECT_EQ(peer_calls, 1);
     EXPECT_EQ(browser_calls, 1);

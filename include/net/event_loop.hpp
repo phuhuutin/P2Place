@@ -11,6 +11,7 @@
 
 #include "net/socket.hpp"
 #include "net/tcp_connection.hpp"
+#include "net/timer_queue.hpp"
 #include <atomic>
 #include <functional>
 #include <map>
@@ -256,11 +257,22 @@ public:
      */
     void close_after_flush(int fd);
 
+    // Schedule a callback for execution in the event loop.
+    TimerQueue::Token schedule_timer(
+        TimerQueue::Clock::time_point due,
+        std::function<void()> callback
+    );
+
+    // Cancel a pending scheduled callback.
+    bool cancel_timer(TimerQueue::Token token);
+
 private:
     /** The epoll descriptor. */
     Socket epfd_;
     /** The eventfd whose readability interrupts epoll_wait. */
     Socket wake_fd_;
+
+    TimerQueue timers_;
 
     /** True while run() is executing. */
     std::atomic<bool> running_{false};

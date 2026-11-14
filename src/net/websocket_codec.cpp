@@ -1,3 +1,4 @@
+#include <stdexcept>
 
 /**
  * @file net/websocket_codec.cpp

@@ -59,6 +59,8 @@ public:
     [[nodiscard]]
     std::vector<NodeInfo> alive_set() const;
 
+    [[nodiscard]] std::vector<NodeInfo> all() const;
+
 private:
     /**
      * @brief Maps NodeId -> NodeInfo.

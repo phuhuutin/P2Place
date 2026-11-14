@@ -8,6 +8,7 @@
 #include "core/node_info.hpp"
 
 #include <cstdint>
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -28,6 +29,19 @@ struct Config {
 
     /** Reserved for the browser WebSocket interface. */
     std::uint16_t ws_port = 9001;
+
+    /** Path to the same committed fixed-partition manifest on every peer. */
+    // The placement state is maintained automatically; NOT an epoch manifest.
+    std::string state_file;
+    // Node 1 is the initial bootstrap authority; Ring election may change it.
+    static constexpr core::NodeId MEMBERSHIP_AUTHORITY = 1;
+    // Optional graceful-leave trigger for reproducible churn experiments.
+    // Zero disables automatic departure.
+    std::uint32_t leave_after_seconds = 0;
+
+    std::size_t replication_n = 3;
+    std::size_t read_r = 2;
+    std::size_t write_w = 2;
 
     /** Addresses of other known peers (the seed list). */
     std::vector<core::NodeInfo> peers;

@@ -1,7 +1,3 @@
-/**
- * @file peer/peer_node.cpp
- * @brief Implementation of the PeerNode composition root.
- */
 #include "peer/peer_node.hpp"
 
 #include "net/protocol_codec.hpp"
@@ -9,6 +5,9 @@
 #include "net/tcp_connection.hpp"
 #include <nlohmann/json.hpp>
 #include "core/versioned_pixel.hpp"
+#include "core/membership_gossip.hpp"
+#include "messages/payloads.hpp"
+#include "messages/placement_protocol.hpp"
 #include <chrono>
 #include <cstdint>
 #include <iostream>
@@ -17,6 +16,14 @@
 #include <utility>
 #include <vector>
 #include <charconv>
+#include <algorithm>
+#include <limits>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+#include <cstring>
+#include <filesystem>
+#include <set>
 
 using json = nlohmann::json;
 
@@ -24,54 +31,26 @@ namespace p2place::peer {
 constexpr auto CANVAS_SIZE = core::RegionStore::CANVAS_SIDE;
 namespace {
     using namespace std::chrono_literals;
-
-    /**
-     * @brief Append a 16-bit value in big-endian byte order.
-     * @param b Output byte vector.
-     * @param v The value to append.
-     */
+    //16bits to  8 bits each. big-endian: big | small
     void put_u16(std::vector<std::uint8_t>& b, std::uint16_t v) {
         b.push_back(static_cast<std::uint8_t>(v >> 8));
         b.push_back(static_cast<std::uint8_t>(v));
     }
-    /**
-     * @brief Append a 32-bit value in big-endian byte order.
-     * @param b Output byte vector.
-     * @param v The value to append.
-     */
     void put_u32(std::vector<std::uint8_t>& b, std::uint32_t v) {
         b.push_back(static_cast<std::uint8_t>(v >> 24));
         b.push_back(static_cast<std::uint8_t>(v >> 16));
         b.push_back(static_cast<std::uint8_t>(v >> 8));
         b.push_back(static_cast<std::uint8_t>(v));
     }
-    /**
-     * @brief Read a 16-bit big-endian value from a byte vector.
-     * @param b The byte vector.
-     * @param off Offset of the value's first byte.
-     * @return The decoded value.
-     */
     std::uint16_t get_u16(const std::vector<std::uint8_t>& b, std::size_t off) {
         return (std::uint16_t(b[off]) << 8) | b[off + 1];
     }
-    /**
-     * @brief Read a 32-bit big-endian value from a byte vector.
-     * @param b The byte vector.
-     * @param off Offset of the value's first byte.
-     * @return The decoded value.
-     */
     std::uint32_t get_u32(const std::vector<std::uint8_t>& b, std::size_t off) {
         return (std::uint32_t(b[off]) << 24) |
             (std::uint32_t(b[off + 1]) << 16) |
             (std::uint32_t(b[off + 2]) << 8) | b[off + 3];
     }
 
-    /**
-     * @brief Parse a "#RRGGBB" color string into 0xRRGGBB.
-     * @param color The color text.
-     * @return The 24-bit color value.
-     * @throws std::invalid_argument if the format is invalid.
-     */
     std::uint32_t parse_color(std::string_view color) {
         if (color.size() != 7 || color[0] != '#') {
             throw std::invalid_argument(
@@ -97,11 +76,6 @@ namespace {
         return value;
     }
     
-    /**
-     * @brief Format a 24-bit color as "#RRGGBB" text.
-     * @param color The color value (upper 8 bits ignored).
-     * @return The hex color string.
-     */
     std::string color_to_hex(std::uint32_t color) {
         constexpr char digits[] = "0123456789ABCDEF";
 
@@ -116,8 +90,51 @@ namespace {
     }
 } // anonymous namespace 
 
-PeerNode::PeerNode(Config config) : config_(std::move(config)) {
+PeerNode::PeerNode(Config config)
+    : config_(std::move(config)), placement_manager_(config_.state_file) {
+    // Node 1 bootstraps only the first cluster. Joiners receive committed
+    // placement from the authority after coordinated data handoff.
+    if (config_.id == 1 ||
+        std::filesystem::exists(config_.state_file)) {
+        placement_manager_.bootstrap(config_.id);
+        set_committed(placement_manager_.active());
+        // A restarted former leader must not immediately resume authority:
+        // peers may have elected a replacement while it was offline.
+        if (config_.id == 1 && placement_.members().size() > 1) {
+            authority_id_ = 0; // unknown until election/reconciliation
+            std::cout << "[election] recovered node 1; authority unknown, waiting for ring election\n";
+        }
+    }
+    // A crashed follower with a pending/committed-but-not-released
+    // transition must not resume serving its old placement on restart.
+    const auto stage_file=config_.state_file+".pending";
+    if(std::filesystem::exists(stage_file)) {
+        auto stage=core::BalancedPlacement::load(stage_file);
+        if(placement_ready_ && stage.epoch()<placement_.epoch())
+            throw std::runtime_error("stale transition marker; manual recovery required");
+        frozen_=true;
+        if(!placement_ready_ || stage.epoch()>placement_.epoch())staged_=stage;
+        std::cout << "[membership] restarting FROZEN with transition marker\n";
+    }
+    replication_strategy_=std::make_unique<replication::FixedReplicationStrategy>(
+        replication::QuorumConfig{config_.replication_n,config_.read_r,config_.write_w});
+    replicator_ = std::make_unique<replication::ReplicationManager>(
+        config_.id,ring_,region_store_,*replication_strategy_,
+        [this](core::NodeId peer,const messages::Message& m)->bool {
+            const auto fd=owner_fd(peer);
+            if(!fd)return false;
+            send_message(*fd,m);
+            return true;
+        },
+        [this](std::function<void()> cb) {
+            return loop_.schedule_timer(net::TimerQueue::Clock::now()+std::chrono::seconds(3),std::move(cb));
+        },
+        [this](net::TimerQueue::Token token) {loop_.cancel_timer(token);}
+    );
     register_handlers();
+    // The local process participates in placement even when no peers are online.
+    refresh_ring();
+    next_gossip_ = std::chrono::steady_clock::now() + std::chrono::seconds(5);
 
     // Keep runtime tables in sync when EventLoop destroys a
     // connection (EOF, RST, protocol error, failed flush, ...).
@@ -139,6 +156,12 @@ void PeerNode::send_hello(int fd) {
     put_u32(m.payload, config_.id);
     put_u16(m.payload, config_.port);
     put_u16(m.payload, config_.ws_port);
+    // Cluster placement identity; reject routing to peers with divergent maps.
+    const auto fp = placement_ready_ ? placement_.fingerprint() : 0;
+    put_u32(m.payload, static_cast<std::uint32_t>(fp >> 32));
+    put_u32(m.payload, static_cast<std::uint32_t>(fp));
+    // 1 = prepared but not committed, 2 = committed but not released.
+    m.payload.push_back(staged_ ? 1 : (frozen_ ? 2 : 0));
     send_message(fd, m);
 }
 
@@ -152,8 +175,139 @@ void PeerNode::forget_connection(int fd) {
         fd_by_node_.erase(f);
         peers_.mark(id, core::NodeStatus::Dead);
         last_pong_.erase(id);
+        handle_peer_disconnect(id);
+        if(config_.id==authority_id_ &&
+           phase_!=Phase::Idle && transition_peers_.contains(id))
+            abort_transition("participant disconnected");
         std::cout << "Peer " << id << " disconnected\n";
+        membership_dirty_ = true;
+        refresh_ring();
     }
+}
+
+std::vector<core::NodeInfo> PeerNode::current_membership() const {
+    core::NodeInfo self;
+    self.id = config_.id;
+    self.peer_port = config_.port;
+    self.ws_port = config_.ws_port;
+    self.status = core::NodeStatus::Alive;
+    return core::live_membership(peers_, self);
+}
+
+void PeerNode::refresh_ring() {
+    // Canonical ownership never depends on HELLO/PING/PONG/NODELIST liveness.
+    // Manifest changes require explicit offline handoff and restart (for now).
+    if (!placement_ready_) return;
+    if (ring_.all_nodes() == placement_.members()) return;
+    ring_.rebuild(placement_);
+    std::cout << "[placement] node=" << config_.id
+              << " epoch=" << placement_.epoch()
+              << " partitions=" << core::BalancedPlacement::PARTITIONS
+              << " fingerprint=" << placement_.fingerprint()
+              << " members=" << placement_.members().size() << '\n';
+}
+
+void PeerNode::send_nodelist(int fd) {
+    messages::Message msg;
+    msg.type = messages::Type::NODELIST;
+    msg.payload = messages::encode_nodelist(
+        messages::NodeListPayload{current_membership()}
+    );
+    send_message(fd, msg);
+}
+
+void PeerNode::broadcast_nodelist() {
+    const auto connected = fd_by_node_;
+    for (const auto& [id, fd] : connected) {
+        (void)id;
+        send_nodelist(fd);
+    }
+}
+
+std::optional<int> PeerNode::owner_fd(core::NodeId id) const {
+    if (const auto it = fd_by_node_.find(id); it != fd_by_node_.end())
+        return it->second;
+    return std::nullopt;
+}
+
+std::uint32_t PeerNode::new_request_id() {
+    if(next_request_id_==0 || next_request_id_>=0x40000000)next_request_id_=1;
+    return next_request_id_++;
+}
+
+void PeerNode::report_browser_error(int fd, const std::string& error) {
+    try { ws_server_->send_to(fd, json{{"op","error"},{"message",error}}.dump()); }
+    catch (const std::exception&) { /* browser already disconnected */ }
+}
+
+void PeerNode::broadcast_pixel(std::uint32_t key, std::uint16_t index,
+                               std::uint32_t color) {
+    const auto x = (key % core::RegionStore::REGIONS_SIDE) * core::Region::SIDE
+                 + index % core::Region::SIDE;
+    const auto y = (key / core::RegionStore::REGIONS_SIDE) * core::Region::SIDE
+                 + index / core::Region::SIDE;
+    ws_server_->broadcast(json{{"op","pixel"},{"x",x},{"y",y},
+                               {"color",color_to_hex(color)}}.dump());
+}
+
+void PeerNode::handle_peer_disconnect(core::NodeId id) {
+    if(replicator_)replicator_->on_disconnect(id);
+}
+
+void PeerNode::finish_snapshot(int browser_fd, const std::string& error) {
+    if (!snapshots_.erase(browser_fd)) return;
+    if (!error.empty()) report_browser_error(browser_fd, error);
+    try { ws_server_->send_to(browser_fd,R"({"op":"canvas_end"})"); }
+    catch (const std::exception&) { /* browser closed */ }
+}
+
+void PeerNode::deliver_region(int browser_fd, std::uint32_t key,
+                              const core::Region& region) {
+    constexpr std::size_t CHUNK_SIZE = 100;
+    json pixels = json::array();
+    for (std::size_t index=0; index<core::Region::COUNT; ++index) {
+        const auto& px = region.pixel(index);
+        if (px.lamport == 0) continue;
+        const auto x = (key % core::RegionStore::REGIONS_SIDE) * core::Region::SIDE
+                     + index % core::Region::SIDE;
+        const auto y = (key / core::RegionStore::REGIONS_SIDE) * core::Region::SIDE
+                     + index / core::Region::SIDE;
+        pixels.push_back({{"x",x},{"y",y},{"color",color_to_hex(px.color)}});
+        if (pixels.size() >= CHUNK_SIZE) {
+            ws_server_->send_to(browser_fd,json{{"op","canvas_chunk"},{"pixels",pixels}}.dump());
+            pixels = json::array();
+        }
+    }
+    if (!pixels.empty())
+        ws_server_->send_to(browser_fd,json{{"op","canvas_chunk"},{"pixels",pixels}}.dump());
+}
+
+void PeerNode::start_snapshot(int browser_fd) {
+    if(snapshots_.contains(browser_fd)) {
+        report_browser_error(browser_fd,"snapshot already in progress");
+        return;
+    }
+    snapshots_[browser_fd]=Snapshot{};
+    ws_server_->send_to(browser_fd,R"({"op":"canvas_begin"})");
+    request_next_region(browser_fd);
+}
+void PeerNode::request_next_region(int browser_fd) {
+    auto it=snapshots_.find(browser_fd);
+    if(it==snapshots_.end())return;
+    if(it->second.next_key>=core::RegionStore::REGION_COUNT) {
+        finish_snapshot(browser_fd);return;
+    }
+    const auto key=it->second.next_key++;
+    try {
+        replicator_->get(key,[this,browser_fd,key](bool ok,const core::Region& region,const std::string& error){
+            if(!snapshots_.contains(browser_fd))return;
+            if(!ok){finish_snapshot(browser_fd,error);return;}
+            if(region.version()!=0)lamport_clock_.update(region.version());
+            try {deliver_region(browser_fd,key,region);}
+            catch(const std::exception&){finish_snapshot(browser_fd,"browser snapshot delivery failed");return;}
+            request_next_region(browser_fd);
+        });
+    } catch(const std::exception& e) {finish_snapshot(browser_fd,e.what());}
 }
 
 void PeerNode::on_message(net::TcpConnection& conn,
@@ -170,19 +324,31 @@ void PeerNode::on_message(net::TcpConnection& conn,
         handler->second(conn, msg, sender);
     }
 }
-/**
- * @brief Registers callback functions for different message types so
- *        PeerNode knows what to do when a message arrives.
- */
+//summary:registers callback functions
+// for different message types so PeerNode knows what to do when a message arrives.
 void PeerNode::register_handlers() {
     handlers_[messages::Type::HELLO] = [this](
         net::TcpConnection& conn, const messages::Message& msg, core::NodeId sender) {
-        if (sender != 0 || msg.payload.size() != 8)
+        if (sender != 0 || (msg.payload.size() != 16 && msg.payload.size()!=17))
             throw std::runtime_error("invalid or duplicate HELLO");
 
+        const auto remote_stage=msg.payload.size()==17 ? msg.payload[16] : 0;
         const auto id = get_u32(msg.payload, 0);
         const auto port = get_u16(msg.payload, 4);
         const auto ws_port = get_u16(msg.payload, 6);
+        const auto remote_fingerprint =
+            (static_cast<std::uint64_t>(get_u32(msg.payload,8)) << 32) |
+            get_u32(msg.payload,12);
+        // Never accept a different committed ring silently. A fresh joiner
+        // announces fingerprint 0; it must receive a prepared snapshot from
+        // the authority before it can serve any pixel request.
+        const auto members = placement_ready_ ? placement_.members() : std::vector<core::NodeId>{};
+        const bool candidate = std::find(members.begin(),members.end(),id)==members.end()
+            && remote_fingerprint == 0;
+        const bool joining_self = !placement_ready_;
+        if (!candidate && !joining_self &&
+            (!placement_ready_ || remote_fingerprint != placement_.fingerprint()))
+            throw std::runtime_error("committed placement mismatch; peer is stale");
         if (id == 0 || id == config_.id || port == 0)
             throw std::runtime_error("invalid peer identity");
 
@@ -196,6 +362,15 @@ void PeerNode::register_handlers() {
         for (const auto& seed : config_.peers) {
             if (seed.id == id) { info.host = seed.host; break; }
         }
+        // A peer that dialed us provides its IP through the TCP socket.
+        // HELLO only provides the peer's listening PORT.
+        sockaddr_in address{};
+        socklen_t length=sizeof(address);
+        if (::getpeername(conn.fd(), reinterpret_cast<sockaddr*>(&address), &length)==0) {
+            char ip[INET_ADDRSTRLEN]{};
+            if (::inet_ntop(AF_INET, &address.sin_addr, ip, sizeof(ip)))
+                info.host = ip;
+        }
 
         // This minimal Lab 02 version keeps one active connection per NodeId.
         if (const auto old = fd_by_node_.find(id);
@@ -207,6 +382,26 @@ void PeerNode::register_handlers() {
         fd_by_node_[id] = conn.fd();
         last_pong_[id] = std::chrono::steady_clock::now();
         std::cout << "HELLO from peer " << id << " (fd=" << conn.fd() << ")\n";
+        membership_dirty_ = true;
+        refresh_ring();
+        // HELLO precedes NODELIST in each connection's outgoing byte stream.
+        send_nodelist(conn.fd());
+        // Synchronize the last election result with a recovered former leader.
+        // Without this, Node 1 might resume acting as authority after reconnect.
+        if (!last_elected_token_.empty() && !candidate &&
+            remote_fingerprint == placement_.fingerprint())
+            send_control(id, messages::Type::RING_ELECTED, last_elected_token_);
+        if (config_.id == authority_id_) {
+            broadcast_endpoints();
+            if (remote_stage==1 && phase_==Phase::Idle &&
+                (remote_fingerprint==0 ||
+                 (placement_ready_ && remote_fingerprint==placement_.fingerprint()))) {
+                // Authority restarted before commit; previously prepared
+                // participants can safely abort to the last committed view.
+                send_control(id,messages::Type::PLACEMENT_ABORT);
+            }
+            if (candidate) schedule_join(id);
+        }
     };
 
     handlers_[messages::Type::PING] = [this](
@@ -219,6 +414,7 @@ void PeerNode::register_handlers() {
         pong.request_id = msg.request_id;
         send_message(conn.fd(), pong);
         peers_.mark(sender, core::NodeStatus::Alive);
+        refresh_ring();
     };
 
     handlers_[messages::Type::PONG] = [this](
@@ -227,19 +423,83 @@ void PeerNode::register_handlers() {
             throw std::runtime_error("unexpected PONG payload");
         last_pong_[sender] = std::chrono::steady_clock::now();
         peers_.mark(sender, core::NodeStatus::Alive);
+        refresh_ring();
     };
+
+    handlers_[messages::Type::NODELIST] = [this](
+        net::TcpConnection&, const messages::Message& msg, core::NodeId sender) {
+        if (sender == 0 || (msg.flags & messages::IS_RESPONSE)) {
+            throw std::runtime_error("invalid NODELIST sender or flags");
+        }
+        const auto reported = messages::decode_nodelist(msg.payload);
+        if (core::merge_gossip(peers_, config_.id, reported.peers)) {
+            membership_dirty_ = true;
+            refresh_ring();
+        }
+    };
+
+    handlers_[messages::Type::RING_ELECTION] = [this](
+        net::TcpConnection&, const messages::Message& msg, core::NodeId sender) {
+        on_ring_election(msg, sender);
+    };
+    handlers_[messages::Type::RING_ELECTED] = [this](
+        net::TcpConnection&, const messages::Message& msg, core::NodeId sender) {
+        on_ring_elected(msg, sender);
+    };
+
+    // Requests are always sent by an authenticated neighboring peer.
+    for (auto type : {messages::Type::PLACEMENT_PREPARE, messages::Type::PLACEMENT_READY,
+                      messages::Type::PLACEMENT_COMMIT, messages::Type::PLACEMENT_COMMITTED,
+                      messages::Type::PLACEMENT_RELEASE, messages::Type::JOIN_REQUEST,
+                      messages::Type::LEAVE_REQUEST, messages::Type::PLACEMENT_ABORT,
+                      messages::Type::PEER_ENDPOINTS}) {
+        handlers_[type] = [this](net::TcpConnection& conn,
+               const messages::Message& msg, core::NodeId sender) {
+            on_placement_message(conn,msg,sender);
+        };
+    }
+    for(auto type : {messages::Type::HANDOFF_GET, messages::Type::HANDOFF_DATA,
+                     messages::Type::HANDOFF_PUT, messages::Type::HANDOFF_OK}) {
+        handlers_[type] = [this](net::TcpConnection& conn,
+               const messages::Message& msg, core::NodeId sender) {
+            on_handoff_message(conn,msg,sender);
+        };
+    }
+
+    for(auto type:{messages::Type::PUT,messages::Type::PUT_OK,
+                   messages::Type::GET,messages::Type::GET_OK,
+                   messages::Type::REGION_PUT,messages::Type::ERROR}) {
+        handlers_[type]=[this](net::TcpConnection&,const messages::Message& msg,core::NodeId sender){
+            if(frozen_ || !placement_ready_) {
+                // Allow outstanding replies while draining a transition.
+                if(!(msg.flags & messages::IS_RESPONSE)) {
+                    messages::Message error;
+                    error.type=messages::Type::ERROR;
+                    error.flags=messages::IS_RESPONSE;
+                    error.request_id=msg.request_id;
+                    if(const auto fd=owner_fd(sender))send_message(*fd,error);
+                    return;
+                }
+            }
+            if(msg.type==messages::Type::PUT && !(msg.flags & messages::IS_RESPONSE)) {
+                const auto payload=messages::decode_put(msg.payload);
+                lamport_clock_.update(payload.pixel.lamport);
+            }
+            replicator_->on_message(sender,msg);
+        };
+    }
+
 }
-/**
- * @brief Called when a new connection is accepted: creates a
- *        TcpConnection object, registers it with the EventLoop, and
- *        sends a HELLO message to the new peer.
- */
+//this is called when a new connection is accepted. 
+//It creates a TcpConnection object, registers it with the EventLoop, 
+//and sends a HELLO message to the new peer.
 void PeerNode::on_accepted(net::Socket client) {
+    // Avoid 40ms delayed-ACK/Nagle stalls in the serial region handoff RPCs.
+    int no_delay=1;
+    ::setsockopt(client.get(),IPPROTO_TCP,TCP_NODELAY,&no_delay,sizeof(no_delay));
     auto conn = std::make_unique<net::TcpConnection>(
         std::move(client),
         std::make_unique<net::ProtocolCodec>(),
-        //this callback is called inside drain_and_process()
-        //drain and extract one frame callback(this, bytes )
         [this](net::TcpConnection& c, std::span<const std::uint8_t> bytes) {
             on_message(c, bytes);
         }
@@ -255,17 +515,46 @@ void PeerNode::on_tick() {
     const auto connected = fd_by_node_;
     for (const auto& [id, fd] : connected) {
         auto seen = last_pong_.find(id);
-        if (seen != last_pong_.end() && now - seen->second > 3s)
+        if (seen != last_pong_.end() && now - seen->second > 3s &&
+            peers_.find(id)->status != core::NodeStatus::Suspect) {
             peers_.mark(id, core::NodeStatus::Suspect);
+            membership_dirty_ = true;
+            refresh_ring();
+        }
 
         messages::Message ping;
         ping.type = messages::Type::PING;
         ping.request_id = next_request_id_++;
         send_message(fd, ping);
     }
+
+    // Send promptly following a membership change and at least every 5 seconds.
+    // Do not reset the periodic deadline on a change-triggered broadcast.
+    const bool periodic = now >= next_gossip_;
+    if (membership_dirty_ || periodic) {
+        broadcast_nodelist();
+        if (config_.id == authority_id_)
+            broadcast_endpoints();
+        membership_dirty_ = false;
+        if (periodic) {
+            next_gossip_ = now + 5s;
+        }
+    }
+    connect_discovered_peers();
+    election_tick();
+    if(config_.leave_after_seconds>0 && !leave_requested_ && placement_ready_ &&
+       config_.id!=authority_id_ &&
+       now-started_>=std::chrono::seconds(config_.leave_after_seconds) &&
+       owner_fd(authority_id_)) {
+        send_control(authority_id_,messages::Type::LEAVE_REQUEST);
+        leave_requested_=true;
+    }
+    if (config_.id == authority_id_) progress_transition();
+    else send_ready_if_quiescent();
 }
 
 void PeerNode::run() {
+    started_=std::chrono::steady_clock::now();
     server_ = std::make_unique<net::TcpServer>(config_.port);
     // register this function to eventloop,
     // which will be called when Incoming connections on listener.
@@ -274,18 +563,11 @@ void PeerNode::run() {
         [this] {
         // Accept all pending connections in tcp_server.cpp, 
         //then transfer the ownership back to the PeerNode.
-        //this callback will be called when the listener is readable.
-        //a new connection is accepted
-        // accept and create a new client socket, then transfer ownership to PeerNode.
-        //via on_accepted
         server_->accept_ready([this](net::Socket socket) {
             on_accepted(std::move(socket));
         });
     });
     // New Lab 03 browser listener.
-    // inside ws_port will be registered to eventloop,
-    // which will be called when Incoming connections on listener.
-    // WebSocketServer 
     ws_server_ = std::make_unique<ui::WebSocketServer>(
         loop_,
         config_.ws_port,
@@ -345,220 +627,106 @@ void PeerNode::run() {
 }
 
 
-void PeerNode::on_browser_command(
-    int fd,
-    std::string_view message
-) {
-    try {
-        const auto command = json::parse(message);
+    void PeerNode::on_browser_command(
+        int fd,
+        std::string_view message
+    ) {
+        try {
+            const auto command = json::parse(message);
 
-        if (!command.is_object()) {
-            throw std::invalid_argument(
-                "Command must be a JSON object"
-            );
-        }
-
-        const std::string op =
-            command.at("op").get<std::string>();
-
-        if (op == "put") {
-            // Parse into signed/wider integers first
-            // so out-of-range values cannot wrap.
-            const auto x =
-                command.at("x").get<std::int64_t>();
-
-            const auto y =
-                command.at("y").get<std::int64_t>();
-
-            const auto color_string =
-                command.at("color").get<std::string>();
-
-            if (x < 0 || x >= CANVAS_SIZE  ||
-                y < 0 || y >= CANVAS_SIZE ) {
-                throw std::out_of_range(
-                    "Pixel coordinates out of range"
+            if (!command.is_object()) {
+                throw std::invalid_argument(
+                    "Command must be a JSON object"
                 );
             }
 
-            const auto color =
-                parse_color(color_string);
+            const std::string op =
+                command.at("op").get<std::string>();
 
-            handle_put(
-                fd,
-                static_cast<std::uint16_t>(x),
-                static_cast<std::uint16_t>(y),
-                color
-            );
-        }
-        else if (op == "get_canvas") {
-            handle_get_canvas(fd);
-        }
-        else {
-            ws_server_->send_to(
-                fd,
-                json{
-                    {"op", "error"},
-                    {"message", "Unsupported operation"}
-                }.dump()
-            );
-        }
-    }
-    catch (const std::exception& e) {
-        ws_server_->send_to(
-            fd,
-            json{
-                {"op", "error"},
-                {"message", e.what()}
-            }.dump()
-        );
-    }
-}
-
-
-    void PeerNode::handle_put(
-        int fd,
-        std::uint16_t x,
-        std::uint16_t y,
-        std::uint32_t color
-    ) {
-        // 1. Find the region containing this pixel.
-        const auto region_key =
-            core::RegionStore::region_key(x, y);
-
-        // 2. Find its index inside the 16×16 region.
-        const auto pixel_index =
-            core::RegionStore::pixel_index(x, y);
-
-        // 3. Generate the new pixel version.
-        core::VersionedPixel pixel{
-            color,
-            lamport_clock_.tick(),
-            config_.id
-        };
-
-        // 4. Apply using Last-Write-Wins.
-        const bool accepted =
-            region_store_.apply_pixel(
-                region_key,
-                pixel_index,
-                pixel
-            );
-
-        if (!accepted) {
-            ws_server_->send_to(
-                fd,
-                json{
-                    {"op", "error"},
-                    {"message", "Pixel update rejected"}
-                }.dump()
-            );
-
-            return;
-        }
-
-        // 5. Create the browser update message.
-        const json update = {
-            {"op", "pixel"},
-            {"x", x},
-            {"y", y},
-            {"color", color_to_hex(color)}
-        };
-
-        // 6. Broadcast to every connected browser.
-        ws_server_->broadcast(update.dump());
-    }
-
-
-    void PeerNode::handle_get_canvas(int fd) {
-        constexpr std::uint32_t REGIONS_PER_ROW =
-            core::RegionStore::REGIONS_SIDE;
-
-        constexpr std::size_t CHUNK_SIZE = 100;
-
-        // Tell browser to reset the canvas.
-        ws_server_->send_to(
-            fd,
-            R"({"op":"canvas_begin"})"
-        );
-
-        json pixels = json::array();
-
-        // Enumerate regions currently stored locally.
-        for (const auto region_key :
-            region_store_.all_keys()) {
-
-            const auto region =
-                region_store_.get_region(region_key);
-
-            if (!region) {
-                continue;
-            }
-
-            const std::uint32_t rx =
-                region_key % REGIONS_PER_ROW;
-
-            const std::uint32_t ry =
-                region_key / REGIONS_PER_ROW;
-
-            for (std::size_t i = 0;
-                i < core::Region::COUNT;
-                ++i) {
-
-                const auto& pixel = region->pixel(i);
-
-                // Lamport 0 means no write has occurred.
-                if (pixel.lamport == 0) {
-                    continue;
-                }
-
+            if (op == "put") {
+                // Parse into signed/wider integers first
+                // so out-of-range values cannot wrap.
                 const auto x =
-                    rx * core::Region::SIDE +
-                    i % core::Region::SIDE;
+                    command.at("x").get<std::int64_t>();
 
                 const auto y =
-                    ry * core::Region::SIDE +
-                    i / core::Region::SIDE;
+                    command.at("y").get<std::int64_t>();
 
-                pixels.push_back({
-                    {"x", x},
-                    {"y", y},
-                    {"color", color_to_hex(pixel.color)}
-                });
+                const auto color_string =
+                    command.at("color").get<std::string>();
 
-                // Send one bounded chunk.
-                if (pixels.size() >= CHUNK_SIZE) {
-                    ws_server_->send_to(
-                        fd,
-                        json{
-                            {"op", "canvas_chunk"},
-                            {"pixels", pixels}
-                        }.dump()
+                if (x < 0 || x >= CANVAS_SIZE  ||
+                    y < 0 || y >= CANVAS_SIZE ) {
+                    throw std::out_of_range(
+                        "Pixel coordinates out of range"
                     );
-
-                    pixels = json::array();
                 }
+
+                const auto color =
+                    parse_color(color_string);
+
+                handle_put(
+                    fd,
+                    static_cast<std::uint16_t>(x),
+                    static_cast<std::uint16_t>(y),
+                    color
+                );
+            }
+            else if (op == "leave") {
+                // Development-only administrative operation. Restrict access
+                // to trusted local clients before deploying publicly.
+                if (!placement_ready_) throw std::runtime_error("not a member");
+                if (config_.id == authority_id_)
+                    schedule_leave(config_.id);
+                else send_control(authority_id_, messages::Type::LEAVE_REQUEST);
+            }
+            else if (op == "get_canvas") {
+                handle_get_canvas(fd);
+            }
+            else {
+                ws_server_->send_to(
+                    fd,
+                    json{
+                        {"op", "error"},
+                        {"message", "Unsupported operation"}
+                    }.dump()
+                );
             }
         }
-
-        // Send any remaining pixels.
-        if (!pixels.empty()) {
+        catch (const std::exception& e) {
             ws_server_->send_to(
                 fd,
                 json{
-                    {"op", "canvas_chunk"},
-                    {"pixels", pixels}
+                    {"op", "error"},
+                    {"message", e.what()}
                 }.dump()
             );
         }
-
-        // Snapshot complete.
-        ws_server_->send_to(
-            fd,
-            R"({"op":"canvas_end"})"
-        );
     }
 
 
+    void PeerNode::handle_put(int fd,std::uint16_t x,std::uint16_t y,std::uint32_t color) {
+        if(frozen_ || !placement_ready_) {
+            report_browser_error(fd,"placement transition or join in progress");return;
+        }
+        const auto key=core::RegionStore::region_key(x,y);
+        const auto index=core::RegionStore::pixel_index(x,y);
+        const core::VersionedPixel pixel{color,lamport_clock_.tick(),config_.id};
+        try {
+            replicator_->put(key,index,pixel,[this,fd,key,index,color](bool ok,const std::string& error){
+                if(ok)broadcast_pixel(key,index,color);
+                else report_browser_error(fd,error);
+            });
+        }catch(const std::exception& e){report_browser_error(fd,e.what());}
+    }
+
+    void PeerNode::handle_get_canvas(int fd) {
+        if(frozen_ || !placement_ready_) {
+            report_browser_error(fd,"placement transition or join in progress");
+            return;
+        }
+        start_snapshot(fd);
+    }
 
 
 } // namespace p2place::peer

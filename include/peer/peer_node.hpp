@@ -1,19 +1,17 @@
-/**
- * @file peer/peer_node.hpp
- * @brief PeerNode: the composition root that wires everything together.
- */
-
 #pragma once
 
 #include "core/peer_table.hpp"
+#include "core/consistent_hash_ring.hpp"
+#include "core/balanced_placement.hpp"
+#include "core/automatic_placement.hpp"
 #include "messages/message.hpp"
 #include "net/event_loop.hpp"
 #include "net/tcp_server.hpp"
 #include "peer/config.hpp"
-#include "ui/websocket_server.hpp"
 #include "core/region_store.hpp"
 #include "core/lamport_clock.hpp"
 #include "ui/websocket_server.hpp"
+#include "replication/replication_manager.hpp"
 
 #include <chrono>
 #include <cstdint>
@@ -21,134 +19,136 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
+#include <set>
+#include <deque>
 
 namespace p2place::net { class TcpConnection; }
 
-/**
- * @brief The peer application: PeerNode composition root and Config.
- */
 namespace p2place::peer {
 
-/**
- * @brief One P2Place peer process: mesh member + canvas server.
- *
- * The composition root. It owns the configuration, peer table, event
- * loop, region store, Lamport clock, the peer TCP listener and the
- * WebSocket UI server, and dispatches HELLO/PING/PONG plus browser
- * JSON commands.
- */
 class PeerNode final {
 public:
-    /**
-     * @brief Construct a peer and register its message handlers.
-     * @param config Parsed command-line configuration.
-     */
     explicit PeerNode(Config config);
-
-    /**
-     * @brief Start the peer TCP listener, the WebSocket listener,
-     *        connect to the seed peers and run the event loop.
-     */
     void run();
 
 private:
-    /**
-     * @brief Signature of a message handler.
-     * @param conn The connection the message arrived on.
-     * @param msg The decoded message.
-     * @param sender The sender's NodeId (0 before HELLO).
-     */
     using Handler = std::function<void(
         net::TcpConnection&, const messages::Message&, core::NodeId)>;
 
-    /**
-     * @brief Install the HELLO/PING/PONG handlers.
-     */
     void register_handlers();
-
-    /**
-     * @brief Periodic maintenance: PING all peers, mark SUSPECT.
-     */
     void on_tick();
-
-    /**
-     * @brief Handle a newly accepted inbound TCP connection.
-     * @param client The accepted socket (ownership transferred).
-     */
     void on_accepted(net::Socket client);
-
-    /**
-     * @brief Decode one frame and dispatch it to the handler registry.
-     * @param conn The connection the bytes arrived on.
-     * @param body The received frame payload.
-     */
     void on_message(net::TcpConnection& conn, std::span<const std::uint8_t> body);
-
-    /**
-     * @brief Encode and queue a message on a peer connection.
-     * @param fd The destination connection.
-     * @param msg The message to send.
-     */
     void send_message(int fd, const messages::Message& msg);
-
-    /**
-     * @brief Send this peer's HELLO (id + ports) on a connection.
-     * @param fd The destination connection.
-     */
     void send_hello(int fd);
-
-    /**
-     * @brief Drop all bookkeeping for a destroyed connection.
-     * @param fd The connection the loop just destroyed.
-     */
     void forget_connection(int fd);
 
-    /** This peer's configuration. */
+    // Lab 04: membership gossip and deterministic ring refresh.
+    [[nodiscard]] std::vector<core::NodeInfo> current_membership() const;
+    void refresh_ring();
+    void send_nodelist(int fd);
+    void broadcast_nodelist();
+    void broadcast_endpoints();
+    void connect_discovered_peers();
+    // Single-writer membership protocol. All methods execute on EventLoop thread.
+    // Ring election: oldest admitted participating member wins, using a clockwise token.
+    // This course-level protocol is NOT a substitute for consensus/fencing.
+    void election_tick();
+    void start_ring_election();
+    void on_ring_election(const messages::Message&, core::NodeId sender);
+    void on_ring_elected(const messages::Message&, core::NodeId sender);
+    [[nodiscard]] std::optional<core::NodeId> next_ring_peer() const;
+    [[nodiscard]] std::size_t reachable_voters() const;
+    [[nodiscard]] bool has_majority() const;
+    [[nodiscard]] core::NodeId preferred_initiator() const;
+    void schedule_join(core::NodeId id);
+    void schedule_leave(core::NodeId id);
+    void begin_transition(core::NodeId id, bool joining);
+    void progress_transition();
+    void send_ready_if_quiescent();
+    void next_handoff();
+    void send_transition_message(messages::Type type, const std::vector<std::uint8_t>& payload = {});
+    void abort_transition(const std::string& why);
+    bool connected_to_all(const std::vector<core::NodeId>& ids) const;
+    void set_committed(const core::BalancedPlacement& candidate);
+    void send_control(core::NodeId id, messages::Type type, const std::vector<std::uint8_t>& payload = {});
+    void on_placement_message(net::TcpConnection&, const messages::Message&, core::NodeId);
+    void on_handoff_message(net::TcpConnection&, const messages::Message&, core::NodeId);
+    void connect_peer(core::NodeId id, const std::string& host, std::uint16_t port);
+
+    // Lab05: single quorum coordinator replaces old primary-only pending maps.
+    struct Snapshot { std::uint32_t next_key=0; };
+    std::map<int,Snapshot> snapshots_;
+    std::unique_ptr<replication::ReplicationStrategy> replication_strategy_;
+    std::unique_ptr<replication::ReplicationManager> replicator_;
+
+    void start_snapshot(int browser_fd);
+    void request_next_region(int browser_fd);
+    void deliver_region(int browser_fd, std::uint32_t key,
+                        const core::Region& region);
+    void finish_snapshot(int browser_fd, const std::string& error = {});
+    void broadcast_pixel(std::uint32_t key, std::uint16_t index,
+                         std::uint32_t color);
+    void report_browser_error(int browser_fd, const std::string& error);
+    void handle_peer_disconnect(core::NodeId id);
+    [[nodiscard]] std::optional<int> owner_fd(core::NodeId id) const;
+    [[nodiscard]] std::uint32_t new_request_id();
+
     Config config_;
-    /** Membership table of known peers. */
     core::PeerTable peers_;
-    /** The single-threaded event loop. */
+    core::AutomaticPlacement placement_manager_;
+    core::BalancedPlacement placement_;
+    core::NodeId authority_id_ = 1;
+    std::uint64_t election_round_ = 0;
+    std::vector<std::uint8_t> last_elected_token_;
+    bool election_in_progress_ = false;
+    std::chrono::steady_clock::time_point election_deadline_{};
+    std::chrono::steady_clock::time_point next_election_attempt_{};
+    bool placement_ready_ = false;
+    bool frozen_ = false;
+    std::optional<core::BalancedPlacement> staged_;
+    enum class Phase { Idle, Preparing, Fetching, Installing, Committing };
+    Phase phase_ = Phase::Idle;
+    struct MovedRegion { std::uint32_t key; core::NodeId old_owner; core::NodeId new_owner; };
+    std::vector<MovedRegion> moves_;
+    std::map<core::NodeId,std::set<std::uint32_t>> transition_keys_;
+    std::size_t next_move_ = 0;
+    std::set<core::NodeId> waiting_;
+    std::set<core::NodeId> transition_peers_;
+    bool ready_sent_ = false;
+    std::deque<std::pair<core::NodeId, bool>> membership_queue_;
+    std::map<core::NodeId, std::chrono::steady_clock::time_point> next_dial_;
+    std::set<core::NodeId> connecting_;
+    std::chrono::steady_clock::time_point transition_deadline_{};
+    std::chrono::steady_clock::time_point next_endpoint_broadcast_{};
+    core::ConsistentHashRing ring_;
+    bool membership_dirty_ = false;
+    std::chrono::steady_clock::time_point started_{};
+    bool leave_requested_ = false;
+    std::chrono::steady_clock::time_point next_gossip_{};
     net::EventLoop loop_;
-    /** The peer TCP listener (created in run()). */
     std::unique_ptr<net::TcpServer> server_;
 
-    /** fd -> NodeId for established peer connections. */
+  
+
     std::map<int, core::NodeId> node_by_fd_;
-    /** NodeId -> fd for established peer connections. */
     std::map<core::NodeId, int> fd_by_node_;
-    /** NodeId -> time of the last PONG received. */
     std::map<core::NodeId, std::chrono::steady_clock::time_point> last_pong_;
-    /** Message type -> handler (). */
     std::map<messages::Type, Handler> handlers_;
-    /** Monotonic id source for PING request_ids. */
     std::uint32_t next_request_id_ = 1;
 
-    /** The memory-only canvas. */
     core::RegionStore region_store_;
-    /** Stamps every accepted paint. */
     core::LamportClock lamport_clock_{
         core::LamportClock::restart_seed()
     };
-    /** The browser WebSocket server (created in run()). */
     std::unique_ptr<ui::WebSocketServer> ws_server_;
-
-    /**
-     * @brief Handle one JSON command from a browser tab.
-     * @param fd The browser connection.
-     * @param message The JSON text of the command.
-     */
     void on_browser_command(
         int fd,
         std::string_view message
     );
 
-    /**
-     * @brief Apply one paint: LWW store update + pixel broadcast.
-     * @param fd The browser connection (for error replies).
-     * @param x Canvas x coordinate.
-     * @param y Canvas y coordinate.
-     * @param color 0xRRGGBB color.
-     */
     void handle_put(
         int fd,
         std::uint16_t x,
@@ -156,10 +156,6 @@ private:
         std::uint32_t color
     );
 
-    /**
-     * @brief Send the full canvas snapshot as chunked JSON.
-     * @param fd The requesting browser connection.
-     */
     void handle_get_canvas(int fd);
 };
 

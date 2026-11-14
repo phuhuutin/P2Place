@@ -124,7 +124,10 @@ Config Config::parse_args(int argc, char* argv[]) {
 
         const std::string_view value(argv[++i]);
 
-        if (option == "--id") {
+        if (option == "--replicas") config.replication_n=parse_number(value,1,256);
+        else if (option == "--read-quorum") config.read_r=parse_number(value,1,256);
+        else if (option == "--write-quorum") config.write_w=parse_number(value,1,256);
+        else if (option == "--id") {
             if (has_id) {
                 throw std::invalid_argument("Duplicate --id");
             }
@@ -154,6 +157,16 @@ Config Config::parse_args(int argc, char* argv[]) {
             config.ws_port = static_cast<std::uint16_t>(
                 parse_number(value, 1, 65535)
             );
+        }
+        else if (option == "--state-file") {
+            config.state_file = std::string(value);
+            if(config.state_file.empty()) throw std::invalid_argument("empty --state-file");
+        }
+        else if (option == "--placement") {
+            throw std::invalid_argument("--placement is removed; use automatic state persistence");
+        }
+        else if (option == "--leave-after") {
+            config.leave_after_seconds=parse_number(value,1,86400);
         }
         else if (option == "--peers") {
             std::size_t start = 0;
@@ -190,6 +203,8 @@ Config Config::parse_args(int argc, char* argv[]) {
         }
     }
 
+
+
     if (!has_id || !has_port) {
         throw std::invalid_argument(
             "Required arguments: --id and --port"
@@ -212,6 +227,12 @@ Config Config::parse_args(int argc, char* argv[]) {
         }
     }
 
+    if(config.state_file.empty())
+        config.state_file = "state/node" + std::to_string(config.id) + "/placement.state";
+    if(config.id != Config::MEMBERSHIP_AUTHORITY && config.peers.empty())
+        throw std::invalid_argument("non-authority must seed --peers 1:HOST:PORT");
+    if(config.read_r>config.replication_n || config.write_w>config.replication_n)
+        throw std::invalid_argument("R/W must be <= N");
     return config;
 }
 
