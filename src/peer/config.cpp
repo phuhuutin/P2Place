@@ -127,6 +127,9 @@ Config Config::parse_args(int argc, char* argv[]) {
         if (option == "--replicas") config.replication_n=parse_number(value,1,256);
         else if (option == "--read-quorum") config.read_r=parse_number(value,1,256);
         else if (option == "--write-quorum") config.write_w=parse_number(value,1,256);
+        else if (option == "--suspect-after") config.suspect_after_seconds=parse_number(value,1,3600);
+        else if (option == "--unavailable-after") config.unavailable_after_seconds=parse_number(value,1,3600);
+        else if (option == "--recovery-stabilization") config.recovery_stabilization_seconds=parse_number(value,0,3600);
         else if (option == "--id") {
             if (has_id) {
                 throw std::invalid_argument("Duplicate --id");
@@ -233,6 +236,8 @@ Config Config::parse_args(int argc, char* argv[]) {
         throw std::invalid_argument("non-authority must seed --peers 1:HOST:PORT");
     if(config.read_r>config.replication_n || config.write_w>config.replication_n)
         throw std::invalid_argument("R/W must be <= N");
+    if(config.unavailable_after_seconds<=config.suspect_after_seconds)
+        throw std::invalid_argument("--unavailable-after must exceed --suspect-after");
     return config;
 }
 

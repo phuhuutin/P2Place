@@ -118,6 +118,11 @@ PeerNode::PeerNode(Config config)
     }
     replication_strategy_=std::make_unique<replication::FixedReplicationStrategy>(
         replication::QuorumConfig{config_.replication_n,config_.read_r,config_.write_w});
+    // Thresholds from config; accelerated values allowed for lab experiments.
+    failure_detector_=core::FailureDetector(core::FailureDetector::Config{
+        std::chrono::seconds(config_.suspect_after_seconds),
+        std::chrono::seconds(config_.unavailable_after_seconds),
+        std::chrono::seconds(config_.recovery_stabilization_seconds)});
     replicator_ = std::make_unique<replication::ReplicationManager>(
         config_.id,ring_,region_store_,*replication_strategy_,
         [this](core::NodeId peer,const messages::Message& m)->bool {
@@ -135,6 +140,7 @@ PeerNode::PeerNode(Config config)
     // The local process participates in placement even when no peers are online.
     refresh_ring();
     next_gossip_ = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    next_repair_ = std::chrono::steady_clock::now() + std::chrono::seconds(2);
 
     // Keep runtime tables in sync when EventLoop destroys a
     // connection (EOF, RST, protocol error, failed flush, ...).
@@ -160,12 +166,17 @@ void PeerNode::send_hello(int fd) {
     const auto fp = placement_ready_ ? placement_.fingerprint() : 0;
     put_u32(m.payload, static_cast<std::uint32_t>(fp >> 32));
     put_u32(m.payload, static_cast<std::uint32_t>(fp));
+    // Committed generation: lets a stale restarted peer detect that the
+    // cluster moved on and reset itself to a fresh joiner session.
+    const auto epoch = placement_ready_ ? placement_.epoch() : 0;
+    put_u32(m.payload, static_cast<std::uint32_t>(epoch));
     // 1 = prepared but not committed, 2 = committed but not released.
     m.payload.push_back(staged_ ? 1 : (frozen_ ? 2 : 0));
     send_message(fd, m);
 }
 
 void PeerNode::forget_connection(int fd) {
+    dialed_fds_.erase(fd);
     const auto it = node_by_fd_.find(fd);
     if (it == node_by_fd_.end()) return;
 
@@ -173,12 +184,18 @@ void PeerNode::forget_connection(int fd) {
     node_by_fd_.erase(it);
     if (auto f = fd_by_node_.find(id); f != fd_by_node_.end() && f->second == fd) {
         fd_by_node_.erase(f);
-        peers_.mark(id, core::NodeStatus::Dead);
+        // A TCP disconnect is SUSPECT, not a permanent membership removal.
+        peers_.mark(id, core::NodeStatus::Suspect);
+        log_peer_health(id, core::NodeStatus::Suspect);
+        failure_detector_.disconnected(id, std::chrono::steady_clock::now());
         last_pong_.erase(id);
+        join_referrals_.erase(id);
         handle_peer_disconnect(id);
         if(config_.id==authority_id_ &&
            phase_!=Phase::Idle && transition_peers_.contains(id))
             abort_transition("participant disconnected");
+        std::cout << "[disconnect] node=" << config_.id << " peer=" << id
+                  << " fd=" << fd << " reason=remote-close-or-error\n";
         std::cout << "Peer " << id << " disconnected\n";
         membership_dirty_ = true;
         refresh_ring();
@@ -250,8 +267,132 @@ void PeerNode::broadcast_pixel(std::uint32_t key, std::uint16_t index,
                                {"color",color_to_hex(color)}}.dump());
 }
 
+void PeerNode::relay_pixel_event(const messages::Message& msg,core::NodeId except) {
+    std::size_t relayed=0;
+    const auto members=placement_.members();
+    for(const auto& [peer,fd]:fd_by_node_) {
+        if(peer==except || !placement_ready_ ||
+           std::find(members.begin(),members.end(),peer)==members.end())continue;
+        try {send_message(fd,msg);++relayed;}
+        catch(const std::exception& e) {
+            std::cerr << "[pixel-event] node=" << config_.id << " relay-failed peer=" << peer << " error=" << e.what() << '\n';
+        }
+    }
+    std::cout << "[pixel-event] node=" << config_.id << " relayed=" << relayed << '\n';
+}
+void PeerNode::announce_committed_pixel(std::uint32_t key,std::uint16_t index,
+                                         const core::VersionedPixel& pixel) {
+    const auto pixel_key=key*core::Region::COUNT+index;
+    const auto known=last_browser_pixel_versions_.find(pixel_key);
+    if(known!=last_browser_pixel_versions_.end() && !pixel.newer_than(known->second)) {
+        std::cout << "[pixel-event] node=" << config_.id << " drop=old-local-version region=" << key << " index=" << index << '\n';
+        return;
+    }
+    last_browser_pixel_versions_[pixel_key]=pixel;
+    broadcast_pixel(key,index,pixel.color);
+    if(!placement_ready_ || frozen_)return;
+    PixelEvent e{config_.id,++next_pixel_event_,placement_.fingerprint(),key,index,pixel};
+    seen_pixel_events_.accept(e.origin,e.sequence);
+    messages::Message m;m.type=messages::Type::PIXEL_EVENT;
+    m.payload=encode_pixel_event(e);
+    std::cout << "[pixel-event] node=" << config_.id << " origin=" << e.origin
+              << " seq=" << e.sequence << " region=" << key << " pixel=" << index
+              << " version=" << pixel.lamport << " accepted=W quorum\n";
+    relay_pixel_event(m,0);
+}
+void PeerNode::on_pixel_event(const messages::Message& msg,core::NodeId sender) {
+    if(!placement_ready_ || frozen_)return;
+    const auto e=decode_pixel_event(msg.payload);
+    const auto members=placement_.members();
+    if(e.placement_fingerprint!=placement_.fingerprint() ||
+       std::find(members.begin(),members.end(),e.origin)==members.end()){
+        std::cout << "[pixel-event] node=" << config_.id << " drop=placement-mismatch sender=" << sender << '\n';
+        return;
+    }
+    if(!seen_pixel_events_.accept(e.origin,e.sequence)) {
+        std::cout << "[pixel-event] node=" << config_.id << " drop=duplicate origin=" << e.origin << " seq=" << e.sequence << '\n';
+        return;
+    }
+    // Notification delivery does not create a replica or acknowledge a write.
+    // Per-pixel LWW guard prevents an older delayed event from visually
+    // overwriting a newer event on this peer's connected browser clients.
+    const auto pixel_key=e.key*core::Region::COUNT+e.index;
+    const auto known=last_browser_pixel_versions_.find(pixel_key);
+    if(known==last_browser_pixel_versions_.end() || e.pixel.newer_than(known->second)) {
+        last_browser_pixel_versions_[pixel_key]=e.pixel;
+        broadcast_pixel(e.key,e.index,e.pixel.color);
+    } else {
+        std::cout << "[pixel-event] node=" << config_.id << " drop=stale-display-event origin=" << e.origin << " seq=" << e.sequence << '\n';
+    }
+    std::cout << "[pixel-event] node=" << config_.id << " received-from=" << sender
+              << " origin=" << e.origin << " seq=" << e.sequence
+              << " region=" << e.key << " pixel=" << e.index << " ws=broadcast\n";
+    relay_pixel_event(msg,sender);
+}
+
 void PeerNode::handle_peer_disconnect(core::NodeId id) {
     if(replicator_)replicator_->on_disconnect(id);
+}
+
+void PeerNode::log_peer_health(core::NodeId id, core::NodeStatus status) {
+    auto& last=last_peer_health_status_[id];
+    if(last==status)return;
+    const char* name[]={"","HEALTHY","SUSPECT","UNAVAILABLE"};
+    const char* old_name=name[static_cast<int>(last)];
+    if(!*old_name)old_name="HEALTHY";
+    std::cout << "[peer-health] node=" << config_.id
+              << " peer=" << id
+              << ' ' << old_name << "->" << name[static_cast<int>(status)]
+              << " placement=" << (placement_ready_ && placement_.contains(id)
+                                   ? "member" : "non-member")
+              << '\n';
+    last=status;
+    if(status==core::NodeStatus::Alive) {
+        unavailable_since_.erase(id);
+        reported_suspect_.erase(id);
+    }
+}
+
+void PeerNode::reset_to_joiner(const std::string& why) {
+    if(!placement_ready_ && !staged_ && !frozen_)return;
+    const auto old_gen = placement_ready_ ? placement_.epoch() : 0;
+    std::cout << "[peer-health] node=" << config_.id
+              << " STALE->JOINER local_generation=" << old_gen
+              << " reason=" << why << '\n';
+    // Discard the stale committed state on disk so a crash before re-commit
+    // cannot resurrect the obsolete placement.
+    std::error_code ec;
+    std::filesystem::remove(config_.state_file, ec);
+    std::filesystem::remove(config_.state_file+".pending", ec);
+    placement_manager_.abort();
+    placement_ready_=false;
+    frozen_=false;
+    staged_.reset();
+    ready_sent_=false;
+    phase_=Phase::Idle;
+    transition_keys_.clear();
+    moves_.clear();
+    next_move_=0;
+    waiting_.clear();
+    transition_peers_.clear();
+    membership_queue_.clear();
+    removed_peers_.clear();
+    removal_transition_=false;
+    commit_uncertain_logged_=false;
+    // Un-acknowledged local pixels must never overwrite live replicas.
+    region_store_.clear();
+    seen_pixel_events_=PixelEventDedup{};
+    last_browser_pixel_versions_.clear();
+    // Never reclaim authority: the cluster elects its own leader; this peer
+    // re-enters as an ordinary joiner with a fresh admission order.
+    authority_id_=0;
+    last_elected_token_.clear();
+    election_in_progress_=false;
+    join_referrals_.clear();
+    unavailable_since_.clear();
+    reported_suspect_.clear();
+    last_peer_health_status_.clear();
+    refresh_ring();
 }
 
 void PeerNode::finish_snapshot(int browser_fd, const std::string& error) {
@@ -329,16 +470,46 @@ void PeerNode::on_message(net::TcpConnection& conn,
 void PeerNode::register_handlers() {
     handlers_[messages::Type::HELLO] = [this](
         net::TcpConnection& conn, const messages::Message& msg, core::NodeId sender) {
-        if (sender != 0 || (msg.payload.size() != 16 && msg.payload.size()!=17))
+        const auto size=msg.payload.size();
+        if (sender != 0 || (size != 16 && size != 17 && size != 20 && size != 21))
             throw std::runtime_error("invalid or duplicate HELLO");
 
-        const auto remote_stage=msg.payload.size()==17 ? msg.payload[16] : 0;
+        // 16/17-byte HELLOs predate the committed-generation field (legacy).
+        const bool has_epoch = size >= 20;
+        const auto remote_stage=(size==17||size==21) ? msg.payload[size-1] : 0;
         const auto id = get_u32(msg.payload, 0);
         const auto port = get_u16(msg.payload, 4);
         const auto ws_port = get_u16(msg.payload, 6);
         const auto remote_fingerprint =
             (static_cast<std::uint64_t>(get_u32(msg.payload,8)) << 32) |
             get_u32(msg.payload,12);
+        const auto remote_epoch = has_epoch ? get_u32(msg.payload, 16) : 0;
+
+        // Stale-generation resolution: the cluster moved on while the peer
+        // with the LOWER committed generation was down. That side must reset
+        // to a fresh joiner session and re-sync; it must never serve or
+        // overwrite data under its obsolete placement.
+        if (placement_ready_ && remote_fingerprint != 0 && remote_epoch != 0) {
+            if (remote_epoch < placement_.epoch()) {
+                std::cout << "[peer-health] node=" << config_.id
+                          << " peer=" << id << " STALE"
+                          << " peer_generation=" << remote_epoch
+                          << " local_generation=" << placement_.epoch() << '\n';
+                throw std::runtime_error("stale peer committed placement");
+            }
+            if (remote_epoch > placement_.epoch()) {
+                std::cout << "[stale-reset] node=" << config_.id
+                          << " fd=" << conn.fd()
+                          << " local_gen=" << placement_.epoch()
+                          << " remote_gen=" << remote_epoch
+                          << " remote_peer=" << id
+                          << " old_fp=" << placement_.fingerprint()
+                          << " state=joiner\n";
+                reset_to_joiner("remote generation " + std::to_string(remote_epoch)
+                    + " > local " + std::to_string(placement_.epoch()));
+            }
+        }
+
         // Never accept a different committed ring silently. A fresh joiner
         // announces fingerprint 0; it must receive a prepared snapshot from
         // the authority before it can serve any pixel request.
@@ -372,25 +543,60 @@ void PeerNode::register_handlers() {
                 info.host = ip;
         }
 
-        // This minimal Lab 02 version keeps one active connection per NodeId.
+        // One active connection per NodeId. When two peers dial each other
+        // concurrently, both ends see a "duplicate" HELLO. Resolve
+        // deterministically: keep the connection whose initiator has the
+        // smaller node id, so both ends keep the SAME TCP connection instead
+        // of each keeping a different one (which would tear both down).
         if (const auto old = fd_by_node_.find(id);
             old != fd_by_node_.end() && old->second != conn.fd()) {
-            throw std::runtime_error("duplicate peer connection");
+            const int old_fd = old->second;
+            const auto old_initiator = dialed_fds_.contains(old_fd) ? config_.id : id;
+            const auto new_initiator = dialed_fds_.contains(conn.fd()) ? config_.id : id;
+            if (new_initiator < old_initiator) {
+                // Adopt the new connection and retire the old one. Update the
+                // maps first so the old fd's disconnect callback cannot be
+                // mistaken for a peer disconnection (no abort, no failure
+                // reporting, no HELLO-bytes lost).
+                node_by_fd_.erase(old_fd);
+                dialed_fds_.erase(old_fd);
+                fd_by_node_[id] = conn.fd();
+                loop_.remove(old_fd);
+                std::cout << "[peer] replacing duplicate connection to " << id
+                          << " old_fd=" << old_fd << " new_fd=" << conn.fd() << '\n';
+            } else {
+                throw std::runtime_error("duplicate peer connection");
+            }
         }
         peers_.upsert(std::move(info));
         node_by_fd_[conn.fd()] = id;
         fd_by_node_[id] = conn.fd();
         last_pong_[id] = std::chrono::steady_clock::now();
+        failure_detector_.observe(id, last_pong_[id]);
+        reported_unavailable_.erase(id);
+        log_peer_health(id, core::NodeStatus::Alive);
         std::cout << "HELLO from peer " << id << " (fd=" << conn.fd() << ")\n";
         membership_dirty_ = true;
         refresh_ring();
         // HELLO precedes NODELIST in each connection's outgoing byte stream.
         send_nodelist(conn.fd());
-        // Synchronize the last election result with a recovered former leader.
-        // Without this, Node 1 might resume acting as authority after reconnect.
-        if (!last_elected_token_.empty() && !candidate &&
-            remote_fingerprint == placement_.fingerprint())
+        // Synchronize the last election result with recovered/joining peers:
+        // a former leader must not resume authority, and a fresh joiner must
+        // learn the CURRENT elected authority (its default is node 1, which
+        // may have been removed long ago).
+        if (!last_elected_token_.empty() &&
+            (candidate || remote_fingerprint == placement_.fingerprint()))
             send_control(id, messages::Type::RING_ELECTED, last_elected_token_);
+        if (candidate && config_.id != authority_id_) {
+            // This seed has verified the joiner over TCP. Tell the authority
+            // how to establish its OWN authenticated HELLO connection.
+            join_referrals_[id] = *peers_.find(id);
+            std::cout << "[join-referral] seed=" << config_.id
+                      << " candidate=" << id << " via=" << join_referrals_[id].host
+                      << ':' << port << " authority=" << authority_id_ << '\n';
+            next_join_referral_ = std::chrono::steady_clock::time_point{};
+            forward_join_referrals();
+        }
         if (config_.id == authority_id_) {
             broadcast_endpoints();
             if (remote_stage==1 && phase_==Phase::Idle &&
@@ -399,6 +605,18 @@ void PeerNode::register_handlers() {
                 // Authority restarted before commit; previously prepared
                 // participants can safely abort to the last committed view.
                 send_control(id,messages::Type::PLACEMENT_ABORT);
+            }
+            if (remote_stage==2 && phase_==Phase::Idle && placement_ready_ &&
+                remote_fingerprint==placement_.fingerprint()) {
+                // Peer committed the current generation but crashed before
+                // RELEASE. Re-sending RELEASE is idempotent and unfreezes it.
+                std::cout << "[membership] recovery: re-release to committed peer "
+                          << id << " generation " << placement_.epoch() << '\n';
+                const auto fp = placement_.fingerprint();
+                std::vector<std::uint8_t> tag;
+                for (int i = 7; i >= 0; --i)
+                    tag.push_back(static_cast<std::uint8_t>(fp >> (i * 8)));
+                send_control(id,messages::Type::PLACEMENT_RELEASE,std::move(tag));
             }
             if (candidate) schedule_join(id);
         }
@@ -422,7 +640,10 @@ void PeerNode::register_handlers() {
         if (!msg.payload.empty())
             throw std::runtime_error("unexpected PONG payload");
         last_pong_[sender] = std::chrono::steady_clock::now();
+        failure_detector_.observe(sender,last_pong_[sender]);
+        reported_unavailable_.erase(sender);
         peers_.mark(sender, core::NodeStatus::Alive);
+        log_peer_health(sender, core::NodeStatus::Alive);
         refresh_ring();
     };
 
@@ -446,6 +667,9 @@ void PeerNode::register_handlers() {
         net::TcpConnection&, const messages::Message& msg, core::NodeId sender) {
         on_ring_elected(msg, sender);
     };
+
+    handlers_[messages::Type::PIXEL_EVENT] = [this](net::TcpConnection&,
+        const messages::Message& msg,core::NodeId sender){on_pixel_event(msg,sender);};
 
     // Requests are always sent by an authenticated neighboring peer.
     for (auto type : {messages::Type::PLACEMENT_PREPARE, messages::Type::PLACEMENT_READY,
@@ -473,6 +697,10 @@ void PeerNode::register_handlers() {
             if(frozen_ || !placement_ready_) {
                 // Allow outstanding replies while draining a transition.
                 if(!(msg.flags & messages::IS_RESPONSE)) {
+                    // Best-effort anti-entropy repair expects no reply; an
+                    // ERROR with its request_id 0 would pollute the sender's
+                    // quorum accounting ([quorum-ignore] request=0 noise).
+                    if(msg.type==messages::Type::REGION_PUT)return;
                     messages::Message error;
                     error.type=messages::Type::ERROR;
                     error.flags=messages::IS_RESPONSE;
@@ -515,9 +743,11 @@ void PeerNode::on_tick() {
     const auto connected = fd_by_node_;
     for (const auto& [id, fd] : connected) {
         auto seen = last_pong_.find(id);
-        if (seen != last_pong_.end() && now - seen->second > 3s &&
-            peers_.find(id)->status != core::NodeStatus::Suspect) {
+        if (seen != last_pong_.end() &&
+            now - seen->second > std::chrono::seconds(config_.suspect_after_seconds) &&
+            peers_.find(id)->status == core::NodeStatus::Alive) {
             peers_.mark(id, core::NodeStatus::Suspect);
+            log_peer_health(id, core::NodeStatus::Suspect);
             membership_dirty_ = true;
             refresh_ring();
         }
@@ -528,6 +758,19 @@ void PeerNode::on_tick() {
         send_message(fd, ping);
     }
 
+    // Failure detection never edits canonical ownership by itself: the
+    // UNAVAILABLE state is only a signal to the membership authority.
+    for (auto id: failure_detector_.unavailable(now)) {
+        auto info=peers_.find(id);
+        if(info && info->status!=core::NodeStatus::Dead) {
+            peers_.mark(id, core::NodeStatus::Dead);
+            log_peer_health(id, core::NodeStatus::Dead);
+            membership_dirty_ = true;
+            std::cout << "[churn] node=" << id
+                      << " unavailable; awaiting authority-led removal\n";
+        }
+    }
+    schedule_auto_removal_tick(now);
     // Send promptly following a membership change and at least every 5 seconds.
     // Do not reset the periodic deadline on a change-triggered broadcast.
     const bool periodic = now >= next_gossip_;
@@ -542,6 +785,13 @@ void PeerNode::on_tick() {
     }
     connect_discovered_peers();
     election_tick();
+    forward_join_referrals();
+    // Lab 06 shared repair path; do not run across in-progress reconfiguration.
+    if (placement_ready_ && !frozen_ && phase_==Phase::Idle &&
+        now>=next_repair_ && replicator_) {
+        replicator_->anti_entropy_step();
+        next_repair_=now+std::chrono::seconds(2);
+    }
     if(config_.leave_after_seconds>0 && !leave_requested_ && placement_ready_ &&
        config_.id!=authority_id_ &&
        now-started_>=std::chrono::seconds(config_.leave_after_seconds) &&
@@ -590,6 +840,7 @@ void PeerNode::run() {
 
             if (result.status == net::ConnectStatus::Connected) {
                 // TCP connection established immediately
+                dialed_fds_.insert(result.socket.get());
                 on_accepted(std::move(result.socket));
             }
             else {
@@ -599,6 +850,7 @@ void PeerNode::run() {
 
                     // Success callback
                     [this](net::Socket connected) {
+                        dialed_fds_.insert(connected.get());
                         on_accepted(std::move(connected));
                     },
 
@@ -713,10 +965,19 @@ void PeerNode::run() {
         const auto index=core::RegionStore::pixel_index(x,y);
         const core::VersionedPixel pixel{color,lamport_clock_.tick(),config_.id};
         try {
-            replicator_->put(key,index,pixel,[this,fd,key,index,color](bool ok,const std::string& error){
-                if(ok)broadcast_pixel(key,index,color);
-                else report_browser_error(fd,error);
+            const auto request=replicator_->put(key,index,pixel,[this,fd,key,index,pixel](bool ok,const std::string& error){
+                if(ok) {
+                    std::cout << "[ws-put] node=" << config_.id << " quorum=success region=" << key << " index=" << index << '\n';
+                    announce_committed_pixel(key,index,pixel);
+                } else {
+                    std::cerr << "[ws-put] node=" << config_.id << " quorum=failed region=" << key << " error=" << error << '\n';
+                    report_browser_error(fd,error);
+                }
             });
+            std::cout << "[ws-put] node=" << config_.id << " request=" << request
+                      << " x=" << x << " y=" << y << " region=" << key
+                      << " index=" << index << " color=" << color_to_hex(color)
+                      << " version=" << pixel.lamport << '\n';
         }catch(const std::exception& e){report_browser_error(fd,e.what());}
     }
 

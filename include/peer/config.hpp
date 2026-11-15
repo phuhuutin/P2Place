@@ -43,6 +43,12 @@ struct Config {
     std::size_t read_r = 2;
     std::size_t write_w = 2;
 
+    // Failure-detection thresholds for automatic failed-member removal
+    // (accelerated values allowed for lab experiments).
+    std::uint32_t suspect_after_seconds = 3;
+    std::uint32_t unavailable_after_seconds = 15;
+    std::uint32_t recovery_stabilization_seconds = 2;
+
     /** Addresses of other known peers (the seed list). */
     std::vector<core::NodeInfo> peers;
 

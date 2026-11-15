@@ -104,6 +104,8 @@ void PeerNode::election_tick() {
     }
     if(now>=next_election_attempt_ && !election_in_progress_) {
         next_election_attempt_=now+RETRY;
+        std::cout<<"[election] authority="<<authority_id_
+                 <<" unavailable; starting ring election\n";
         start_ring_election();
     }
 }
@@ -121,7 +123,10 @@ void PeerNode::on_ring_election(const messages::Message& msg,core::NodeId sender
         authority_id_=t.winner;
         last_elected_token_=encode(t);
         std::cout<<"[election] RING elected authority="<<authority_id_
-                 <<" generation="<<t.gen<<"\n";
+                 <<" generation="<<t.gen
+                 <<" reachable="<<reachable_voters()<<'/'<<placement_.members().size()<<"\n";
+        std::cout<<"[authority] leader="<<authority_id_
+                 <<" placement_gen="<<t.gen<<"\n";
         // Announce clockwise; all participants learn the same elected leader.
         // The election is advisory until all peer connections/placement are healthy.
         auto next=next_ring_peer();
@@ -138,7 +143,19 @@ void PeerNode::on_ring_election(const messages::Message& msg,core::NodeId sender
 }
 void PeerNode::on_ring_elected(const messages::Message& msg,core::NodeId sender) {
     const auto t=decode(msg.payload);
-    if(!placement_ready_ || t.gen!=placement_.epoch() ||
+    if(!placement_ready_) {
+        // Fresh or stale-reset joiner: adopt the announced authority. The
+        // token's generation cannot be verified yet (no placement), but the
+        // sender connection is HELLO-authenticated and the joiner defaults
+        // to node 1, which may be long gone.
+        if(t.winner==0)return;
+        authority_id_=t.winner;
+        last_elected_token_=msg.payload;
+        std::cout<<"[election] learned authority="<<authority_id_
+                 <<" as joiner via="<<sender<<"\n";
+        return;
+    }
+    if(t.gen!=placement_.epoch() ||
        t.fingerprint!=placement_.fingerprint() ||
        t.visited<=placement_.members().size()/2 ||
        !placement_.contains(sender) || !placement_.contains(t.winner))return;
@@ -147,6 +164,8 @@ void PeerNode::on_ring_elected(const messages::Message& msg,core::NodeId sender)
     last_elected_token_=msg.payload;
     election_in_progress_=false;
     std::cout<<"[election] learned authority="<<authority_id_<<"\n";
+    std::cout<<"[authority] leader="<<authority_id_
+             <<" placement_gen="<<t.gen<<"\n";
     const auto next=next_ring_peer();
     if(next)send_control(*next,messages::Type::RING_ELECTED,msg.payload);
 }

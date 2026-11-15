@@ -4,6 +4,7 @@
 #include "messages/message.hpp"
 #include "net/timer_queue.hpp"
 #include "replication/replication_strategy.hpp"
+#include <chrono>
 #include <functional>
 #include <map>
 #include <set>
@@ -31,6 +32,9 @@ public:
     std::uint32_t get(std::uint32_t key,GetResult callback);
     void on_message(NodeId sender,const messages::Message& msg);
     void on_disconnect(NodeId sender);
+    // Pace periodic in-memory repair; returns true if one region was attempted.
+    bool anti_entropy_step();
+    std::uint64_t repair_bytes_sent() const noexcept {return repair_bytes_sent_;}
     void cancel_all(const std::string& reason);
     std::size_t pending_count() const noexcept { return pending_.size(); }
     QuorumConfig config(std::uint32_t key) const {return strategy_.plan(key);}
@@ -42,6 +46,7 @@ private:
         std::set<NodeId> expected, responded, failed;
         std::map<NodeId,core::Region> versions;
         net::TimerQueue::Token timer=0;
+        std::chrono::steady_clock::time_point started{};
         PutResult put_callback;
         GetResult get_callback;
     };
@@ -54,6 +59,8 @@ private:
     Cancel cancel_;
     std::map<std::uint32_t,Pending> pending_;
     std::uint32_t next_id_=0x40000000;
+    std::size_t repair_cursor_=0;
+    std::uint64_t repair_bytes_sent_=0;
     std::uint32_t id();
     std::set<NodeId> targets(std::uint32_t key,std::size_t count) const;
     bool dispatch(NodeId to,const messages::Message& msg);

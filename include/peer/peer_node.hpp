@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/peer_table.hpp"
+#include "core/failure_detector.hpp"
 #include "core/consistent_hash_ring.hpp"
 #include "core/balanced_placement.hpp"
 #include "core/automatic_placement.hpp"
@@ -8,6 +9,7 @@
 #include "net/event_loop.hpp"
 #include "net/tcp_server.hpp"
 #include "peer/config.hpp"
+#include "peer/pixel_event.hpp"
 #include "core/region_store.hpp"
 #include "core/lamport_clock.hpp"
 #include "ui/websocket_server.hpp"
@@ -64,7 +66,14 @@ private:
     [[nodiscard]] bool has_majority() const;
     [[nodiscard]] core::NodeId preferred_initiator() const;
     void schedule_join(core::NodeId id);
-    void schedule_leave(core::NodeId id);
+    void schedule_leave(core::NodeId id, const std::string& reason = {});
+    void schedule_auto_removal_tick(std::chrono::steady_clock::time_point now);
+    void reset_to_joiner(const std::string& why);
+    void log_peer_health(core::NodeId id, core::NodeStatus status);
+    // Authority-message gate: members require sender==authority_id_; a
+    // joiner without a committed placement adopts the sender (no election
+    // token exists when the authority never failed).
+    bool accept_authority_message(core::NodeId sender);
     void begin_transition(core::NodeId id, bool joining);
     void progress_transition();
     void send_ready_if_quiescent();
@@ -77,6 +86,7 @@ private:
     void on_placement_message(net::TcpConnection&, const messages::Message&, core::NodeId);
     void on_handoff_message(net::TcpConnection&, const messages::Message&, core::NodeId);
     void connect_peer(core::NodeId id, const std::string& host, std::uint16_t port);
+    void forward_join_referrals();
 
     // Lab05: single quorum coordinator replaces old primary-only pending maps.
     struct Snapshot { std::uint32_t next_key=0; };
@@ -91,6 +101,10 @@ private:
     void finish_snapshot(int browser_fd, const std::string& error = {});
     void broadcast_pixel(std::uint32_t key, std::uint16_t index,
                          std::uint32_t color);
+    void announce_committed_pixel(std::uint32_t key, std::uint16_t index,
+                                 const core::VersionedPixel& pixel);
+    void on_pixel_event(const messages::Message& msg,core::NodeId sender);
+    void relay_pixel_event(const messages::Message& msg,core::NodeId except);
     void report_browser_error(int browser_fd, const std::string& error);
     void handle_peer_disconnect(core::NodeId id);
     [[nodiscard]] std::optional<int> owner_fd(core::NodeId id) const;
@@ -98,6 +112,8 @@ private:
 
     Config config_;
     core::PeerTable peers_;
+    core::FailureDetector failure_detector_{{}};
+    std::set<core::NodeId> reported_unavailable_;
     core::AutomaticPlacement placement_manager_;
     core::BalancedPlacement placement_;
     core::NodeId authority_id_ = 1;
@@ -120,14 +136,37 @@ private:
     bool ready_sent_ = false;
     std::deque<std::pair<core::NodeId, bool>> membership_queue_;
     std::map<core::NodeId, std::chrono::steady_clock::time_point> next_dial_;
+    // Directly verified joiners waiting for the elected authority to discover them.
+    std::map<core::NodeId, core::NodeInfo> join_referrals_;
+    std::chrono::steady_clock::time_point next_join_referral_{};
     std::set<core::NodeId> connecting_;
+    // Outbound connections this process initiated. Used to resolve duplicate
+    // mutual dials deterministically: both ends keep the connection whose
+    // initiator has the smaller node id.
+    std::set<int> dialed_fds_;
+    // Per-peer outbound dial attempt counter (seed reconnects are logged).
+    std::map<core::NodeId, std::uint64_t> dial_attempts_;
+    // Deduplication of diagnostic logs (log only when the wait reason changes).
+    std::string last_ready_wait_;
+    std::string last_transition_wait_;
+    bool commit_uncertain_logged_ = false;
     std::chrono::steady_clock::time_point transition_deadline_{};
+    // Automatic failed-member removal bookkeeping (authority only).
+    std::set<core::NodeId> reported_suspect_;
+    std::map<core::NodeId, std::chrono::steady_clock::time_point> unavailable_since_;
+    std::map<core::NodeId, core::NodeStatus> last_peer_health_status_;
+    std::map<core::NodeId, std::chrono::steady_clock::time_point> last_dial_error_log_;
+    bool removal_transition_ = false;
+    std::set<core::NodeId> removed_peers_;
+    std::chrono::steady_clock::time_point transition_started_{};
+    std::string last_blocked_log_;
     std::chrono::steady_clock::time_point next_endpoint_broadcast_{};
     core::ConsistentHashRing ring_;
     bool membership_dirty_ = false;
     std::chrono::steady_clock::time_point started_{};
     bool leave_requested_ = false;
     std::chrono::steady_clock::time_point next_gossip_{};
+    std::chrono::steady_clock::time_point next_repair_{};
     net::EventLoop loop_;
     std::unique_ptr<net::TcpServer> server_;
 
@@ -138,6 +177,9 @@ private:
     std::map<core::NodeId, std::chrono::steady_clock::time_point> last_pong_;
     std::map<messages::Type, Handler> handlers_;
     std::uint32_t next_request_id_ = 1;
+    std::uint64_t next_pixel_event_ = 0;
+    PixelEventDedup seen_pixel_events_;
+    std::map<std::uint32_t,core::VersionedPixel> last_browser_pixel_versions_;
 
     core::RegionStore region_store_;
     core::LamportClock lamport_clock_{

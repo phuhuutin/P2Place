@@ -75,6 +75,14 @@ public:
     void merge_region(std::uint32_t region,const Region& incoming);
 
     /**
+     * @brief Discard every in-memory region.
+     *
+     * Used when a peer resets to joiner state after learning its committed
+     * placement is stale: un-acknowledged local copies must not be served.
+     */
+    void clear() noexcept {regions_.clear();}
+
+    /**
      * @brief All region keys currently present in the store.
      * @return Vector of keys in ascending order (std::map order).
      */

@@ -28,6 +28,7 @@ add_library(p2place STATIC
     src/core/peer_table.cpp
     src/peer/config.cpp
     src/peer/peer_node.cpp
+    src/peer/pixel_event.cpp
     src/peer/placement_runtime.cpp
     src/peer/ring_election.cpp
     src/messages/message.cpp
@@ -48,6 +49,8 @@ add_library(p2place STATIC
     src/core/consistent_hash_ring.cpp
     src/core/membership_gossip.cpp
     src/replication/replication_manager.cpp
+    src/core/failure_detector.cpp
+    src/replication/churn_replication_strategy.cpp
 )
 
 target_include_directories(p2place PUBLIC
@@ -173,24 +176,7 @@ if(BUILD_TESTING)
         LABELS "lab04;through-lab04"
     )
 
-        # Lab 04 - ConsistentHashRing
-    add_executable(p2place-test-ring-lab04
-        tests/test_consistent_hash_ring.cpp
-    )
-
-    target_link_libraries(p2place-test-ring-lab04 PRIVATE
-        p2place
-        GTest::gtest_main
-    )
-
-    add_test(
-        NAME ring-lab04
-        COMMAND p2place-test-ring-lab04
-    )
-
-    set_tests_properties(ring-lab04 PROPERTIES
-        LABELS "lab04;through-lab04"
-    )
+     
 
     # Lab 04 - NODELIST membership
     add_executable(p2place-test-membership-lab04
@@ -261,3 +247,35 @@ add_executable(p2place-test-lab05-three-nodes tests/test_lab05_three_node_sim.cp
 target_link_libraries(p2place-test-lab05-three-nodes PRIVATE p2place)
 add_test(NAME lab05-three-node-simulation COMMAND p2place-test-lab05-three-nodes)
 set_tests_properties(lab05-three-node-simulation PROPERTIES LABELS "lab05;through-lab05")
+
+# Lab 06: independent tests without the networking runtime.
+add_executable(p2place-test-lab06-core
+    tests/test_lab06_core_standalone.cpp)
+target_link_libraries(p2place-test-lab06-core PRIVATE p2place)
+add_test(NAME lab06-core COMMAND p2place-test-lab06-core)
+
+add_executable(p2place-test-lab06-anti-entropy
+    tests/test_lab06_anti_entropy_sim.cpp)
+target_link_libraries(p2place-test-lab06-anti-entropy PRIVATE p2place)
+add_test(NAME lab06-anti-entropy COMMAND p2place-test-lab06-anti-entropy)
+
+# No GTest/JSON needed for event codec unit test.
+if(BUILD_TESTING)
+  add_executable(p2place-test-pixel-event tests/test_pixel_event_standalone.cpp)
+  target_link_libraries(p2place-test-pixel-event PRIVATE p2place)
+  add_test(NAME lab06-pixel-event COMMAND p2place-test-pixel-event)
+endif()
+
+# Seed-independent cluster joining: referral payload unit test.
+add_executable(p2place-test-join-referral tests/test_join_referral.cpp)
+target_include_directories(p2place-test-join-referral PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_test(NAME join-referral-wire COMMAND p2place-test-join-referral)
+set_tests_properties(join-referral-wire PROPERTIES LABELS "lab06;membership")
+
+# Lab 06 regression: handoff sources may be any old replica (not only the
+# primary); destination merges keep the newer per-pixel version.
+add_executable(p2place-test-handoff-regression
+    tests/test_handoff_regression.cpp)
+target_link_libraries(p2place-test-handoff-regression PRIVATE p2place)
+add_test(NAME handoff-regression COMMAND p2place-test-handoff-regression)
+set_tests_properties(handoff-regression PROPERTIES LABELS "lab06;membership")

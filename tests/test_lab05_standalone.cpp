@@ -106,9 +106,24 @@ void local_replica_and_invalid_quorum(){
  bool rejected=false;
  try{replication::QuorumConfig{3,4,2}.validate();}catch(const std::invalid_argument&){rejected=true;}
  check(rejected,"invalid R>N accepted");
- Test small({3,2,2},{1,2});rejected=false;
- try{small.mgr->get(0,[](auto,auto&,auto&){});}catch(const std::runtime_error&){rejected=true;}
- check(rejected,"silently downgraded N with 2 nodes");
+ // Under-replication after failed-member removal: with only two live
+ // members the manager assigns the two available replicas (target N stays 3,
+ // reported via the assigned= log field) and the strict R/W quorum still
+ // decides. It must never silently lower R or W.
+ Test small({3,2,2},{1,2});
+ int gcount=0;bool gok=false;core::Region gr;
+ small.mgr->get(0,[&](bool r,const auto& data,const auto&){++gcount;gok=r;gr=data;});
+ check(small.sent.size()==1,"GET must assign the single remote available replica");
+ check(gcount==0,"local ACK alone must not satisfy R2");
+ small.respond(small.sent.at(0).first,small.sent.at(0).second,{0xAB0000,4,1});
+ check(gcount==1&&gok&&gr.pixel(0).color==0xAB0000,
+       "strict R2 succeeds only when both live replicas respond");
+ // One of the two live replicas unreachable: R2 must fail, not downgrade.
+ Test small2({3,2,2},{1,2});
+ small2.disconnected.insert(2);
+ int fcount=0;bool fok=true;
+ small2.mgr->get(0,[&](bool r,const auto&,const auto&){++fcount;fok=r;});
+ check(fcount==1&&!fok,"R2 must fail when one of two live replicas is unreachable");
 }
 void mismatched_response(){
  Test t;bool finished=false;
