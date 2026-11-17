@@ -5,8 +5,11 @@
  */
 #include "peer/config.hpp"
 
+#include <algorithm>
 #include <charconv>
+#include <cmath>
 #include <cstdint>
+#include <cstdlib>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -104,6 +107,18 @@ core::NodeInfo parse_peer(std::string_view spec) {
     return info;
 }
 
+/**
+ * @brief Convert an argument to a finite double within (0,1].
+ */
+double parse_double(std::string_view text) {
+    std::string s(text);
+    char* end=nullptr;
+    const double v=std::strtod(s.c_str(),&end);
+    if(end!=s.c_str()+s.size() || !std::isfinite(v) || v<=0.0 || v>1.0)
+        throw std::invalid_argument("Invalid double argument: "+s);
+    return v;
+}
+
 } // namespace
 
 Config Config::parse_args(int argc, char* argv[]) {
@@ -130,6 +145,22 @@ Config Config::parse_args(int argc, char* argv[]) {
         else if (option == "--suspect-after") config.suspect_after_seconds=parse_number(value,1,3600);
         else if (option == "--unavailable-after") config.unavailable_after_seconds=parse_number(value,1,3600);
         else if (option == "--recovery-stabilization") config.recovery_stabilization_seconds=parse_number(value,0,3600);
+        else if (option == "--strategy") {
+            if(value=="A")config.strategy=Config::Strategy::A;
+            else if(value=="B")config.strategy=Config::Strategy::B;
+            else throw std::invalid_argument("--strategy must be A or B");
+        }
+        else if (option == "--min-replicas") config.min_replicas=parse_number(value,1,256);
+        else if (option == "--max-replicas") config.max_replicas=parse_number(value,1,256);
+        else if (option == "--reliability-window") config.reliability_window_seconds=parse_number(value,1,86400);
+        else if (option == "--policy-interval") config.policy_interval_seconds=parse_number(value,1,3600);
+        else if (option == "--policy-cooldown") config.policy_cooldown_seconds=parse_number(value,0,86400);
+        else if (option == "--policy-threshold-high") config.policy_threshold_high=parse_double(value);
+        else if (option == "--policy-threshold-low") config.policy_threshold_low=parse_double(value);
+        else if (option == "--metrics-dir") {
+            config.metrics_dir=std::string(value);
+            if(config.metrics_dir.empty())throw std::invalid_argument("empty --metrics-dir");
+        }
         else if (option == "--id") {
             if (has_id) {
                 throw std::invalid_argument("Duplicate --id");
@@ -238,6 +269,18 @@ Config Config::parse_args(int argc, char* argv[]) {
         throw std::invalid_argument("R/W must be <= N");
     if(config.unavailable_after_seconds<=config.suspect_after_seconds)
         throw std::invalid_argument("--unavailable-after must exceed --suspect-after");
+    if(config.strategy==Config::Strategy::B) {
+        // Min N = 2: Strategy B may raise replicas under churn (mid tier
+        // and N4) but must not shrink below the N2 baseline.
+        if(config.min_replicas<2)
+            throw std::invalid_argument("Strategy B requires --min-replicas >= 2");
+        if(config.max_replicas<config.min_replicas)
+            throw std::invalid_argument("--max-replicas must be >= --min-replicas");
+        if(!(config.policy_threshold_low>0 &&
+             config.policy_threshold_low<config.policy_threshold_high &&
+             config.policy_threshold_high<=1.0))
+            throw std::invalid_argument("require 0 < policy-threshold-low < policy-threshold-high <= 1");
+    }
     return config;
 }
 

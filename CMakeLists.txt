@@ -51,6 +51,10 @@ add_library(p2place STATIC
     src/replication/replication_manager.cpp
     src/core/failure_detector.cpp
     src/replication/churn_replication_strategy.cpp
+    # Strategy B: reliability measurement + shared replication policy
+    src/core/peer_reliability.cpp
+    src/core/replication_policy.cpp
+    src/peer/metrics.cpp
 )
 
 target_include_directories(p2place PUBLIC
@@ -259,6 +263,14 @@ add_executable(p2place-test-lab06-anti-entropy
 target_link_libraries(p2place-test-lab06-anti-entropy PRIVATE p2place)
 add_test(NAME lab06-anti-entropy COMMAND p2place-test-lab06-anti-entropy)
 
+# Backfill false-complete regression: complete_all+exclude_self backfill merge,
+# bounded empty-region retries, stale-epoch callback drop.
+add_executable(p2place-test-backfill-completeness
+    tests/test_backfill_completeness.cpp)
+target_link_libraries(p2place-test-backfill-completeness PRIVATE p2place)
+add_test(NAME backfill-completeness COMMAND p2place-test-backfill-completeness)
+set_tests_properties(backfill-completeness PROPERTIES LABELS "lab06;strategy-b")
+
 # No GTest/JSON needed for event codec unit test.
 if(BUILD_TESTING)
   add_executable(p2place-test-pixel-event tests/test_pixel_event_standalone.cpp)
@@ -279,3 +291,17 @@ add_executable(p2place-test-handoff-regression
 target_link_libraries(p2place-test-handoff-regression PRIVATE p2place)
 add_test(NAME handoff-regression COMMAND p2place-test-handoff-regression)
 set_tests_properties(handoff-regression PROPERTIES LABELS "lab06;membership")
+
+# Strategy B: rolling-window peer reliability tracker.
+add_executable(p2place-test-peer-reliability
+    tests/test_peer_reliability.cpp)
+target_link_libraries(p2place-test-peer-reliability PRIVATE p2place)
+add_test(NAME peer-reliability COMMAND p2place-test-peer-reliability)
+set_tests_properties(peer-reliability PROPERTIES LABELS "lab06;strategy-b")
+
+# Strategy B: deterministic policy mapping, cooldown, snapshot validation.
+add_executable(p2place-test-policy-b
+    tests/test_policy_b.cpp)
+target_link_libraries(p2place-test-policy-b PRIVATE p2place)
+add_test(NAME policy-b COMMAND p2place-test-policy-b)
+set_tests_properties(policy-b PROPERTIES LABELS "lab06;strategy-b")

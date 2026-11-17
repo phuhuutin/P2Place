@@ -5,10 +5,13 @@
 #include "core/consistent_hash_ring.hpp"
 #include "core/balanced_placement.hpp"
 #include "core/automatic_placement.hpp"
+#include "core/peer_reliability.hpp"
+#include "core/replication_policy.hpp"
 #include "messages/message.hpp"
 #include "net/event_loop.hpp"
 #include "net/tcp_server.hpp"
 #include "peer/config.hpp"
+#include "peer/metrics.hpp"
 #include "peer/pixel_event.hpp"
 #include "core/region_store.hpp"
 #include "core/lamport_clock.hpp"
@@ -91,8 +94,26 @@ private:
     // Lab05: single quorum coordinator replaces old primary-only pending maps.
     struct Snapshot { std::uint32_t next_key=0; };
     std::map<int,Snapshot> snapshots_;
+
+    // Strategy B state. policy_table_ must be constructed BEFORE
+    // replication_strategy_ (the churn strategy holds a reference to it).
+    core::PolicyTable policy_table_{3};
+    core::PeerReliabilityTracker reliability_tracker_{std::chrono::seconds(120)};
+    std::unique_ptr<core::PolicyEvaluator> policy_evaluator_;
+    std::chrono::steady_clock::time_point next_policy_eval_{};
+    std::chrono::steady_clock::time_point process_started_{};
+    std::unique_ptr<Metrics> metrics_;
+
     std::unique_ptr<replication::ReplicationStrategy> replication_strategy_;
     std::unique_ptr<replication::ReplicationManager> replicator_;
+
+    void evaluate_and_broadcast_policy(std::chrono::steady_clock::time_point now,
+                                       bool placement_changed);
+    // After a real policy/placement change: re-queue every owned region that
+    // lacks data (absent or empty) so backfill re-pulls from the max-N
+    // preference superset, which may include former holders stranded by a
+    // shrink (N4->N3->N2).
+    void reconsider_owned_backfills(const core::PolicySnapshot& snap);
 
     void start_snapshot(int browser_fd);
     void request_next_region(int browser_fd);
@@ -134,7 +155,14 @@ private:
     std::set<core::NodeId> waiting_;
     std::set<core::NodeId> transition_peers_;
     bool ready_sent_ = false;
-    std::deque<std::pair<core::NodeId, bool>> membership_queue_;
+    // Membership queue: one change at a time. AutoRemove entries are
+    // re-validated at dequeue (a peer may recover while queued).
+    struct MembershipOp {
+        core::NodeId id = 0;
+        enum class Kind : std::uint8_t { Join, Leave, AutoRemove } kind = Kind::Join;
+        bool operator==(const MembershipOp& o) const { return id==o.id && kind==o.kind; }
+    };
+    std::deque<MembershipOp> membership_queue_;
     std::map<core::NodeId, std::chrono::steady_clock::time_point> next_dial_;
     // Directly verified joiners waiting for the elected authority to discover them.
     std::map<core::NodeId, core::NodeInfo> join_referrals_;
@@ -158,6 +186,9 @@ private:
     std::map<core::NodeId, std::chrono::steady_clock::time_point> last_dial_error_log_;
     bool removal_transition_ = false;
     std::set<core::NodeId> removed_peers_;
+    core::NodeId transition_candidate_ = 0; // join candidate of the running
+                                            // transition (re-enqueued on abort)
+    bool timeline_initial_emitted_ = false;
     std::chrono::steady_clock::time_point transition_started_{};
     std::string last_blocked_log_;
     std::chrono::steady_clock::time_point next_endpoint_broadcast_{};

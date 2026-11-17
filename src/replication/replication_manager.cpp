@@ -64,14 +64,29 @@ std::uint32_t ReplicationManager::put(std::uint32_t key,std::uint16_t index,
  }
  return request;
 }
-std::uint32_t ReplicationManager::get(std::uint32_t key,GetResult callback) {
+std::uint32_t ReplicationManager::get(std::uint32_t key,GetResult callback,
+                                      bool complete_all,bool exclude_self,
+                                      std::size_t fanout,bool background) {
  const auto plan=strategy_.plan(key);plan.validate();
- auto peers=targets(key,plan.N);
+ auto peers=targets(key,fanout>0?fanout:plan.N);
+ if(exclude_self)peers.erase(local_);
+ if(peers.empty()) {
+  // No remote source can be consulted; never fabricate success.
+  callback(false,core::Region{},"no backfill sources available");
+  return 0;
+ }
  const auto request=id();
- Pending p; p.key=key;p.read=true;p.expected=peers;p.required=plan.R;p.get_callback=std::move(callback);
+ Pending p; p.key=key;p.read=true;p.expected=peers;
+ // A fanout (superset) pull must remain satisfiable even when the current
+ // plan.N is small: at N=2 minus self there is only one source, and a
+ // repair pull from it is strictly better than a guaranteed timeout.
+ p.required=fanout>0?std::min<std::size_t>(plan.R,peers.size()):plan.R;
+ p.get_callback=std::move(callback);
+ p.complete_all=complete_all;
+ p.background=background;
  p.started=std::chrono::steady_clock::now();
  pending_.emplace(request,std::move(p));
- std::cout << "[quorum] node=" << local_ << " op=GET request=" << request << " region=" << key << " N=" << plan.N << " assigned=" << peers.size() << " R=" << plan.R << " targets=";
+ std::cout << "[quorum] node=" << local_ << " op=GET request=" << request << " region=" << key << " N=" << plan.N << " assigned=" << peers.size() << " R=" << p.required << (fanout>0?" fanout=superset":"") << (complete_all?" complete_all=1":"") << (exclude_self?" exclude_self=1":"") << " targets=";
  for(auto n:peers)std::cout << n << ",";
  std::cout << '\n';
  pending_.at(request).timer=schedule_([this,request]{deadline(request);});
@@ -86,9 +101,112 @@ std::uint32_t ReplicationManager::get(std::uint32_t key,GetResult callback) {
 void ReplicationManager::deadline(std::uint32_t request) {
  if(auto it=pending_.find(request);it!=pending_.end()) {
   std::cerr << "[quorum-timeout] node=" << local_ << " request=" << request << " received=" << it->second.responded.size() << "/" << it->second.required << '\n';
-  if(it->second.read)finish_get(request,false,"read quorum timeout");
-  else finish_put(request,false,"write quorum timeout");
+  if(it->second.read) {
+   // complete_all reads merge the best available set at the deadline instead
+   // of failing: sources that never answered are simply absent from the merge
+   // (and are flagged by the caller via responded-vs-expected accounting).
+   if(it->second.complete_all && it->second.responded.size()>=it->second.required) {
+    finish_get(request,true,"read quorum timeout (complete_all merged "
+        +std::to_string(it->second.responded.size())+"/"+std::to_string(it->second.expected.size())+" sources)");
+    return;
+   }
+   finish_get(request,false,"read quorum timeout");
+  } else finish_put(request,false,"write quorum timeout");
  }
+}
+void ReplicationManager::request_backfill(std::uint32_t key) {
+ if(key>=core::RegionStore::REGION_COUNT)throw std::out_of_range("backfill region key");
+ backfill_queue_.insert(key);
+}
+void ReplicationManager::reconsider_backfill(std::uint32_t key) {
+ if(key>=core::RegionStore::REGION_COUNT)throw std::out_of_range("backfill region key");
+ backfill_resolved_.erase(key);
+ backfill_attempts_.erase(key);
+ backfill_queue_.insert(key);
+}
+void ReplicationManager::reset_repair_state() {
+ ++state_epoch_; // drop in-flight backfill callbacks from the previous store
+ backfill_queue_.clear();
+ backfill_resolved_.clear();
+ backfill_attempts_.clear();
+ repair_cursor_=0;
+}
+bool ReplicationManager::backfill_step() {
+ if(backfill_queue_.empty())return false;
+ auto it=backfill_queue_.begin();
+ const auto key=*it;
+ backfill_queue_.erase(it);
+ if(backfill_resolved_.contains(key))return true; // accepted earlier
+ // A NON-empty local copy still gets pulled: the LWW merge adds pixels
+ // stranded on former holders after a shrink (partial regions have
+ // version()>0 and must not be skipped). Live-write races are harmless
+ // (merge keeps the newer pixel).
+ const auto epoch=state_epoch_;
+ get(key,[this,key,epoch](bool ok,const core::Region& region,const std::string& error){
+  if(epoch!=state_epoch_) { // store was reset while this pull was in flight
+   std::cout << "[backfill] node=" << local_ << " region=" << key
+             << " success=false error=stale_store_epoch classification=drop\n";
+   if(backfill_metric_cb_)backfill_metric_cb_(key,false,"stale_store_epoch classification=drop");
+   return;
+  }
+  if(ok) {
+   store_.merge_region(key,region);
+   if(region.version()>0) {
+    backfill_resolved_.insert(key);
+    // A non-empty error means not every expected source was seen; the merged
+    // data is present but possibly incomplete (anti-entropy is the backstop).
+    const std::string reason=error.empty()
+        ?"classification=complete"
+        :error+" classification=complete_partial";
+    std::cout << "[backfill] node=" << local_ << " region=" << key
+              << " success=true version=" << region.version()
+              << " " << reason << '\n';
+    if(backfill_metric_cb_)backfill_metric_cb_(key,true,reason);
+   } else {
+    // Empty merge. If EVERY expected source responded (error empty), the
+    // reachable designated replicas agree the region has no data: accept as
+    // empty_valid immediately. Partial merges (silent/failed sources) are
+    // retried a bounded number of times before acceptance.
+    const unsigned attempts=++backfill_attempts_[key];
+    if(error.empty()) {
+     backfill_resolved_.insert(key);
+     const std::string reason="classification=empty_valid attempts="+std::to_string(attempts);
+     std::cout << "[backfill] node=" << local_ << " region=" << key
+               << " success=true version=0 " << reason << '\n';
+     if(backfill_metric_cb_)backfill_metric_cb_(key,true,reason);
+    } else if(attempts>=kMaxBackfillAttempts) {
+     backfill_resolved_.insert(key);
+     const std::string reason=error+" classification=empty_partial_accepted attempts="+std::to_string(attempts);
+     std::cout << "[backfill] node=" << local_ << " region=" << key
+               << " success=true version=0 " << reason << " (anti-entropy remains backstop)\n";
+     if(backfill_metric_cb_)backfill_metric_cb_(key,true,reason);
+    } else {
+     request_backfill(key);
+     const std::string reason=error+" classification=retry attempts="+std::to_string(attempts);
+     std::cout << "[backfill] node=" << local_ << " region=" << key
+               << " success=false error=" << reason << '\n';
+     if(backfill_metric_cb_)backfill_metric_cb_(key,false,reason);
+    }
+   }
+  } else {
+   const unsigned attempts=++backfill_attempts_[key];
+   const std::string reason=error+" classification="+
+       (attempts>=kMaxBackfillAttempts?"give_up":"retry")+
+       " attempts="+std::to_string(attempts);
+   if(attempts>=kMaxBackfillAttempts) {
+    backfill_resolved_.insert(key);
+    std::cout << "[backfill] node=" << local_ << " region=" << key
+              << " success=false error=" << reason << " (anti-entropy remains backstop)\n";
+   } else {
+    request_backfill(key);
+    std::cout << "[backfill] node=" << local_ << " region=" << key
+              << " success=false error=" << reason << '\n';
+   }
+   if(backfill_metric_cb_)backfill_metric_cb_(key,false,reason);
+  }
+ }, /*complete_all=*/true, /*exclude_self=*/true,
+    /*fanout=*/strategy_.max_targets(), /*background=*/true);
+ return true;
 }
 void ReplicationManager::finish_put(std::uint32_t request,bool ok,const std::string& error) {
  auto it=pending_.find(request);if(it==pending_.end())return;
@@ -98,6 +216,7 @@ void ReplicationManager::finish_put(std::uint32_t request,bool ok,const std::str
  std::cout << "[quorum] op=PUT ok=" << ok << " ack_unique=" << p.responded.size() << "/" << p.required
            << " assigned=" << p.expected.size() << " latency_ms=" << ms << " error=" << error << '\n';
  std::cout << "[quorum-done] node=" << local_ << " op=PUT request=" << request << " ok=" << ok << " ack=" << p.responded.size() << "/" << p.required << " error=" << error << '\n';
+ if(metrics_cb_)metrics_cb_("PUT",p.key,ok,static_cast<double>(ms),error);
  if(p.put_callback)p.put_callback(ok,error);
 }
 void ReplicationManager::finish_get(std::uint32_t request,bool ok,const std::string& error) {
@@ -108,6 +227,7 @@ void ReplicationManager::finish_get(std::uint32_t request,bool ok,const std::str
  std::cout << "[quorum] op=GET ok=" << ok << " ack_unique=" << p.responded.size() << "/" << p.required
            << " assigned=" << p.expected.size() << " latency_ms=" << ms << " error=" << error << '\n';
  std::cout << "[quorum-done] node=" << local_ << " op=GET request=" << request << " ok=" << ok << " ack=" << p.responded.size() << "/" << p.required << " error=" << error << '\n';
+ if(metrics_cb_)metrics_cb_("GET",p.key,ok,static_cast<double>(ms),error);
  core::Region merged;
  if(ok) {
   for(const auto& [node,region]:p.versions) { (void)node;merged.merge(region); }
@@ -132,6 +252,16 @@ void ReplicationManager::failed(std::uint32_t request,NodeId peer) {
  if(!p.expected.contains(peer) || p.responded.contains(peer))return;
  p.failed.insert(peer);
  std::cerr << "[quorum-failure] node=" << local_ << " request=" << request << " failed-peer=" << peer << " failed=" << p.failed.size() << '\n';
+ if(p.complete_all && p.responded.size()>=p.required) {
+  // A complete_all read with a satisfied quorum never fails early: finish
+  // when all sources are accounted for, otherwise merge the best set at the
+  // deadline. The error string flags the failed sources as a partial merge.
+  if(p.responded.size()+p.failed.size()>=p.expected.size())
+   finish_get(request,true,"complete_all merged "
+       +std::to_string(p.responded.size())+"/"+std::to_string(p.expected.size())
+       +" sources ("+std::to_string(p.failed.size())+" failed)");
+  return;
+ }
  if(p.expected.size()-p.failed.size()<p.required) {
   if(p.read)finish_get(request,false,"read quorum unavailable");
   else finish_put(request,false,"write quorum unavailable");
@@ -203,7 +333,11 @@ void ReplicationManager::on_message(NodeId sender,const messages::Message& msg) 
   } else {
    const auto get=messages::decode_get(msg.payload);
    if(get.key>=core::RegionStore::REGION_COUNT)throw std::runtime_error("invalid replica GET");
-   const auto pref=ring_.successors(get.key,strategy_.plan(get.key).N);
+   // Reads may be served by any member of the max-N preference superset:
+   // backfill pulls from former holders after a shrink (N4->N2), and those
+   // copies are only reachable if the responder accepts a GET outside the
+   // current plan.N set. Writes stay strict (see the PUT branch above).
+   const auto pref=ring_.successors(get.key,strategy_.max_targets());
    if(std::find(pref.begin(),pref.end(),local_)==pref.end())reply.type=messages::Type::ERROR;
    else {
     std::cout << "[replica-get] node=" << local_ << " from=" << sender << " request=" << msg.request_id << " region=" << get.key << '\n';
@@ -234,7 +368,21 @@ void ReplicationManager::on_message(NodeId sender,const messages::Message& msg) 
   if(region.key!=p.key)return;
   p.responded.insert(sender);p.versions.emplace(sender,region.region);
   std::cout << "[quorum-ack] node=" << local_ << " op=GET request=" << msg.request_id << " from=" << sender << " count=" << p.responded.size() << "/" << p.required << '\n';
-  if(p.responded.size()>=p.required)finish_get(msg.request_id,true,{});
+  if(p.responded.size()>=p.required) {
+   // complete_all reads keep collecting until every expected source has
+   // responded or failed; a plain quorum read finishes on the first R.
+   const bool settled=p.responded.size()+p.failed.size()>=p.expected.size();
+   if(!p.complete_all || settled) {
+    // An empty error means EVERY expected source responded; any failed or
+    // silent source makes the merge partial and is reported in the error
+    // string so backfill can distinguish empty_valid from partial_transfer.
+    if(p.complete_all && !p.failed.empty())
+     finish_get(msg.request_id,true,"complete_all merged "
+        +std::to_string(p.responded.size())+"/"+std::to_string(p.expected.size())
+        +" sources ("+std::to_string(p.failed.size())+" failed)");
+    else finish_get(msg.request_id,true,{});
+   }
+  }
  }
 }
 }

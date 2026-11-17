@@ -8,6 +8,7 @@
 #include "core/membership_gossip.hpp"
 #include "messages/payloads.hpp"
 #include "messages/placement_protocol.hpp"
+#include "replication/churn_replication_strategy.hpp"
 #include <chrono>
 #include <cstdint>
 #include <iostream>
@@ -116,8 +117,39 @@ PeerNode::PeerNode(Config config)
         if(!placement_ready_ || stage.epoch()>placement_.epoch())staged_=stage;
         std::cout << "[membership] restarting FROZEN with transition marker\n";
     }
-    replication_strategy_=std::make_unique<replication::FixedReplicationStrategy>(
-        replication::QuorumConfig{config_.replication_n,config_.read_r,config_.write_w});
+    // Reliability window + policy table are shared strategy state; the
+    // strategy object only READS the table (never computes N locally).
+    reliability_tracker_=core::PeerReliabilityTracker(
+        std::chrono::seconds(config_.reliability_window_seconds));
+    policy_table_=core::PolicyTable(3);
+    if(config_.strategy==Config::Strategy::A) {
+        replication_strategy_=std::make_unique<replication::FixedReplicationStrategy>(
+            replication::QuorumConfig{config_.replication_n,config_.read_r,config_.write_w});
+    } else {
+        replication_strategy_=std::make_unique<replication::ChurnReplicationStrategy>(
+            policy_table_,config_.read_r,config_.write_w,config_.max_replicas);
+        policy_evaluator_=std::make_unique<core::PolicyEvaluator>(
+            core::PolicyConfig{config_.min_replicas,config_.max_replicas,
+                               config_.policy_threshold_high,config_.policy_threshold_low,
+                               std::chrono::seconds(config_.policy_cooldown_seconds)});
+    }
+    process_started_=std::chrono::steady_clock::now();
+    next_policy_eval_=process_started_+std::chrono::seconds(config_.policy_interval_seconds);
+    if(!config_.metrics_dir.empty())
+        metrics_=std::make_unique<Metrics>(
+            std::filesystem::path(config_.metrics_dir).filename().string(),
+            config_.metrics_dir,config_.id);
+    std::cout << "[config] strategy="
+              << (config_.strategy==Config::Strategy::B ? 'B' : 'A')
+              << " n_base=" << config_.replication_n
+              << " r=" << config_.read_r << " w=" << config_.write_w
+              << " min_n=" << config_.min_replicas
+              << " max_n=" << config_.max_replicas
+              << " window=" << config_.reliability_window_seconds << "s"
+              << " interval=" << config_.policy_interval_seconds << "s"
+              << " cooldown=" << config_.policy_cooldown_seconds << "s"
+              << " thresholds=" << config_.policy_threshold_high << '/'
+              << config_.policy_threshold_low << '\n';
     // Thresholds from config; accelerated values allowed for lab experiments.
     failure_detector_=core::FailureDetector(core::FailureDetector::Config{
         std::chrono::seconds(config_.suspect_after_seconds),
@@ -136,7 +168,31 @@ PeerNode::PeerNode(Config config)
         },
         [this](net::TimerQueue::Token token) {loop_.cancel_timer(token);}
     );
+    replicator_->set_metrics([this](const char* op,std::uint32_t region,
+                                    bool ok,double latency_ms,const std::string& error){
+        if(!metrics_)return;
+        metrics_->operation(
+            std::chrono::duration<double>(
+                std::chrono::steady_clock::now()-process_started_).count(),
+            op,region,ok,latency_ms,error);
+    });
+    replicator_->set_backfill_metric([this](std::uint32_t region,bool ok,
+                                            const std::string& error){
+        if(!metrics_)return;
+        metrics_->backfill(region,ok,placement_.epoch(),
+                           policy_table_.initialized()
+                               ? policy_table_.current().policy_epoch : 0,
+                           error);
+    });
     register_handlers();
+    // Configured seeds are visible to the discovery/retry loop from t=0:
+    // if the one-shot seed dial in run() fails (the seed's listener may not
+    // be up yet), the periodic dialer must retry them. Without this, a
+    // failed initial dial leaves peers_ empty and the node has nothing to
+    // dial ever again.
+    for(const auto& seed:config_.peers)
+        if(seed.id!=config_.id && seed.peer_port)
+            peers_.upsert(seed);
     // The local process participates in placement even when no peers are online.
     refresh_ring();
     next_gossip_ = std::chrono::steady_clock::now() + std::chrono::seconds(5);
@@ -340,12 +396,22 @@ void PeerNode::log_peer_health(core::NodeId id, core::NodeStatus status) {
     const char* name[]={"","HEALTHY","SUSPECT","UNAVAILABLE"};
     const char* old_name=name[static_cast<int>(last)];
     if(!*old_name)old_name="HEALTHY";
+    // Strategy B measurement input: one tracker event per actual
+    // transition (duplicate HEALTHY->HEALTHY calls never reach here).
+    const auto now=std::chrono::steady_clock::now();
+    reliability_tracker_.observe(id,status==core::NodeStatus::Alive,now);
     std::cout << "[peer-health] node=" << config_.id
               << " peer=" << id
               << ' ' << old_name << "->" << name[static_cast<int>(status)]
               << " placement=" << (placement_ready_ && placement_.contains(id)
                                    ? "member" : "non-member")
               << '\n';
+    if(metrics_) {
+        const auto s=reliability_tracker_.get(id,now);
+        metrics_->health(
+            std::chrono::duration<double>(now-process_started_).count(),
+            id,name[static_cast<int>(status)],s.observed_seconds,s.score);
+    }
     last=status;
     if(status==core::NodeStatus::Alive) {
         unavailable_since_.erase(id);
@@ -378,9 +444,11 @@ void PeerNode::reset_to_joiner(const std::string& why) {
     membership_queue_.clear();
     removed_peers_.clear();
     removal_transition_=false;
+    transition_candidate_=0;
     commit_uncertain_logged_=false;
     // Un-acknowledged local pixels must never overwrite live replicas.
     region_store_.clear();
+    if(replicator_)replicator_->reset_repair_state(); // fresh joiner re-pulls
     seen_pixel_events_=PixelEventDedup{};
     last_browser_pixel_versions_.clear();
     // Never reclaim authority: the cluster elects its own leader; this peer
@@ -488,7 +556,11 @@ void PeerNode::register_handlers() {
         // Stale-generation resolution: the cluster moved on while the peer
         // with the LOWER committed generation was down. That side must reset
         // to a fresh joiner session and re-sync; it must never serve or
-        // overwrite data under its obsolete placement.
+        // overwrite data under its obsolete placement. (Deliberately
+        // committed-epoch only: a frozen participant mid-transition is
+        // already the same committed generation as its peers, and a stale
+        // staged proposal at an equal epoch is cleared by the reset once the
+        // remote's committed epoch exceeds ours.)
         if (placement_ready_ && remote_fingerprint != 0 && remote_epoch != 0) {
             if (remote_epoch < placement_.epoch()) {
                 std::cout << "[peer-health] node=" << config_.id
@@ -676,7 +748,7 @@ void PeerNode::register_handlers() {
                       messages::Type::PLACEMENT_COMMIT, messages::Type::PLACEMENT_COMMITTED,
                       messages::Type::PLACEMENT_RELEASE, messages::Type::JOIN_REQUEST,
                       messages::Type::LEAVE_REQUEST, messages::Type::PLACEMENT_ABORT,
-                      messages::Type::PEER_ENDPOINTS}) {
+                      messages::Type::PEER_ENDPOINTS, messages::Type::POLICY_SNAPSHOT}) {
         handlers_[type] = [this](net::TcpConnection& conn,
                const messages::Message& msg, core::NodeId sender) {
             on_placement_message(conn,msg,sender);
@@ -799,6 +871,16 @@ void PeerNode::on_tick() {
         send_control(authority_id_,messages::Type::LEAVE_REQUEST);
         leave_requested_=true;
     }
+    // Strategy B: the authority re-evaluates the shared policy snapshot on
+    // a fixed interval (all peers apply the same table — no local decisions).
+    if(policy_evaluator_ && config_.id==authority_id_ && placement_ready_ &&
+       !frozen_ && phase_==Phase::Idle && now>=next_policy_eval_) {
+        next_policy_eval_=now+std::chrono::seconds(config_.policy_interval_seconds);
+        evaluate_and_broadcast_policy(now,false);
+    }
+    // Policy-activation backfill: pull one queued region per tick.
+    if(replicator_ && placement_ready_ && !frozen_ && phase_==Phase::Idle)
+        replicator_->backfill_step();
     if (config_.id == authority_id_) progress_transition();
     else send_ready_if_quiescent();
 }

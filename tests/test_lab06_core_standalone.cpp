@@ -1,11 +1,15 @@
 #include "core/failure_detector.hpp"
+#include "core/replication_policy.hpp"
 #include "replication/churn_replication_strategy.hpp"
 #include <cassert>
 #include <chrono>
 #include <iostream>
+#include <string>
 using namespace std::chrono_literals;
 int main() {
  using p2place::core::FailureDetector;
+ using p2place::core::PolicyTable;
+ using p2place::core::PolicySnapshot;
  using p2place::replication::ChurnReplicationStrategy;
  using Clock=FailureDetector::Clock;
  auto start=Clock::now();
@@ -21,14 +25,23 @@ int main() {
  d.observe(2,start+20000ms);
  d.observe(2,start+22500ms);
  assert(d.state(2,start+22500ms)==FailureDetector::State::Healthy);
- ChurnReplicationStrategy p({3,2,5,2,2,0.60,0.25,30s});
- assert(p.plan(163).N==3);
- p.update(163,0.90,start);assert(p.plan(163).N==4);
- p.update(163,0.95,start+10s);assert(p.plan(163).N==4);
- p.update(163,0.95,start+31s);assert(p.plan(163).N==5);
- p.update(163,0.10,start+62s);assert(p.plan(163).N==4);
- assert(p.plan(164).N==3);
- bool rejected=false;try {p.update(163,1.5,start);}catch(const std::invalid_argument&) {rejected=true;}
- assert(rejected);
- std::cout<<"PASS lab06 core failure detection / hysteresis / adaptive bounds\n";
+ // Strategy B is a VIEW over the shared authority policy table: per-region
+ // N never diverges across peers, and regions without a snapshot fall back
+ // to the fixed baseline.
+ PolicyTable table(3);
+ PolicySnapshot s;
+ s.placement_gen=1;s.placement_fp=0xABCD;s.policy_epoch=1;s.strategy='B';
+ s.target_n.fill(2);s.target_n[163]=4;
+ std::string reason;
+ assert(table.apply(s,&reason));
+ ChurnReplicationStrategy b(table,2,2,4);
+ assert(b.plan(163).N==4);
+ assert(b.plan(0).N==2 && b.plan(255).N==2);
+ PolicyTable empty(3);
+ ChurnReplicationStrategy fallback(empty,2,2,4);
+ assert(fallback.plan(7).N==3);
+ bool rejected=false;
+ try{ChurnReplicationStrategy bad(empty,3,2,4);}catch(const std::invalid_argument&){rejected=true;}
+ assert(!rejected); // R/W<=fallback baseline is valid at construction
+ std::cout<<"PASS lab06 core failure detection / shared policy strategy view\n";
 }

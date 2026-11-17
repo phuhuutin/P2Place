@@ -5,6 +5,7 @@
 #include "net/tcp_client.hpp"
 #include <arpa/inet.h>
 #include <algorithm>
+#include <array>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -99,9 +100,9 @@ void PeerNode::schedule_join(core::NodeId id) {
     if(phase_!=Phase::Idle && staged_ && staged_->contains(id))return;
     const bool inserted =
         std::find(membership_queue_.begin(),membership_queue_.end(),
-                  std::make_pair(id,true)) == membership_queue_.end();
+                  MembershipOp{id,MembershipOp::Kind::Join}) == membership_queue_.end();
     if(inserted) {
-        membership_queue_.emplace_back(id,true);
+        membership_queue_.push_back({id,MembershipOp::Kind::Join});
         std::cout << "[membership] queued JOIN " << id
                   << " newly_enqueued=true queue_size=" << membership_queue_.size() << '\n';
     }
@@ -115,12 +116,14 @@ void PeerNode::schedule_leave(core::NodeId id, const std::string& reason) {
         return;
     }
     if(!placement_ready_ || !placement_.contains(id))return;
+    const auto kind = reason=="unavailable" ? MembershipOp::Kind::AutoRemove
+                                            : MembershipOp::Kind::Leave;
     const bool inserted =
         std::find(membership_queue_.begin(),membership_queue_.end(),
-                  std::make_pair(id,false)) == membership_queue_.end();
+                  MembershipOp{id,kind}) == membership_queue_.end();
     if(inserted) {
-        membership_queue_.emplace_back(id,false);
-        if(reason=="unavailable")
+        membership_queue_.push_back({id,kind});
+        if(kind==MembershipOp::Kind::AutoRemove)
             std::cout << "[membership] queued AUTO_REMOVE peer=" << id
                       << " reason=unavailable queue_size=" << membership_queue_.size() << '\n';
         else
@@ -171,6 +174,7 @@ void PeerNode::begin_transition(core::NodeId id,bool joining) {
     waiting_.erase(config_.id);
     removal_transition_=!joining;
     removed_peers_.clear();
+    transition_candidate_ = joining ? id : 0;
     transition_started_=Clock::now();
     if(!joining) {
         // Note: members() returns by value — bind it once; begin()/end()
@@ -179,14 +183,16 @@ void PeerNode::begin_transition(core::NodeId id,bool joining) {
         for(auto n:placement_.members())
             if(!std::binary_search(next_members.begin(),next_members.end(),n))
                 removed_peers_.insert(n);
-        // Survivor-only participants: never wait for a READY/ACK from a
-        // removed member (disconnected or confirmed dead).
-        for(auto it=waiting_.begin();it!=waiting_.end();) {
-            auto info=peers_.find(*it);
-            const bool dead=info && info->status==core::NodeStatus::Dead;
-            if(!fd_by_node_.contains(*it) || dead) it=waiting_.erase(it);
-            else ++it;
-        }
+    }
+    // Survivor-only participants for EVERY transition: never wait for a
+    // READY/ACK from a disconnected or confirmed-dead peer. For joins this
+    // matters when an incumbent is down while a new node is admitted — the
+    // join must complete and let the downed member recover on its own.
+    for(auto it=waiting_.begin();it!=waiting_.end();) {
+        auto info=peers_.find(*it);
+        const bool dead=info && info->status==core::NodeStatus::Dead;
+        if(!fd_by_node_.contains(*it) || dead) it=waiting_.erase(it);
+        else ++it;
     }
     transition_keys_.clear();
     transition_keys_[config_.id] = {};
@@ -223,14 +229,6 @@ void PeerNode::begin_transition(core::NodeId id,bool joining) {
 
 void PeerNode::abort_transition(const std::string& why) {
     if(phase_==Phase::Idle)return;
-    {
-        std::ostringstream os;
-        for(auto n:waiting_)os<<n<<',';
-        std::cerr << "[transition-abort] phase=" << static_cast<int>(phase_)
-                  << " gen=" << (staged_ ? staged_->epoch() : placement_.epoch())
-                  << " reason=" << why
-                  << " waiting=[" << os.str() << "]\n";
-    }
     // Never roll back a partially committed version automatically.
     if(phase_==Phase::Committing) {
         if(!commit_uncertain_logged_) {
@@ -238,6 +236,14 @@ void PeerNode::abort_transition(const std::string& why) {
             commit_uncertain_logged_=true;
         }
         return;
+    }
+    {
+        std::ostringstream os;
+        for(auto n:waiting_)os<<n<<',';
+        std::cerr << "[transition-abort] phase=" << static_cast<int>(phase_)
+                  << " gen=" << (staged_ ? staged_->epoch() : placement_.epoch())
+                  << " reason=" << why
+                  << " waiting=[" << os.str() << "]\n";
     }
     // Tolerant broadcast: a missing participant connection must not leave
     // this state machine wedged. Unreachable peers keep their fail-closed
@@ -258,18 +264,27 @@ void PeerNode::abort_transition(const std::string& why) {
     last_ready_wait_.clear();
     phase_=Phase::Idle;
     frozen_=false;
+    // A JOIN that aborted (e.g. a participant disconnected mid-transition)
+    // must be retried: the referral/HELLO paths are one-shot per
+    // connection, so re-enqueue the still-connected candidate here.
+    if(transition_candidate_ && fd_by_node_.contains(transition_candidate_))
+        schedule_join(transition_candidate_);
+    transition_candidate_=0;
 }
 
 void PeerNode::progress_transition() {
     if(config_.id!=authority_id_)return;
     if(phase_==Phase::Idle) {
         std::ostringstream wait;
-        const auto [id,joining] = membership_queue_.empty()
-            ? std::pair<core::NodeId,bool>{0,true}
+        const auto op = membership_queue_.empty()
+            ? MembershipOp{0,MembershipOp::Kind::Join}
             : membership_queue_.front();
+        const auto id=op.id;
+        const bool joining=op.kind==MembershipOp::Kind::Join;
+        const bool auto_remove=op.kind==MembershipOp::Kind::AutoRemove;
         if(membership_queue_.empty()) wait << "empty_queue";
-        else if(replicator_ && replicator_->pending_count()!=0)
-            wait << "pending_quorums=" << replicator_->pending_count();
+        else if(replicator_ && replicator_->foreground_pending()!=0)
+            wait << "pending_quorums=" << replicator_->foreground_pending();
         else if(joining && !fd_by_node_.contains(id))
             wait << "candidate=" << id << " not_connected";
         else if(joining && !connected_to_all(placement_.members())) {
@@ -277,7 +292,28 @@ void PeerNode::progress_transition() {
             for(auto n:placement_.members())
                 if(n!=config_.id && !fd_by_node_.contains(n))wait<<n<<',';
             wait << "]";
-        } else if(!joining) {
+        } else if(auto_remove) {
+            // Re-validate a queued AUTO_REMOVE at dequeue time: the peer
+            // may have recovered and rejoined while the removal waited
+            // behind another transition. Removing a currently healthy,
+            // connected member on a stale suspicion is wrong (and the
+            // graceful-departure path would stop it permanently).
+            auto info=peers_.find(id);
+            const bool connected=fd_by_node_.contains(id);
+            if(!placement_.contains(id) || connected ||
+               !info || info->status!=core::NodeStatus::Dead) {
+                membership_queue_.pop_front();
+                last_transition_wait_.clear();
+                std::cout << "[membership] dropped stale AUTO_REMOVE peer=" << id
+                          << " reason="
+                          << (!placement_.contains(id) ? "not-a-member" :
+                              (connected ? "reconnected" :
+                               (!info ? "unknown-status" : "recovered")))
+                          << " status="
+                          << (info ? std::to_string(static_cast<int>(info->status)) : "none")
+                          << '\n';
+                return;
+            }
             // Removal: the member being removed may be unreachable. Require
             // every OTHER committed member to be connected; never wait for
             // an ACK, snapshot, or release from the confirmed-unavailable
@@ -287,6 +323,14 @@ void PeerNode::progress_transition() {
                 if(n!=config_.id && n!=id && !fd_by_node_.contains(n))missing=true;
             if(missing)
                 wait << "missing_survivor_connections peer=" << id << " being_removed";
+        } else {
+            // Graceful leave: the leaver is connected; every other committed
+            // member must be reachable as well.
+            bool missing=false;
+            for(auto n:placement_.members())
+                if(n!=config_.id && n!=id && !fd_by_node_.contains(n))missing=true;
+            if(missing)
+                wait << "missing_survivor_connections peer=" << id << " leaving";
         }
         if(!wait.str().empty()) {
             if(wait.str()!=last_transition_wait_) {
@@ -312,8 +356,8 @@ void PeerNode::progress_transition() {
             wait << "awaiting_ready=[";
             for(auto n:waiting_)wait<<n<<',';
             wait << "]";
-        } else if(replicator_ && replicator_->pending_count()!=0) {
-            wait << "pending_quorums=" << replicator_->pending_count();
+        } else if(replicator_ && replicator_->foreground_pending()!=0) {
+            wait << "pending_quorums=" << replicator_->foreground_pending();
         } else if(!snapshots_.empty()) {
             wait << "browser_snapshots=" << snapshots_.size();
         }
@@ -433,12 +477,15 @@ void PeerNode::next_handoff() {
         waiting_=transition_peers_;
         waiting_.erase(config_.id);
         // Survivor-only commit destinations: never await an unavailable
-        // member being removed (a no-op for joins, where every participant
-        // is connected by the admission guard).
+        // member being removed, and never await a REMOVED peer at all —
+        // a removed peer that reconnects mid-transition may hold a stale
+        // staged proposal (same epoch, different fingerprint) and can never
+        // acknowledge this commit.
         for(auto it=waiting_.begin();it!=waiting_.end();) {
             auto info=peers_.find(*it);
             const bool dead=info && info->status==core::NodeStatus::Dead;
-            if(!fd_by_node_.contains(*it) || dead) it=waiting_.erase(it);
+            if(removed_peers_.contains(*it) ||
+               !fd_by_node_.contains(*it) || dead) it=waiting_.erase(it);
             else ++it;
         }
         send_transition_message(messages::Type::PLACEMENT_COMMIT,
@@ -479,8 +526,8 @@ void PeerNode::next_handoff() {
 void PeerNode::send_ready_if_quiescent() {
     if(!staged_ || ready_sent_ || !frozen_)return;
     std::ostringstream wait;
-    if(replicator_ && replicator_->pending_count()!=0)
-        wait << "pending_quorums=" << replicator_->pending_count() << ' ';
+    if(replicator_ && replicator_->foreground_pending()!=0)
+        wait << "pending_quorums=" << replicator_->foreground_pending() << ' ';
     if(!snapshots_.empty())wait << "browser_snapshots=" << snapshots_.size() << ' ';
     // All-to-all connectivity with the staged membership is a deliberate
     // READY gate: the authority can only trust handoff sources/destinations
@@ -760,6 +807,7 @@ void PeerNode::on_placement_message(net::TcpConnection& conn,
                 for(auto id:removed_peers_) {
                     std::cout << "[membership] REMOVED peer=" << id
                               << " generation=" << placement_.epoch() << '\n';
+                    reliability_tracker_.mark_removed(id,Clock::now());
                     unavailable_since_.erase(id);
                     last_peer_health_status_.erase(id);
                     reported_unavailable_.erase(id);
@@ -785,8 +833,37 @@ void PeerNode::on_placement_message(net::TcpConnection& conn,
                 removed_peers_.clear();
             }
             phase_=Phase::Idle;
+            transition_candidate_=0;
             std::cout<<"[membership] RELEASE generation "<<placement_.epoch()<<'\n';
             broadcast_endpoints();
+            // Committed membership changed: record a compact placement
+            // snapshot (members + version) and a placement event; the
+            // runner reconstructs per-node assignments from these.
+            if(metrics_) {
+                metrics_->placement_snapshot(placement_.epoch(),
+                                             placement_.fingerprint(),
+                                             config_.id,placement_.members());
+                metrics_->replication_placement_change(
+                    placement_.epoch(),placement_.fingerprint(),
+                    policy_table_.initialized()
+                        ? policy_table_.current().policy_epoch : 0,
+                    config_.id,"membership_release");
+                // Strategy A has no policy broadcasts: emit the constant
+                // N=3 baseline once so its timeline is complete too.
+                if(!timeline_initial_emitted_ &&
+                   config_.strategy==Config::Strategy::A) {
+                    std::array<std::uint8_t,core::BalancedPlacement::PARTITIONS> a{};
+                    a.fill(static_cast<std::uint8_t>(config_.replication_n));
+                    metrics_->replication_initial(a,placement_.epoch(),
+                                                  placement_.fingerprint(),0,
+                                                  config_.id);
+                    timeline_initial_emitted_=true;
+                }
+            }
+            // Placement changed: recompute the shared policy immediately
+            // (cooldowns waived) and distribute a fresh snapshot; joiners
+            // pick it up here even when no interval evaluation has fired.
+            evaluate_and_broadcast_policy(Clock::now(),true);
         }
         return;
     case T::PLACEMENT_RELEASE:
@@ -815,6 +892,42 @@ void PeerNode::on_placement_message(net::TcpConnection& conn,
         }
         else throw std::runtime_error("cannot abort after commit; fail closed");
         return;
+    case T::POLICY_SNAPSHOT: {
+        if(!accept_authority_message(sender))
+            throw std::runtime_error("unauthorized policy snapshot");
+        const auto snap=core::PolicySnapshot::decode(msg.payload);
+        if(!placement_ready_ || snap.placement_gen!=placement_.epoch() ||
+           snap.placement_fp!=placement_.fingerprint()) {
+            std::cout << "[policy-ignore] node=" << config_.id << " from=" << sender
+                      << " gen=" << snap.placement_gen
+                      << " reason=placement-mismatch\n";
+            return;
+        }
+        const bool first_apply=!policy_table_.initialized();
+        const auto prev=policy_table_.current();
+        std::string reason;
+        if(!policy_table_.apply(snap,&reason)) {
+            std::cout << "[policy-ignore] node=" << config_.id << " from=" << sender
+                      << " reason=" << reason << '\n';
+            return;
+        }
+        const bool changed=first_apply || prev.placement_gen!=snap.placement_gen ||
+                           snap.policy_epoch!=prev.policy_epoch ||
+                           snap.target_n!=prev.target_n;
+        std::cout << "[policy-apply] node=" << config_.id
+                  << " gen=" << snap.placement_gen
+                  << " epoch=" << snap.policy_epoch
+                  << " strategy=" << static_cast<char>(snap.strategy)
+                  << (changed?"":" (heartbeat)") << '\n';
+        if(!changed)return; // periodic heartbeat re-broadcast; nothing new
+        // Reconsider every owned region that lacks DATA (absent, or an empty
+        // merge accepted under an earlier epoch): the new target set may
+        // include former holders whose acknowledged copies a shrink stranded.
+        // Backfill pulls from the max-N preference superset, so those copies
+        // are discoverable now even though they are not current targets.
+        reconsider_owned_backfills(snap);
+        return;
+    }
     case T::PEER_ENDPOINTS:
         if(!accept_authority_message(sender))
             throw std::runtime_error("unauthorized endpoint advertisement");
@@ -841,6 +954,98 @@ void PeerNode::on_placement_message(net::TcpConnection& conn,
         return;
     default: (void)conn;throw std::runtime_error("unknown membership control");
     }
+}
+
+void PeerNode::reconsider_owned_backfills(const core::PolicySnapshot& snap) {
+    if(!replicator_)return;
+    // Reconsider EVERY owned region, not only data-less ones: a partial
+    // local copy (some pixels present, others stranded on former holders
+    // dropped by a shrink) has version()>0 and would otherwise never be
+    // re-pulled. The pull merge is LWW-idempotent, so re-pulling a complete
+    // region is a cheap no-op; the resolved-set guard in backfill_step
+    // still caps genuinely-empty regions.
+    for(std::uint32_t r=0;r<core::BalancedPlacement::PARTITIONS;++r) {
+        if(!snap.target_n[r])continue;
+        const auto targets=placement_.preference(r,snap.target_n[r]);
+        if(std::find(targets.begin(),targets.end(),config_.id)==targets.end())
+            continue;
+        replicator_->reconsider_backfill(r);
+    }
+}
+
+void PeerNode::evaluate_and_broadcast_policy(std::chrono::steady_clock::time_point now,
+                                             bool placement_changed) {
+    if(config_.id!=authority_id_ || !policy_evaluator_ || !placement_ready_)return;
+    auto ev=policy_evaluator_->evaluate(placement_,reliability_tracker_,
+                                        policy_table_,now,placement_changed);
+    const auto prev=policy_table_.current();
+    const bool prev_init=policy_table_.initialized();
+    std::string reason;
+    if(!policy_table_.apply(ev.snap,&reason)) {
+        std::cerr << "[policy-ignore] node=" << config_.id
+                  << " reason=" << reason << '\n';
+        return;
+    }
+    // Timeline events reflect ACCEPTED state only (authority-canonical);
+    // participants never emit N events, so post-run merging cannot
+    // double-count a snapshot.
+    if(metrics_) {
+        if(!prev_init) {
+            metrics_->replication_initial(ev.snap.target_n,ev.snap.placement_gen,
+                                          ev.snap.placement_fp,ev.snap.policy_epoch,
+                                          config_.id);
+        } else if(ev.changed) {
+            for(std::uint32_t r=0;r<core::BalancedPlacement::PARTITIONS;++r)
+                if(prev.target_n[r]!=ev.snap.target_n[r])
+                    metrics_->replication_n_change(r,prev.target_n[r],
+                                                   ev.snap.target_n[r],
+                                                   ev.snap.placement_gen,
+                                                   ev.snap.placement_fp,
+                                                   ev.snap.policy_epoch,
+                                                   config_.id,"policy_apply");
+        }
+    }
+    const auto members=placement_.members();
+    const double time_s=std::chrono::duration<double>(now-process_started_).count();
+    if(metrics_) {
+        for(std::uint32_t r=0;r<core::BalancedPlacement::PARTITIONS;++r) {
+            const auto desired=ev.snap.target_n[r];
+            const auto assigned=static_cast<std::uint8_t>(
+                std::min<std::size_t>(desired,members.size()));
+            std::size_t confirmed=0;
+            for(auto id:placement_.preference(r,assigned))
+                if(fd_by_node_.contains(id))++confirmed;
+            metrics_->policy(time_s,ev.snap.placement_gen,ev.snap.policy_epoch,r,'B',
+                             ev.risk[r],desired,assigned,confirmed);
+        }
+    }
+    if(!ev.changed && !placement_changed) {
+        // Periodic heartbeat: re-broadcast the current snapshot even though
+        // nothing changed. Members that restarted/reconnected at the SAME
+        // placement generation never applied it (their table is empty or
+        // stale), and without a re-broadcast they run on the fallback N
+        // forever, never queue backfill and serve empty regions for every
+        // read. Receivers treat an unchanged epoch as idempotent.
+    } else if(ev.changed) {
+        // The authority applies its own snapshot here (no POLICY_SNAPSHOT
+        // message round-trip), so it must reconsider its own data-less
+        // owned regions on real changes like every other member does.
+        reconsider_owned_backfills(ev.snap);
+    }
+    // Broadcast the same immutable snapshot every peer applies.
+    messages::Message m;
+    m.type=messages::Type::POLICY_SNAPSHOT;
+    m.payload=ev.snap.encode();
+    for(const auto& [id,fd]:fd_by_node_) {(void)id;send_message(fd,m);}
+    std::size_t n2=0,n3=0,n4=0,other=0;
+    for(auto n:ev.snap.target_n) {
+        if(n==2)++n2; else if(n==3)++n3; else if(n==4)++n4; else ++other;
+    }
+    std::cout << "[policy-broadcast] node=" << config_.id
+              << " gen=" << ev.snap.placement_gen
+              << " epoch=" << ev.snap.policy_epoch
+              << " n2=" << n2 << " n3=" << n3 << " n4=" << n4 << " other=" << other
+              << '\n';
 }
 
 void PeerNode::broadcast_endpoints() {

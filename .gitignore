@@ -4,3 +4,17 @@ build/
 *.a
 *.log
 docs/doxygen/
+
+# Windows alternate-data-stream artifacts (Zone.Identifier) from UNC edits
+*Zone.Identifier
+
+# Python bytecode caches
+__pycache__/
+
+# Generated experiment artifacts (runner/analysis scripts stay tracked)
+experiments/results/
+experiments/diagnostics/
+experiments/investigations/
+
+# Dashboard copy — not part of the peer codebase
+p2place-battle-dashboard/

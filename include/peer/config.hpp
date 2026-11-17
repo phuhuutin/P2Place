@@ -21,6 +21,8 @@ namespace p2place::peer {
  * @brief All configuration needed to run one peer.
  */
 struct Config {
+    enum class Strategy { A, B };
+
     /** This peer's unique id. */
     core::NodeId id = 0;
 
@@ -48,6 +50,17 @@ struct Config {
     std::uint32_t suspect_after_seconds = 3;
     std::uint32_t unavailable_after_seconds = 15;
     std::uint32_t recovery_stabilization_seconds = 2;
+
+    // Replication policy (Strategy A = fixed, B = churn-adaptive).
+    Strategy strategy = Strategy::A;
+    std::uint32_t min_replicas = 2;              // B lower bound (min N = 2)
+    std::uint32_t max_replicas = 4;              // B upper bound
+    std::uint32_t reliability_window_seconds = 120;
+    std::uint32_t policy_interval_seconds = 10;
+    std::uint32_t policy_cooldown_seconds = 30;
+    double policy_threshold_high = 0.95;         // min score >= high -> N2
+    double policy_threshold_low = 0.80;          // min score <  low -> N4
+    std::string metrics_dir;                     // empty = no CSV metrics
 
     /** Addresses of other known peers (the seed list). */
     std::vector<core::NodeInfo> peers;
