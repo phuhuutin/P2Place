@@ -148,7 +148,8 @@ Config Config::parse_args(int argc, char* argv[]) {
         else if (option == "--strategy") {
             if(value=="A")config.strategy=Config::Strategy::A;
             else if(value=="B")config.strategy=Config::Strategy::B;
-            else throw std::invalid_argument("--strategy must be A or B");
+            else if(value=="C")config.strategy=Config::Strategy::C;
+            else throw std::invalid_argument("--strategy must be A, B or C");
         }
         else if (option == "--min-replicas") config.min_replicas=parse_number(value,1,256);
         else if (option == "--max-replicas") config.max_replicas=parse_number(value,1,256);
@@ -157,6 +158,10 @@ Config Config::parse_args(int argc, char* argv[]) {
         else if (option == "--policy-cooldown") config.policy_cooldown_seconds=parse_number(value,0,86400);
         else if (option == "--policy-threshold-high") config.policy_threshold_high=parse_double(value);
         else if (option == "--policy-threshold-low") config.policy_threshold_low=parse_double(value);
+        else if (option == "--write-window") config.write_window_seconds=parse_number(value,10,3600);
+        else if (option == "--write-report-interval") config.write_report_interval_seconds=parse_number(value,1,3600);
+        else if (option == "--write-threshold-mid") config.write_threshold_mid=parse_double(value);
+        else if (option == "--write-threshold-high") config.write_threshold_high=parse_double(value);
         else if (option == "--metrics-dir") {
             config.metrics_dir=std::string(value);
             if(config.metrics_dir.empty())throw std::invalid_argument("empty --metrics-dir");
@@ -269,17 +274,26 @@ Config Config::parse_args(int argc, char* argv[]) {
         throw std::invalid_argument("R/W must be <= N");
     if(config.unavailable_after_seconds<=config.suspect_after_seconds)
         throw std::invalid_argument("--unavailable-after must exceed --suspect-after");
-    if(config.strategy==Config::Strategy::B) {
-        // Min N = 2: Strategy B may raise replicas under churn (mid tier
-        // and N4) but must not shrink below the N2 baseline.
+    if(config.strategy==Config::Strategy::B || config.strategy==Config::Strategy::C) {
+        // Min N = 2: B/C may raise replicas under churn (mid tier and N4)
+        // but must not shrink below the N2 baseline.
         if(config.min_replicas<2)
-            throw std::invalid_argument("Strategy B requires --min-replicas >= 2");
+            throw std::invalid_argument("Strategy B/C requires --min-replicas >= 2");
         if(config.max_replicas<config.min_replicas)
             throw std::invalid_argument("--max-replicas must be >= --min-replicas");
         if(!(config.policy_threshold_low>0 &&
              config.policy_threshold_low<config.policy_threshold_high &&
              config.policy_threshold_high<=1.0))
             throw std::invalid_argument("require 0 < policy-threshold-low < policy-threshold-high <= 1");
+    }
+    if(config.strategy==Config::Strategy::C) {
+        if(config.write_window_seconds%10!=0)
+            throw std::invalid_argument("--write-window must be a multiple of 10s");
+        if(config.write_report_interval_seconds>config.write_window_seconds)
+            throw std::invalid_argument("--write-report-interval must be <= --write-window");
+        if(!(config.write_threshold_mid>=0 &&
+             config.write_threshold_mid<config.write_threshold_high))
+            throw std::invalid_argument("require 0 <= write-threshold-mid < write-threshold-high");
     }
     return config;
 }

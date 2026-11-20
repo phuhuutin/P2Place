@@ -128,19 +128,38 @@ PeerNode::PeerNode(Config config)
     } else {
         replication_strategy_=std::make_unique<replication::ChurnReplicationStrategy>(
             policy_table_,config_.read_r,config_.write_w,config_.max_replicas);
-        policy_evaluator_=std::make_unique<core::PolicyEvaluator>(
-            core::PolicyConfig{config_.min_replicas,config_.max_replicas,
-                               config_.policy_threshold_high,config_.policy_threshold_low,
-                               std::chrono::seconds(config_.policy_cooldown_seconds)});
+        core::PolicyConfig pcfg{config_.min_replicas,config_.max_replicas,
+                                config_.policy_threshold_high,config_.policy_threshold_low,
+                                std::chrono::seconds(config_.policy_cooldown_seconds)};
+        if(config_.strategy==Config::Strategy::C) {
+            // Churn + write-aware composition: same reliability term as B,
+            // plus the cluster-wide per-region client PUT rate.
+            pcfg.strategy='C';
+            pcfg.write_threshold_mid=config_.write_threshold_mid;
+            pcfg.write_threshold_high=config_.write_threshold_high;
+        }
+        policy_evaluator_=std::make_unique<core::PolicyEvaluator>(pcfg);
     }
     process_started_=std::chrono::steady_clock::now();
     next_policy_eval_=process_started_+std::chrono::seconds(config_.policy_interval_seconds);
+    if(config_.strategy==Config::Strategy::C) {
+        write_tracker_=core::RegionWriteTracker(
+            std::chrono::seconds(config_.write_window_seconds),process_started_);
+        write_aggregate_=core::WriteReportAggregate(
+            std::chrono::seconds(config_.write_window_seconds),
+            std::chrono::seconds(config_.write_report_interval_seconds));
+        write_report_incarnation_=static_cast<std::uint32_t>(
+            process_started_.time_since_epoch().count()); // boot-unique id
+        next_write_report_=process_started_+
+            std::chrono::seconds(config_.write_report_interval_seconds);
+    }
     if(!config_.metrics_dir.empty())
         metrics_=std::make_unique<Metrics>(
             std::filesystem::path(config_.metrics_dir).filename().string(),
             config_.metrics_dir,config_.id);
     std::cout << "[config] strategy="
-              << (config_.strategy==Config::Strategy::B ? 'B' : 'A')
+              << static_cast<char>(config_.strategy==Config::Strategy::A?'A':
+                                   config_.strategy==Config::Strategy::B?'B':'C')
               << " n_base=" << config_.replication_n
               << " r=" << config_.read_r << " w=" << config_.write_w
               << " min_n=" << config_.min_replicas
@@ -149,7 +168,13 @@ PeerNode::PeerNode(Config config)
               << " interval=" << config_.policy_interval_seconds << "s"
               << " cooldown=" << config_.policy_cooldown_seconds << "s"
               << " thresholds=" << config_.policy_threshold_high << '/'
-              << config_.policy_threshold_low << '\n';
+              << config_.policy_threshold_low;
+    if(config_.strategy==Config::Strategy::C)
+        std::cout << " write_window=" << config_.write_window_seconds << "s"
+                  << " write_report=" << config_.write_report_interval_seconds << "s"
+                  << " write_thresholds=" << config_.write_threshold_mid << '/'
+                  << config_.write_threshold_high;
+    std::cout << '\n';
     // Thresholds from config; accelerated values allowed for lab experiments.
     failure_detector_=core::FailureDetector(core::FailureDetector::Config{
         std::chrono::seconds(config_.suspect_after_seconds),
@@ -183,6 +208,15 @@ PeerNode::PeerNode(Config config)
                            policy_table_.initialized()
                                ? policy_table_.current().policy_epoch : 0,
                            error);
+    });
+    replicator_->set_repair_progress([this](std::uint32_t region,const char* event,
+                                            const std::string& classification,
+                                            unsigned attempts){
+        if(!metrics_ || !placement_ready_)return;
+        metrics_->repair(config_.id,region,placement_.epoch(),
+                         policy_table_.initialized()
+                             ? policy_table_.current().policy_epoch : 0,
+                         event,classification,attempts);
     });
     register_handlers();
     // Configured seeds are visible to the discovery/retry loop from t=0:
@@ -743,6 +777,13 @@ void PeerNode::register_handlers() {
     handlers_[messages::Type::PIXEL_EVENT] = [this](net::TcpConnection&,
         const messages::Message& msg,core::NodeId sender){on_pixel_event(msg,sender);};
 
+    // Strategy C control/metrics: per-peer write-count deltas (the authority
+    // aggregates; non-authority peers drop them).
+    handlers_[messages::Type::REGION_WRITE_COUNTS] = [this](net::TcpConnection&,
+        const messages::Message& msg,core::NodeId sender){
+        handle_write_report(sender,msg.payload);
+    };
+
     // Requests are always sent by an authenticated neighboring peer.
     for (auto type : {messages::Type::PLACEMENT_PREPARE, messages::Type::PLACEMENT_READY,
                       messages::Type::PLACEMENT_COMMIT, messages::Type::PLACEMENT_COMMITTED,
@@ -871,6 +912,13 @@ void PeerNode::on_tick() {
         send_control(authority_id_,messages::Type::LEAVE_REQUEST);
         leave_requested_=true;
     }
+    // Strategy C: per-peer write-count delta reports to the authority.
+    if(config_.strategy==Config::Strategy::C && placement_ready_ &&
+       now>=next_write_report_) {
+        send_write_report(now);
+        next_write_report_=now+
+            std::chrono::seconds(config_.write_report_interval_seconds);
+    }
     // Strategy B: the authority re-evaluates the shared policy snapshot on
     // a fixed interval (all peers apply the same table — no local decisions).
     if(policy_evaluator_ && config_.id==authority_id_ && placement_ready_ &&
@@ -883,6 +931,71 @@ void PeerNode::on_tick() {
         replicator_->backfill_step();
     if (config_.id == authority_id_) progress_transition();
     else send_ready_if_quiescent();
+}
+
+void PeerNode::send_write_report(std::chrono::steady_clock::time_point now) {
+    if(!placement_ready_)return;
+    const auto delta=write_tracker_.drain_delta(now);
+    last_own_delta_=delta.counts;
+    const auto payload=core::write_report::encode(
+        config_.id,write_report_incarnation_,++write_report_sequence_,delta);
+    if(config_.id==authority_id_) {
+        // The authority aggregates its own local delta directly (no self
+        // message), using the same codec path for dedup/validation.
+        core::write_report::Decoded d;
+        if(core::write_report::decode(payload,d))
+            handle_write_report(config_.id,payload);
+        return;
+    }
+    const auto fd=owner_fd(authority_id_);
+    if(!fd)return; // authority unreachable; interval is lost (logged as a gap)
+    messages::Message m;
+    m.type=messages::Type::REGION_WRITE_COUNTS;
+    m.request_id=0; // control/metrics broadcast; no quorum accounting
+    m.payload=payload;
+    try {send_message(*fd,m);}
+    catch(const std::exception& e) {
+        std::cerr << "[write-report] node=" << config_.id
+                  << " send_failed error=" << e.what() << '\n';
+        return;
+    }
+    std::cout << "[write-report] node=" << config_.id
+              << " sent seq=" << write_report_sequence_
+              << " bytes=" << payload.size() << '\n';
+}
+
+void PeerNode::handle_write_report(core::NodeId sender,
+                                   const std::vector<std::uint8_t>& payload) {
+    if(config_.strategy!=Config::Strategy::C)return; // A/B never aggregate
+    if(config_.id!=authority_id_)return; // only the authority aggregates
+    core::write_report::Decoded d;
+    if(!core::write_report::decode(payload,d)) {
+        std::cerr << "[write-report] node=" << config_.id
+                  << " malformed from=" << sender << '\n';
+        return;
+    }
+    if(d.node!=sender) {
+        std::cerr << "[write-report] node=" << config_.id
+                  << " node-mismatch transport=" << sender
+                  << " payload=" << d.node << '\n';
+        return;
+    }
+    if(!peers_.find(d.node) && d.node!=config_.id) {
+        std::cerr << "[write-report] node=" << config_.id
+                  << " unknown-peer=" << d.node << '\n';
+        return;
+    }
+    std::string reason;
+    const bool ok=write_aggregate_.accept(d,std::chrono::steady_clock::now(),
+                                          &reason);
+    std::cout << "[write-report] node=" << config_.id << " from=" << d.node
+              << " incarnation=" << d.incarnation
+              << " seq=" << d.sequence
+              << " interval_ms=" << (d.end_ns-d.start_ns)/1000000
+              << " accepted=" << (ok?"true":"false")
+              << (!ok && !reason.empty() ? " reason="+reason : "") << '\n';
+    if(metrics_)metrics_->write_report(d.node,d.incarnation,d.sequence,
+                                       d.start_ns,d.end_ns,ok,reason);
 }
 
 void PeerNode::run() {
@@ -1045,6 +1158,10 @@ void PeerNode::run() {
         }
         const auto key=core::RegionStore::region_key(x,y);
         const auto index=core::RegionStore::pixel_index(x,y);
+        // Strategy C: one attempted client PUT per valid original command
+        // (quorum outcomes, forwards, repairs and reads never count here).
+        if(config_.strategy==Config::Strategy::C)
+            write_tracker_.record_put_attempt(key,std::chrono::steady_clock::now());
         const core::VersionedPixel pixel{color,lamport_clock_.tick(),config_.id};
         try {
             const auto request=replicator_->put(key,index,pixel,[this,fd,key,index,pixel](bool ok,const std::string& error){

@@ -52,6 +52,27 @@ public:
                             const std::vector<std::uint32_t>& members);
     void backfill(std::uint32_t region, bool ok, std::uint64_t gen,
                   std::uint64_t epoch, std::string_view reason);
+    // Strategy C series: authority-observed write frequency per policy
+    // evaluation (256 rows each) and per-peer report accept/drop events.
+    void write_frequency(double time_s, std::uint32_t region,
+                         std::uint64_t local_attempts_10s,
+                         std::uint64_t cluster_attempts_60s,
+                         double write_rate, double min_reliability,
+                         std::uint8_t n_churn, std::uint8_t n_write,
+                         std::uint8_t target_n, std::uint8_t assigned_n,
+                         std::uint64_t gen, std::uint64_t epoch,
+                         std::uint32_t authority, std::uint8_t observation);
+    void write_report(std::uint32_t node, std::uint32_t incarnation,
+                      std::uint32_t sequence, std::uint64_t start_ns,
+                      std::uint64_t end_ns, bool accepted,
+                      std::string_view reason);
+    // Sparse repair/activation events (urgent_enqueued, backfill_started,
+    // backfill_completed, ...) with the classification token; used to derive
+    // N4_activation_latency per new target.
+    void repair(std::uint32_t node, std::uint32_t region,
+                std::uint64_t gen, std::uint64_t epoch,
+                std::string_view event, std::string_view classification,
+                unsigned attempts);
 
     [[nodiscard]] static std::string csv_escape(std::string_view s);
     [[nodiscard]] static std::uint64_t monotonic_ns();
@@ -72,5 +93,8 @@ private:
     BufferedSink replication_events_;
     BufferedSink placement_snapshots_;
     BufferedSink backfill_events_;
+    BufferedSink write_frequency_;
+    std::ofstream write_report_events_;
+    BufferedSink repair_events_;
 };
 }

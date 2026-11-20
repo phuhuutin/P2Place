@@ -7,6 +7,7 @@
 #include "core/automatic_placement.hpp"
 #include "core/peer_reliability.hpp"
 #include "core/replication_policy.hpp"
+#include "core/region_write_tracker.hpp"
 #include "messages/message.hpp"
 #include "net/event_loop.hpp"
 #include "net/tcp_server.hpp"
@@ -104,16 +105,37 @@ private:
     std::chrono::steady_clock::time_point process_started_{};
     std::unique_ptr<Metrics> metrics_;
 
+    // Strategy C state: local per-region client-PUT tracker (all peers) and
+    // the authority-side aggregate of per-peer delta reports.
+    core::RegionWriteTracker write_tracker_{std::chrono::seconds(60),
+                                            std::chrono::steady_clock::now()};
+    core::WriteReportAggregate write_aggregate_{std::chrono::seconds(60),
+                                                std::chrono::seconds(10)};
+    std::uint32_t write_report_incarnation_ = 0;   // boot-unique id
+    std::uint32_t write_report_sequence_ = 0;
+    std::chrono::steady_clock::time_point next_write_report_{};
+    std::array<std::uint16_t, core::RegionWriteTracker::REGIONS> last_own_delta_{};
+
     std::unique_ptr<replication::ReplicationStrategy> replication_strategy_;
     std::unique_ptr<replication::ReplicationManager> replicator_;
 
     void evaluate_and_broadcast_policy(std::chrono::steady_clock::time_point now,
                                        bool placement_changed);
-    // After a real policy/placement change: re-queue every owned region that
-    // lacks data (absent or empty) so backfill re-pulls from the max-N
-    // preference superset, which may include former holders stranded by a
-    // shrink (N4->N3->N2).
-    void reconsider_owned_backfills(const core::PolicySnapshot& snap);
+    // After a real policy/placement change: targeted activation only.
+    // Newly added N-increase targets are queued URGENT (they must sync
+    // before the hot policy window decays); remaining targets of a changed
+    // set reconcile normally (shrink-stranded copies). Initial sync and
+    // placement changes queue data-less owned regions at normal priority.
+    void reconsider_owned_backfills(const core::PolicySnapshot& prev,
+                                    const core::PolicySnapshot& next,
+                                    bool first_apply,
+                                    bool placement_changed);
+    // Strategy C: drain the local write tracker and send the per-region delta
+    // to the authority (the authority feeds its own delta into the aggregate
+    // directly); REGION_WRITE_COUNTS receiver-side validation + aggregation.
+    void send_write_report(std::chrono::steady_clock::time_point now);
+    void handle_write_report(core::NodeId sender,
+                             const std::vector<std::uint8_t>& payload);
 
     void start_snapshot(int browser_fd);
     void request_next_region(int browser_fd);

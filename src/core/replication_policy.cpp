@@ -76,7 +76,40 @@ PolicyEvaluator::PolicyEvaluator(PolicyConfig cfg):cfg_(cfg) {
          cfg_.threshold_high<=1.0))
         throw std::invalid_argument("invalid policy thresholds");
     if(cfg_.cooldown.count()<0)throw std::invalid_argument("invalid policy cooldown");
+    if(cfg_.strategy!='B' && cfg_.strategy!='C')
+        throw std::invalid_argument("invalid policy strategy byte");
+    if(cfg_.strategy=='C' && !(cfg_.write_threshold_mid>=0 &&
+         cfg_.write_threshold_mid<cfg_.write_threshold_high))
+        throw std::invalid_argument("invalid write thresholds (0 <= mid < high)");
 }
+
+namespace {
+// Middle tier between min_n and max_n; collapses to min_n when the bounds
+// are adjacent (min N = 3 keeps the two-tier N3/N4 behavior).
+std::uint8_t mid_tier(const PolicyConfig& cfg) {
+    const int mid = std::max<int>(static_cast<int>(cfg.min_n),
+        std::min<int>(static_cast<int>(cfg.min_n) + 1,
+                      static_cast<int>(cfg.max_n) - 1));
+    return static_cast<std::uint8_t>(mid);
+}
+// Shared three-tier churn mapping used by B and as C's N_churn term:
+// healthy (>= high) -> min_n; moderate (low..high) -> mid tier;
+// heavy churn (< low) -> max_n.
+std::uint8_t churn_tier(const PolicyConfig& cfg, double min_score) {
+    if (min_score < cfg.threshold_low)
+        return static_cast<std::uint8_t>(cfg.max_n);
+    if (min_score < cfg.threshold_high) return mid_tier(cfg);
+    return static_cast<std::uint8_t>(cfg.min_n);
+}
+// Strategy C write term: rate >= high -> max_n; mid <= rate < high -> mid
+// tier; below -> min_n.
+std::uint8_t write_tier(const PolicyConfig& cfg, double rate) {
+    if (rate >= cfg.write_threshold_high)
+        return static_cast<std::uint8_t>(cfg.max_n);
+    if (rate >= cfg.write_threshold_mid) return mid_tier(cfg);
+    return static_cast<std::uint8_t>(cfg.min_n);
+}
+} // namespace
 
 PolicyEvaluation PolicyEvaluator::evaluate(const BalancedPlacement& placement,
         const PeerReliabilityTracker& reliability,
@@ -85,7 +118,8 @@ PolicyEvaluation PolicyEvaluator::evaluate(const BalancedPlacement& placement,
     PolicyEvaluation out;
     out.snap.placement_gen=placement.epoch();
     out.snap.placement_fp=placement.fingerprint();
-    out.snap.strategy=static_cast<std::uint8_t>('B');
+    out.snap.strategy=static_cast<std::uint8_t>(cfg_.strategy);
+    const bool use_write = cfg_.strategy=='C' && write_rates_!=nullptr;
     const auto members=placement.members();
     const std::size_t baseline=std::min<std::size_t>(3,members.size());
     for(std::uint32_t r=0;r<BalancedPlacement::PARTITIONS;++r) {
@@ -100,21 +134,18 @@ PolicyEvaluation PolicyEvaluator::evaluate(const BalancedPlacement& placement,
         }
         const double risk=1.0-min_score;
         out.risk[r]=risk;
-        // Three-tier adaptive mapping (N2 policy): healthy baselines
-        // (min score >= threshold_high) keep the N2 baseline; moderate
-        // churn (threshold_low..high) moves to the middle tier; heavy churn
-        // (below threshold_low) raises the region to N4. With min N = 3 the
-        // middle tier collapses to min_n, preserving the earlier two-tier
-        // behavior for A/B comparison runs.
-        std::uint8_t desired=static_cast<std::uint8_t>(cfg_.min_n);
-        if(min_score<cfg_.threshold_high) {
-            const int mid=std::max<int>(static_cast<int>(cfg_.min_n),
-                std::min<int>(static_cast<int>(cfg_.min_n)+1,
-                              static_cast<int>(cfg_.max_n)-1));
-            desired=static_cast<std::uint8_t>(mid);
+        // N_churn (same three-tier mapping Strategy B uses) …
+        std::uint8_t desired=churn_tier(cfg_,min_score);
+        out.n_churn[r]=desired;
+        // … and N_write (Strategy C only). C takes the MAX of the two terms:
+        // hot regions pre-position extra replicas even while peers are
+        // healthy. C's N is therefore always >= B's N for the same input.
+        if(use_write) {
+            const double rate=(*write_rates_)[r];
+            out.write_rate[r]=rate;
+            out.n_write[r]=write_tier(cfg_,rate);
+            desired=std::max(desired,out.n_write[r]);
         }
-        if(min_score<cfg_.threshold_low)
-            desired=static_cast<std::uint8_t>(cfg_.max_n);
         const auto assigned=static_cast<std::uint8_t>(
             std::min<std::size_t>(desired,members.size()));
         // Carry the previously applied target forward.

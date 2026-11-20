@@ -5,10 +5,12 @@
 #include "net/timer_queue.hpp"
 #include "replication/replication_strategy.hpp"
 #include <chrono>
+#include <deque>
 #include <functional>
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_set>
 
 namespace p2place::replication {
 // Strategy A fixed quorum contract; do not silently downgrade N, R or W.
@@ -52,6 +54,12 @@ public:
     // Policy-activation backfill: pull a quorum-merged copy of one queued
     // region per call into the local store (no browser GET required).
     void request_backfill(std::uint32_t key);
+    // URGENT activation pull: a region this peer was NEWLY selected to hold
+    // by a policy N increase. Urgent requests jump ahead of the normal
+    // (initial-sync / membership / shrink-reconciliation) queue so a newly
+    // added target syncs before the hot policy window decays. Deduplicated
+    // across both queues; a normal request for the same region is promoted.
+    void request_priority_backfill(std::uint32_t key);
     // Re-queue a region even if an earlier backfill resolved it (used when a
     // NEW policy snapshot changed the target set: an empty/absent owned
     // region must re-pull from the current max-N superset, which may now
@@ -69,6 +77,17 @@ public:
     using BackfillMetric = std::function<void(std::uint32_t region,bool ok,
                                               const std::string& error)>;
     void set_backfill_metric(BackfillMetric cb) {backfill_metric_cb_=std::move(cb);}
+    // Sparse readiness/latency events for the repair pipeline (Strategy C
+    // activation accounting): urgent_enqueued / enqueued / backfill_started /
+    // backfill_completed / backfill_failed / backfill_retry, each with a
+    // classification token (complete, complete_partial, empty_valid,
+    // empty_partial_accepted, retry, give_up, drop, new_target, urgent_merge,
+    // full_merge) and the attempt count.
+    using RepairProgress = std::function<void(std::uint32_t region,
+                                              const char* event,
+                                              const std::string& classification,
+                                              unsigned attempts)>;
+    void set_repair_progress(RepairProgress cb) {repair_progress_cb_=std::move(cb);}
     std::uint64_t repair_bytes_sent() const noexcept {return repair_bytes_sent_;}
     void cancel_all(const std::string& reason);
     std::size_t pending_count() const noexcept { return pending_.size(); }
@@ -107,14 +126,27 @@ private:
     std::size_t repair_cursor_=0;
     std::uint64_t repair_bytes_sent_=0;
     std::set<std::uint32_t> backfill_queue_;
+    // Urgent activation queue: FIFO + dedup set. A region lives in at most
+    // one of the two queues. Urgent work is preferred for a bounded burst
+    // (kUrgentBurst); normal work then gets one slot so a repeatedly failing
+    // urgent item can never starve the normal queue (urgent items are also
+    // bounded by kMaxBackfillAttempts).
+    std::deque<std::uint32_t> priority_queue_;
+    std::unordered_set<std::uint32_t> priority_queued_;
+    unsigned urgent_burst_=0;
     std::set<std::uint32_t> backfill_resolved_;
     std::map<std::uint32_t,unsigned> backfill_attempts_;
     std::uint64_t state_epoch_=0;
     // Bounded retries before an empty merge is accepted as empty_valid
     // (anti-entropy push remains the backstop after acceptance).
     static constexpr unsigned kMaxBackfillAttempts=4;
+    static constexpr unsigned kUrgentBurst=4;
     OpMetric metrics_cb_;
     BackfillMetric backfill_metric_cb_;
+    RepairProgress repair_progress_cb_;
+    void enqueue_priority(std::uint32_t key,bool clear_state,bool report);
+    void emit_repair(std::uint32_t region,const char* event,
+                     const std::string& classification,unsigned attempts);
     std::uint32_t id();
     std::set<NodeId> targets(std::uint32_t key,std::size_t count) const;
     bool dispatch(NodeId to,const messages::Message& msg);

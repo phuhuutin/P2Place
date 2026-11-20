@@ -54,6 +54,8 @@ add_library(p2place STATIC
     # Strategy B: reliability measurement + shared replication policy
     src/core/peer_reliability.cpp
     src/core/replication_policy.cpp
+    # Strategy C: per-region client write-frequency tracking + report aggregation
+    src/core/region_write_tracker.cpp
     src/peer/metrics.cpp
 )
 
@@ -270,6 +272,27 @@ add_executable(p2place-test-backfill-completeness
 target_link_libraries(p2place-test-backfill-completeness PRIVATE p2place)
 add_test(NAME backfill-completeness COMMAND p2place-test-backfill-completeness)
 set_tests_properties(backfill-completeness PROPERTIES LABELS "lab06;strategy-b")
+
+# Policy-activation priority: urgent new-target backfill and fairness.
+add_executable(p2place-test-backfill-priority
+    tests/test_backfill_priority.cpp)
+target_link_libraries(p2place-test-backfill-priority PRIVATE p2place)
+add_test(NAME backfill-priority COMMAND p2place-test-backfill-priority)
+set_tests_properties(backfill-priority PROPERTIES LABELS "strategy-c;lab06")
+
+# Strategy C: write-frequency tracker + multi-gateway delta aggregation.
+add_executable(p2place-test-write-tracker
+    tests/test_region_write_tracker.cpp)
+target_link_libraries(p2place-test-write-tracker PRIVATE p2place)
+add_test(NAME write-tracker COMMAND p2place-test-write-tracker)
+set_tests_properties(write-tracker PROPERTIES LABELS "strategy-c")
+
+# Strategy C: churn + write-aware policy composition.
+add_executable(p2place-test-strategy-c
+    tests/test_strategy_c.cpp)
+target_link_libraries(p2place-test-strategy-c PRIVATE p2place)
+add_test(NAME strategy-c COMMAND p2place-test-strategy-c)
+set_tests_properties(strategy-c PROPERTIES LABELS "strategy-c")
 
 # No GTest/JSON needed for event codec unit test.
 if(BUILD_TESTING)

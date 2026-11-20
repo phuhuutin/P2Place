@@ -28,6 +28,9 @@ python3 tests/test_timeline_reconstruct.py 2>&1 | tail -n 8
 echo "==================== live: lab06 strategy B (stable/churn/recovery + A regression) ===================="
 python3 tests/test_lab06_strategy_b.py 2>&1 | grep -vE 'WebSocket handshake|PASS: HTTP' | tail -n 15
 
+echo "==================== live: strategy C (aggregation + B contrast + two-owner survival) ===================="
+python3 tests/test_strategy_c.py 2>&1 | grep -vE 'WebSocket handshake|PASS: HTTP' | tail -n 15
+
 echo "==================== live: join via seed (existing) ===================="
 python3 tests/test_join_via_seed.py 2>&1 | tail -n 5
 

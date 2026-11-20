@@ -896,6 +896,18 @@ void PeerNode::on_placement_message(net::TcpConnection& conn,
         if(!accept_authority_message(sender))
             throw std::runtime_error("unauthorized policy snapshot");
         const auto snap=core::PolicySnapshot::decode(msg.payload);
+        // Strategy isolation: a B peer must not silently adopt a C table (or
+        // vice versa). A peers never install a policy handler at all.
+        if(config_.strategy==Config::Strategy::A ||
+           static_cast<char>(snap.strategy)!=
+           (config_.strategy==Config::Strategy::B?'B':'C')) {
+            std::cout << "[policy-ignore] node=" << config_.id << " from=" << sender
+                      << " reason=strategy-mismatch local="
+                      << (config_.strategy==Config::Strategy::A?'A':
+                          config_.strategy==Config::Strategy::B?'B':'C')
+                      << " snap=" << static_cast<char>(snap.strategy) << '\n';
+            return;
+        }
         if(!placement_ready_ || snap.placement_gen!=placement_.epoch() ||
            snap.placement_fp!=placement_.fingerprint()) {
             std::cout << "[policy-ignore] node=" << config_.id << " from=" << sender
@@ -920,12 +932,12 @@ void PeerNode::on_placement_message(net::TcpConnection& conn,
                   << " strategy=" << static_cast<char>(snap.strategy)
                   << (changed?"":" (heartbeat)") << '\n';
         if(!changed)return; // periodic heartbeat re-broadcast; nothing new
-        // Reconsider every owned region that lacks DATA (absent, or an empty
-        // merge accepted under an earlier epoch): the new target set may
-        // include former holders whose acknowledged copies a shrink stranded.
-        // Backfill pulls from the max-N preference superset, so those copies
-        // are discoverable now even though they are not current targets.
-        reconsider_owned_backfills(snap);
+        // Apply targeted activation: only regions whose target set actually
+        // changed on this member take action. Newly added targets (N
+        // increase suffix) are URGENT; remaining targets on a changed set
+        // reconcile at normal priority (shrink-stranded copies).
+        reconsider_owned_backfills(prev,snap,first_apply,
+                                   prev.placement_gen!=snap.placement_gen);
         return;
     }
     case T::PEER_ENDPOINTS:
@@ -956,28 +968,67 @@ void PeerNode::on_placement_message(net::TcpConnection& conn,
     }
 }
 
-void PeerNode::reconsider_owned_backfills(const core::PolicySnapshot& snap) {
+void PeerNode::reconsider_owned_backfills(const core::PolicySnapshot& prev,
+                                          const core::PolicySnapshot& next,
+                                          bool first_apply,
+                                          bool placement_changed) {
     if(!replicator_)return;
-    // Reconsider EVERY owned region, not only data-less ones: a partial
-    // local copy (some pixels present, others stranded on former holders
-    // dropped by a shrink) has version()>0 and would otherwise never be
-    // re-pulled. The pull merge is LWW-idempotent, so re-pulling a complete
-    // region is a cheap no-op; the resolved-set guard in backfill_step
-    // still caps genuinely-empty regions.
+    // Targeted activation instead of re-queuing every owned region on every
+    // policy change (which flooded the queue behind low region IDs and let a
+    // hot N4 activation wait until its 60-second write window decayed):
+    //  - initial sync / placement change: normal queue, regions this member
+    //    owns but does not hold yet (the original activation pull);
+    //  - N increase: only members in the NEW preference suffix are urgent
+    //    (they must sync before the policy window can decay);
+    //  - any other changed target set: normal reconciliation, preserving the
+    //    shrink case (acknowledged data stranded on former holders is
+    //    re-pulled from the max-N superset).
+    const auto max_pref=std::min<std::size_t>(
+        4,placement_.members().size());
     for(std::uint32_t r=0;r<core::BalancedPlacement::PARTITIONS;++r) {
-        if(!snap.target_n[r])continue;
-        const auto targets=placement_.preference(r,snap.target_n[r]);
-        if(std::find(targets.begin(),targets.end(),config_.id)==targets.end())
+        const auto new_n=next.target_n[r];
+        if(!new_n)continue;
+        const auto pref=placement_.preference(r,max_pref);
+        int position=-1;
+        for(std::size_t i=0;i<pref.size();++i)
+            if(pref[i]==config_.id){position=static_cast<int>(i);break;}
+        if(position<0 || position>=new_n)continue; // not a current target
+        if(first_apply || placement_changed) {
+            const auto existing=region_store_.get_region(r);
+            if(!existing || existing->version()==0)
+                replicator_->request_backfill(r);
             continue;
-        replicator_->reconsider_backfill(r);
+        }
+        switch(core::policy_activation_action(prev.target_n[r],new_n,position)) {
+        case core::ActivationAction::urgent:
+            replicator_->request_priority_backfill(r);
+            break;
+        case core::ActivationAction::reconcile:
+            replicator_->reconsider_backfill(r);
+            break;
+        case core::ActivationAction::none:
+            break;
+        }
     }
 }
 
 void PeerNode::evaluate_and_broadcast_policy(std::chrono::steady_clock::time_point now,
                                              bool placement_changed) {
     if(config_.id!=authority_id_ || !policy_evaluator_ || !placement_ready_)return;
+    // Strategy C: feed the authority's deduplicated write-report aggregate
+    // into the evaluator as the per-region attempted-write rate.
+    std::array<double,core::BalancedPlacement::PARTITIONS> write_rates{};
+    core::WriteReportAggregate::Summary wsum{};
+    if(config_.strategy==Config::Strategy::C) {
+        wsum=write_aggregate_.summarize(now);
+        for(std::size_t r=0;r<core::BalancedPlacement::PARTITIONS;++r)
+            write_rates[r]=static_cast<double>(wsum.attempts[r])/
+                static_cast<double>(config_.write_window_seconds);
+        policy_evaluator_->set_write_rates(&write_rates);
+    }
     auto ev=policy_evaluator_->evaluate(placement_,reliability_tracker_,
                                         policy_table_,now,placement_changed);
+    policy_evaluator_->set_write_rates(nullptr);
     const auto prev=policy_table_.current();
     const bool prev_init=policy_table_.initialized();
     std::string reason;
@@ -1008,6 +1059,7 @@ void PeerNode::evaluate_and_broadcast_policy(std::chrono::steady_clock::time_poi
     const auto members=placement_.members();
     const double time_s=std::chrono::duration<double>(now-process_started_).count();
     if(metrics_) {
+        const char strat_char=config_.strategy==Config::Strategy::C?'C':'B';
         for(std::uint32_t r=0;r<core::BalancedPlacement::PARTITIONS;++r) {
             const auto desired=ev.snap.target_n[r];
             const auto assigned=static_cast<std::uint8_t>(
@@ -1015,8 +1067,16 @@ void PeerNode::evaluate_and_broadcast_policy(std::chrono::steady_clock::time_poi
             std::size_t confirmed=0;
             for(auto id:placement_.preference(r,assigned))
                 if(fd_by_node_.contains(id))++confirmed;
-            metrics_->policy(time_s,ev.snap.placement_gen,ev.snap.policy_epoch,r,'B',
-                             ev.risk[r],desired,assigned,confirmed);
+            metrics_->policy(time_s,ev.snap.placement_gen,ev.snap.policy_epoch,r,
+                             strat_char,ev.risk[r],desired,assigned,confirmed);
+            if(config_.strategy==Config::Strategy::C) {
+                const double rate=ev.write_rate[r];
+                metrics_->write_frequency(
+                    time_s,r,last_own_delta_[r],wsum.attempts[r],rate,
+                    1.0-ev.risk[r],ev.n_churn[r],ev.n_write[r],desired,assigned,
+                    ev.snap.placement_gen,ev.snap.policy_epoch,config_.id,
+                    wsum.observation_complete[r]);
+            }
         }
     }
     if(!ev.changed && !placement_changed) {
@@ -1028,9 +1088,9 @@ void PeerNode::evaluate_and_broadcast_policy(std::chrono::steady_clock::time_poi
         // read. Receivers treat an unchanged epoch as idempotent.
     } else if(ev.changed) {
         // The authority applies its own snapshot here (no POLICY_SNAPSHOT
-        // message round-trip), so it must reconsider its own data-less
-        // owned regions on real changes like every other member does.
-        reconsider_owned_backfills(ev.snap);
+        // message round-trip), so it must run the same targeted activation
+        // (urgent new targets / normal reconciliation) as every member.
+        reconsider_owned_backfills(prev,ev.snap,!prev_init,placement_changed);
     }
     // Broadcast the same immutable snapshot every peer applies.
     messages::Message m;

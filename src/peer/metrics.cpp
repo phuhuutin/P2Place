@@ -34,6 +34,24 @@ Metrics::Metrics(std::string run_id, std::filesystem::path dir, std::uint32_t no
         backfill_events_.out
             << "run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,"
                "result,reason\n";
+    // Strategy C series.
+    write_frequency_.out.open(dir / "region_write_frequency.csv");
+    if(write_frequency_.out)
+        write_frequency_.out
+            << "run_id,time_s,region,local_attempts_10s,cluster_attempts_60s,"
+               "write_rate_per_sec,min_peer_reliability,n_churn,n_write,"
+               "target_n,assigned_n,placement_gen,policy_epoch,authority_node,"
+               "observation_complete\n";
+    write_report_events_.open(dir / "region_write_report_events.csv");
+    if(write_report_events_)
+        write_report_events_
+            << "run_id,monotonic_ns,node,incarnation,sequence,start_ns,end_ns,"
+               "accepted,reason\n";
+    repair_events_.out.open(dir / "replica_repair_events.csv");
+    if(repair_events_.out)
+        repair_events_.out
+            << "run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,"
+               "event,classification,attempts\n";
 }
 Metrics::~Metrics() = default;
 
@@ -158,5 +176,55 @@ void Metrics::backfill(std::uint32_t region, bool ok, std::uint64_t gen,
         (ok ? "ok" : "failed") + ',' + csv_escape(reason) + '\n';
     backfill_events_.out << line;
     backfill_events_.flush(); // rare event: durable immediately
+}
+
+void Metrics::write_frequency(double time_s, std::uint32_t region,
+                              std::uint64_t local_attempts_10s,
+                              std::uint64_t cluster_attempts_60s,
+                              double write_rate, double min_reliability,
+                              std::uint8_t n_churn, std::uint8_t n_write,
+                              std::uint8_t target_n, std::uint8_t assigned_n,
+                              std::uint64_t gen, std::uint64_t epoch,
+                              std::uint32_t authority,
+                              std::uint8_t observation) {
+    if(!write_frequency_.out)return;
+    write_frequency_.out
+        << run_id_ << ',' << time_s << ',' << region << ','
+        << local_attempts_10s << ',' << cluster_attempts_60s << ','
+        << write_rate << ',' << min_reliability << ','
+        << static_cast<unsigned>(n_churn) << ','
+        << static_cast<unsigned>(n_write) << ','
+        << static_cast<unsigned>(target_n) << ','
+        << static_cast<unsigned>(assigned_n) << ','
+        << gen << ',' << epoch << ',' << authority << ','
+        << static_cast<unsigned>(observation) << '\n';
+    if(++write_frequency_.rows_since_flush >= FLUSH_ROWS)
+        write_frequency_.flush();
+}
+
+void Metrics::write_report(std::uint32_t node, std::uint32_t incarnation,
+                           std::uint32_t sequence, std::uint64_t start_ns,
+                           std::uint64_t end_ns, bool accepted,
+                           std::string_view reason) {
+    if(!write_report_events_)return;
+    write_report_events_
+        << run_id_ << ',' << monotonic_ns() << ',' << node << ','
+        << incarnation << ',' << sequence << ',' << start_ns << ',' << end_ns
+        << ',' << (accepted ? "true" : "false") << ','
+        << csv_escape(reason) << '\n';
+    write_report_events_.flush(); // rare event: durable immediately
+}
+
+void Metrics::repair(std::uint32_t node, std::uint32_t region,
+                     std::uint64_t gen, std::uint64_t epoch,
+                     std::string_view event, std::string_view classification,
+                     unsigned attempts) {
+    if(!repair_events_.out)return;
+    repair_events_.out
+        << run_id_ << ',' << monotonic_ns() << ',' << node << ',' << region
+        << ',' << gen << ',' << epoch << ',' << csv_escape(event) << ','
+        << csv_escape(classification) << ',' << attempts << '\n';
+    // Activation events are sparse: keep them durable for crash forensics.
+    repair_events_.flush();
 }
 }

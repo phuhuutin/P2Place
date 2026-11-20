@@ -21,7 +21,7 @@ namespace p2place::peer {
  * @brief All configuration needed to run one peer.
  */
 struct Config {
-    enum class Strategy { A, B };
+    enum class Strategy { A, B, C };
 
     /** This peer's unique id. */
     core::NodeId id = 0;
@@ -60,6 +60,11 @@ struct Config {
     std::uint32_t policy_cooldown_seconds = 30;
     double policy_threshold_high = 0.95;         // min score >= high -> N2
     double policy_threshold_low = 0.80;          // min score <  low -> N4
+    // Strategy C: cluster-wide per-region client PUT rate policy.
+    std::uint32_t write_window_seconds = 60;       // rolling write-rate window
+    std::uint32_t write_report_interval_seconds = 10; // per-peer delta cadence
+    double write_threshold_mid = 0.20;             // rate >= mid  -> N3
+    double write_threshold_high = 1.00;            // rate >= high -> N4
     std::string metrics_dir;                     // empty = no CSV metrics
 
     /** Addresses of other known peers (the seed list). */

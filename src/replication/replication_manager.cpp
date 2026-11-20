@@ -114,38 +114,100 @@ void ReplicationManager::deadline(std::uint32_t request) {
   } else finish_put(request,false,"write quorum timeout");
  }
 }
+void ReplicationManager::emit_repair(std::uint32_t region,const char* event,
+                                     const std::string& classification,
+                                     unsigned attempts) {
+ if(repair_progress_cb_)repair_progress_cb_(region,event,classification,attempts);
+}
 void ReplicationManager::request_backfill(std::uint32_t key) {
  if(key>=core::RegionStore::REGION_COUNT)throw std::out_of_range("backfill region key");
+ if(priority_queued_.contains(key))return; // already urgent; never duplicate
  backfill_queue_.insert(key);
+}
+void ReplicationManager::enqueue_priority(std::uint32_t key,bool clear_state,
+                                          bool report) {
+ if(clear_state) {
+  // A NEW target must sync against the current superset even if an earlier
+  // (empty) merge resolved the region; retries keep their attempt counter.
+  backfill_resolved_.erase(key);
+  backfill_attempts_.erase(key);
+ }
+ if(priority_queued_.contains(key))return; // dedup across urgent repetitions
+ backfill_queue_.erase(key);               // promotion out of the normal queue
+ priority_queue_.push_back(key);
+ priority_queued_.insert(key);
+ if(report) {
+  const auto attempts=backfill_attempts_.count(key)?backfill_attempts_[key]:0u;
+  std::cout << "[backfill-priority] node=" << local_ << " region=" << key
+            << " event=urgent_enqueued classification=new_target\n";
+  emit_repair(key,"urgent_enqueued","new_target",attempts);
+ }
+}
+void ReplicationManager::request_priority_backfill(std::uint32_t key) {
+ if(key>=core::RegionStore::REGION_COUNT)throw std::out_of_range("backfill region key");
+ enqueue_priority(key,/*clear_state=*/true,/*report=*/true);
 }
 void ReplicationManager::reconsider_backfill(std::uint32_t key) {
  if(key>=core::RegionStore::REGION_COUNT)throw std::out_of_range("backfill region key");
  backfill_resolved_.erase(key);
  backfill_attempts_.erase(key);
- backfill_queue_.insert(key);
+ if(!priority_queued_.contains(key))backfill_queue_.insert(key);
 }
 void ReplicationManager::reset_repair_state() {
  ++state_epoch_; // drop in-flight backfill callbacks from the previous store
  backfill_queue_.clear();
+ priority_queue_.clear();
+ priority_queued_.clear();
+ urgent_burst_=0;
  backfill_resolved_.clear();
  backfill_attempts_.clear();
  repair_cursor_=0;
 }
 bool ReplicationManager::backfill_step() {
- if(backfill_queue_.empty())return false;
- auto it=backfill_queue_.begin();
- const auto key=*it;
- backfill_queue_.erase(it);
+ std::uint32_t key=0;
+ bool urgent=false;
+ if(!priority_queue_.empty() &&
+    (urgent_burst_<kUrgentBurst || backfill_queue_.empty())) {
+  // Policy-activation work first: a newly selected N4 target must sync
+  // before the hot write window can decay. After kUrgentBurst consecutive
+  // urgent picks (when normal work is waiting), one normal region runs.
+  key=priority_queue_.front();
+  priority_queue_.pop_front();
+  priority_queued_.erase(key);
+  ++urgent_burst_;
+  urgent=true;
+ } else if(!backfill_queue_.empty()) {
+  auto it=backfill_queue_.begin();
+  key=*it;
+  backfill_queue_.erase(it);
+  urgent_burst_=0; // fairness slot for normal repair work
+ } else {
+  return false;
+ }
  if(backfill_resolved_.contains(key))return true; // accepted earlier
  // A NON-empty local copy still gets pulled: the LWW merge adds pixels
  // stranded on former holders after a shrink (partial regions have
  // version()>0 and must not be skipped). Live-write races are harmless
  // (merge keeps the newer pixel).
  const auto epoch=state_epoch_;
- get(key,[this,key,epoch](bool ok,const core::Region& region,const std::string& error){
+ const auto attempts_before=backfill_attempts_.count(key)?backfill_attempts_[key]:0u;
+ std::cout << "[backfill-priority] node=" << local_ << " region=" << key
+           << (urgent?" event=urgent_started":" event=started")
+           << " classification=" << (urgent?"urgent_merge":"full_merge") << '\n';
+ emit_repair(key,"backfill_started",urgent?"urgent_merge":"full_merge",
+             attempts_before+1);
+ get(key,[this,key,epoch,urgent](bool ok,const core::Region& region,const std::string& error){
+  // Retries go back to the SAME queue kind (an urgent new-target activation
+  // stays urgent while its budget lasts; a normal repair stays normal) and
+  // to the BACK of the urgent FIFO so other urgent regions are not blocked.
+  const auto requeue=[&](bool clear_state) {
+   if(urgent)enqueue_priority(key,clear_state,/*report=*/false);
+   else request_backfill(key);
+  };
   if(epoch!=state_epoch_) { // store was reset while this pull was in flight
    std::cout << "[backfill] node=" << local_ << " region=" << key
              << " success=false error=stale_store_epoch classification=drop\n";
+   emit_repair(key,"backfill_failed","drop",backfill_attempts_.count(key)?backfill_attempts_[key]:0u);
    if(backfill_metric_cb_)backfill_metric_cb_(key,false,"stale_store_epoch classification=drop");
    return;
   }
@@ -155,12 +217,16 @@ bool ReplicationManager::backfill_step() {
     backfill_resolved_.insert(key);
     // A non-empty error means not every expected source was seen; the merged
     // data is present but possibly incomplete (anti-entropy is the backstop).
-    const std::string reason=error.empty()
-        ?"classification=complete"
-        :error+" classification=complete_partial";
+    const bool partial=!error.empty();
+    const std::string reason=partial
+        ?error+" classification=complete_partial"
+        :"classification=complete";
     std::cout << "[backfill] node=" << local_ << " region=" << key
               << " success=true version=" << region.version()
               << " " << reason << '\n';
+    emit_repair(key,"backfill_completed",
+                partial?"complete_partial":"complete",
+                backfill_attempts_.count(key)?backfill_attempts_[key]:1u);
     if(backfill_metric_cb_)backfill_metric_cb_(key,true,reason);
    } else {
     // Empty merge. If EVERY expected source responded (error empty), the
@@ -173,35 +239,41 @@ bool ReplicationManager::backfill_step() {
      const std::string reason="classification=empty_valid attempts="+std::to_string(attempts);
      std::cout << "[backfill] node=" << local_ << " region=" << key
                << " success=true version=0 " << reason << '\n';
+     emit_repair(key,"backfill_completed","empty_valid",attempts);
      if(backfill_metric_cb_)backfill_metric_cb_(key,true,reason);
     } else if(attempts>=kMaxBackfillAttempts) {
      backfill_resolved_.insert(key);
      const std::string reason=error+" classification=empty_partial_accepted attempts="+std::to_string(attempts);
      std::cout << "[backfill] node=" << local_ << " region=" << key
                << " success=true version=0 " << reason << " (anti-entropy remains backstop)\n";
+     emit_repair(key,"backfill_completed","empty_partial_accepted",attempts);
      if(backfill_metric_cb_)backfill_metric_cb_(key,true,reason);
     } else {
-     request_backfill(key);
+     requeue(/*clear_state=*/false);
      const std::string reason=error+" classification=retry attempts="+std::to_string(attempts);
      std::cout << "[backfill] node=" << local_ << " region=" << key
                << " success=false error=" << reason << '\n';
+     emit_repair(key,"backfill_retry","retry",attempts);
      if(backfill_metric_cb_)backfill_metric_cb_(key,false,reason);
     }
    }
   } else {
    const unsigned attempts=++backfill_attempts_[key];
+   const bool give_up=attempts>=kMaxBackfillAttempts;
    const std::string reason=error+" classification="+
-       (attempts>=kMaxBackfillAttempts?"give_up":"retry")+
+       (give_up?"give_up":"retry")+
        " attempts="+std::to_string(attempts);
-   if(attempts>=kMaxBackfillAttempts) {
+   if(give_up) {
     backfill_resolved_.insert(key);
     std::cout << "[backfill] node=" << local_ << " region=" << key
               << " success=false error=" << reason << " (anti-entropy remains backstop)\n";
    } else {
-    request_backfill(key);
+    requeue(/*clear_state=*/false);
     std::cout << "[backfill] node=" << local_ << " region=" << key
               << " success=false error=" << reason << '\n';
    }
+   emit_repair(key,give_up?"backfill_failed":"backfill_retry",
+               give_up?"give_up":"retry",attempts);
    if(backfill_metric_cb_)backfill_metric_cb_(key,false,reason);
   }
  }, /*complete_all=*/true, /*exclude_self=*/true,

@@ -149,6 +149,7 @@ void PeerNode::on_ring_elected(const messages::Message& msg,core::NodeId sender)
         // sender connection is HELLO-authenticated and the joiner defaults
         // to node 1, which may be long gone.
         if(t.winner==0)return;
+        if(t.winner==config_.id)write_aggregate_.clear(); // fresh C warm-up
         authority_id_=t.winner;
         last_elected_token_=msg.payload;
         std::cout<<"[election] learned authority="<<authority_id_
@@ -163,6 +164,12 @@ void PeerNode::on_ring_elected(const messages::Message& msg,core::NodeId sender)
     authority_id_=t.winner;
     last_elected_token_=msg.payload;
     election_in_progress_=false;
+    if(t.winner==config_.id) {
+        // This peer is the new authority: begin Strategy C with a fresh
+        // write aggregate (documented 60s warm-up; no stale counters).
+        write_aggregate_.clear();
+        write_report_sequence_=0;
+    }
     std::cout<<"[election] learned authority="<<authority_id_<<"\n";
     std::cout<<"[authority] leader="<<authority_id_
              <<" placement_gen="<<t.gen<<"\n";

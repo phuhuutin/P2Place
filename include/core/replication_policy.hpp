@@ -42,31 +42,46 @@ private:
     bool initialized_ = false;
 };
 
-// Authority-side Strategy B evaluator (deterministic).
-//
-//   baseline(r)   = first min(3, members) preferred members of region r
-//   risk(r)       = 1 - min(A_i) over baseline(r)   (worst-replica rule)
-//   desired_n     = min_n (3)  when min(A_i) >= threshold_low
-//                   max_n (4)  when min(A_i) <  threshold_low
-//   assigned_n    = min(desired_n, distinct committed members)
-//
-// Min N = 3: the adaptation may RAISE replicas under churn but never
-// shrinks a region below the fixed baseline (the N2 tier is disabled;
-// threshold_high is retained in the config for compatibility but unused).
-// The first evaluation of a cluster therefore starts every region at the
-// N3 baseline (capped by the live member count), and a 30-second per-region
-// cooldown gates changes; a placement change resets all cooldowns and
-// recomputes immediately. R and W stay fixed at 2.
 struct PolicyConfig {
     std::size_t min_n = 2, max_n = 4;
     double threshold_high = 0.95;   // >= high -> desired 2
     double threshold_low = 0.80;    // <  low  -> desired 4
     std::chrono::seconds cooldown{30};
+    // Strategy C (churn + write-aware) composition inputs.
+    char strategy = 'B';                    // 'B' or 'C' (snapshot byte)
+    double write_threshold_mid = 0.20;      // rate >= mid  -> mid tier
+    double write_threshold_high = 1.00;     // rate >= high -> max N
 };
+
+// What a member must do for one region after a real policy change, given the
+// region's previous target N (`old_n`; 0 when no prior accepted table), the
+// new target N, and this member's index in the region's preference order.
+//   none      - no action (unchanged target set, or not a current target)
+//   urgent    - newly selected by an N INCREASE (position in the new suffix):
+//               activate BEFORE the normal repair backlog; the hot policy
+//               window may decay while a low-priority pull waits.
+//   reconcile - the target set changed while this member stayed a target
+//               (shrink/partial-copy reconciliation); normal priority.
+enum class ActivationAction { none, urgent, reconcile };
+
+constexpr ActivationAction policy_activation_action(std::uint8_t old_n,
+                                                    std::uint8_t new_n,
+                                                    int position) {
+    if (new_n == 0 || position < 0 || position >= new_n)
+        return ActivationAction::none;
+    if (old_n == 0) return ActivationAction::reconcile;  // initial sync
+    if (new_n > old_n && position >= old_n) return ActivationAction::urgent;
+    if (new_n != old_n) return ActivationAction::reconcile;
+    return ActivationAction::none;
+}
 
 struct PolicyEvaluation {
     PolicySnapshot snap;
     std::array<double, BalancedPlacement::PARTITIONS> risk{}; // 1 - min score
+    // Strategy C diagnostics (populated for every region when strategy C):
+    std::array<double, BalancedPlacement::PARTITIONS> write_rate{};
+    std::array<std::uint8_t, BalancedPlacement::PARTITIONS> n_churn{};
+    std::array<std::uint8_t, BalancedPlacement::PARTITIONS> n_write{};
     bool changed = false;
 };
 
@@ -74,6 +89,12 @@ class PolicyEvaluator final {
 public:
     using Clock = std::chrono::steady_clock;
     explicit PolicyEvaluator(PolicyConfig cfg);
+    // Strategy C input: cluster-wide per-region attempted-write rate
+    // (writes/sec over the write window). Null -> pure churn (B) behavior.
+    void set_write_rates(
+        const std::array<double, BalancedPlacement::PARTITIONS>* rates) {
+        write_rates_ = rates;
+    }
     // Recompute the target table. placement_changed resets cooldowns and
     // always yields a fresh epoch on change. unchanged snapshots keep the
     // previous table (authority may re-broadcast them as-is).
@@ -85,5 +106,7 @@ public:
 private:
     PolicyConfig cfg_;
     std::array<Clock::time_point, BalancedPlacement::PARTITIONS> last_change_{};
+    const std::array<double, BalancedPlacement::PARTITIONS>* write_rates_ =
+        nullptr;
 };
 }

@@ -198,6 +198,13 @@ class Cluster:
                 '--unavailable-after', str(self.args.unavailable_after),
                 '--recovery-stabilization', str(self.args.recovery_stabilization),
                 '--metrics-dir', str(incarnation_dir)]
+        if self.args.strategy == 'C':
+            # Strategy C write-rate policy flags (A/B never receive them, so
+            # their command lines and behavior are unchanged).
+            args += ['--write-window', str(self.args.write_window),
+                     '--write-report-interval', str(self.args.write_report_interval),
+                     '--write-threshold-mid', str(self.args.write_threshold_mid),
+                     '--write-threshold-high', str(self.args.write_threshold_high)]
         if n != 1:
             # Always-healthy seed where possible. Node 1 may be dead in the
             # authority-failover phase, so use Node 2 for rejoining Node 1.
@@ -771,7 +778,7 @@ def recorder_events(args):
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--strategy', choices=['A', 'B'], required=True)
+    p.add_argument('--strategy', choices=['A', 'B', 'C'], required=True)
     p.add_argument('--seed', type=int, default=42)
     p.add_argument('--seconds', type=int, default=300,
                    help='workload duration, excluding cluster boot and verification')
@@ -783,8 +790,20 @@ def parse_args():
                    help='attempted PUTs per second, across all nodes')
     p.add_argument('--workers', type=int, default=12)
     p.add_argument('--put-timeout', type=float, default=4.0)
-    p.add_argument('--churn-profile', choices=['aggressive', 'extreme', 'none', 'predictive-churn', 'stress50-spread'],
-                   default='aggressive')
+    p.add_argument('--churn-profile', choices=['aggressive', 'extreme', 'none', 'predictive-churn', 'stress50-spread', 'hotspot-churn'],
+                   default='aggressive',
+                   help='hotspot-churn is a compatibility alias: it selects '
+                        '--workload hotspot and the predictive-churn fault plan')
+    p.add_argument('--workload', choices=['uniform', 'targeted', 'hotspot'], default=None,
+                   help='write distribution dimension, independent of the fault '
+                        'schedule (None keeps the historical churn-profile binding; '
+                        'uniform/hotspot can share any fault plan)')
+    p.add_argument('--hotspot-region-count', type=int, default=8,
+                   help='hotspot workload: number of hot regions (default 8)')
+    p.add_argument('--hotspot-write-percent', type=float, default=70.0,
+                   help='hotspot workload: percent of writes to hot regions (default 70)')
+    p.add_argument('--hotspot-seed', type=int, default=43,
+                   help='hotspot workload: seed for deterministic hot-region selection')
     p.add_argument('--targeted-write-percent', type=float, default=None,
                    help='percent of writes to regions where 8 and 9 are both in fixed N3; '
                         'defaults to 60 for predictive-churn; 92 during double outages for '
@@ -798,6 +817,15 @@ def parse_args():
     p.add_argument('--policy-cooldown', type=int, default=30)
     p.add_argument('--min-replicas', type=int, default=2)
     p.add_argument('--max-replicas', type=int, default=4)
+    # Strategy C write-rate policy (passed to peers only when --strategy C).
+    p.add_argument('--write-window', type=int, default=60,
+                   help='C: rolling write-rate window in seconds (multiple of 10)')
+    p.add_argument('--write-report-interval', type=int, default=10,
+                   help='C: per-peer write-count delta report interval')
+    p.add_argument('--write-threshold-mid', type=float, default=0.2,
+                   help='C: rate >= mid raises a region to the middle tier')
+    p.add_argument('--write-threshold-high', type=float, default=1.0,
+                   help='C: rate >= high raises a region to max N')
     p.add_argument('--suspect-after', type=int, default=3)
     p.add_argument('--unavailable-after', type=int, default=15)
     p.add_argument('--recovery-stabilization', type=int, default=2)
@@ -815,6 +843,10 @@ def parse_args():
     a = p.parse_args()
     if a.nodes != 10:
         p.error('this fault schedule is designed for exactly 10 nodes')
+    if a.churn_profile == 'hotspot-churn':
+        a.churn_profile = 'predictive-churn'
+        if a.workload is None:
+            a.workload = 'hotspot'
     if a.churn_profile in ('predictive-churn', 'stress50-spread') and a.seconds != 600:
         p.error('predictive-churn/stress50-spread require --seconds 600 for fixed-phase fault schedule')
     if a.seconds < 180 and a.churn_profile != 'none':
@@ -827,6 +859,23 @@ def parse_args():
                           else 'round-robin')
     if not 0 <= a.targeted_write_percent <= 100:
         p.error('targeted-write-percent must be between 0 and 100')
+    if not 0 <= a.hotspot_write_percent <= 100:
+        p.error('hotspot-write-percent must be between 0 and 100')
+    if a.hotspot_region_count < 1 or a.hotspot_region_count > 64:
+        p.error('hotspot-region-count must be between 1 and 64')
+    if a.workload == 'hotspot':
+        if a.churn_profile == 'stress50-spread':
+            p.error('--workload hotspot is a separate distribution from the '
+                    'stress50-spread targeting; combine it with predictive-churn '
+                    'or none')
+        a.targeted_write_percent = 0.0  # hotspot replaces region targeting
+    if a.strategy == 'C':
+        if a.write_window % 10 != 0:
+            p.error('--write-window must be a multiple of 10')
+        if a.write_report_interval > a.write_window:
+            p.error('--write-report-interval must be <= --write-window')
+        if not 0 <= a.write_threshold_mid < a.write_threshold_high:
+            p.error('require 0 <= write-threshold-mid < write-threshold-high')
     if a.settle < 0:
         p.error('settle must be non-negative')
     if a.rate <= 0 or a.workers < 1 or a.put_timeout <= 0:
@@ -890,6 +939,55 @@ def main():
                             args.targeted_write_percent > 0 else [])
         if args.targeted_write_percent and not targeted_regions:
             raise RuntimeError('no regions match baseline replica preference for nodes 8,9')
+        # Hotspot workload: a separate write-distribution dimension. The hot
+        # region set is fixed at run initialization from the COMMITTED
+        # placement; preferred hot regions share their first two owners with
+        # nodes 8/9 so the same failure pair drives the B-vs-C contrast.
+        hot_pool, hotspot_idx, hot_regions = [], 0, []
+        if args.workload == 'hotspot':
+            fields = (args.out / 'node1.state').read_text().split()
+            count = int(fields[2])
+            members = [int(x) for x in fields[3:3 + count]]
+            owner_at = 3 + count + (count if fields[0].endswith('V2') else 0)
+            owners = [int(x) for x in fields[owner_at:owner_at + 256]]
+            pref_of = {}
+            for r, owner in enumerate(owners):
+                at = members.index(owner)
+                pref_of[r] = [members[(at + j) % count] for j in range(4)]
+            shared = [r for r in range(256) if pref_of[r][:2] == [8, 9]]
+            hrng = random.Random(args.hotspot_seed)
+            if len(shared) >= args.hotspot_region_count:
+                hot_regions = sorted(hrng.sample(shared, args.hotspot_region_count))
+            else:
+                hot_regions = sorted(shared)
+                rest = [r for r in range(256) if r not in hot_regions]
+                hot_regions += sorted(hrng.sample(rest, args.hotspot_region_count - len(shared)))
+            rp = random.Random(args.hotspot_seed + 7)
+            per_region = []
+            for r in hot_regions:
+                block = [(r // 16) * 16 * 256 + (r % 16) * 16 + y * 256 + x
+                         for y in range(16) for x in range(16)]
+                rp.shuffle(block)
+                per_region.append(block)
+            hot_pool = [p for i in range(256) for p in [rg[i] for rg in per_region]]
+            manifest = {'hot_regions': hot_regions,
+                        'preference_lists': {r: pref_of[r] for r in hot_regions},
+                        'first_two_owners_8_9': len(shared) >= args.hotspot_region_count,
+                        'shared_pair': [8, 9],
+                        'hotspot_seed': args.hotspot_seed,
+                        'hotspot_write_percent': args.hotspot_write_percent,
+                        'write_thresholds': {'mid': args.write_threshold_mid,
+                                             'high': args.write_threshold_high}
+                        if args.strategy == 'C' else None,
+                        'note': 'hot regions fixed at init from the committed placement; '
+                                'the fault plan is independent (same schedule for A/B/C)'}
+            (args.out / 'workload_manifest.json').write_text(
+                json.dumps(manifest, indent=2) + '\n')
+            summary['workload'] = 'hotspot'
+            summary['hotspot_regions'] = hot_regions
+            print(f'[workload] hotspot regions={hot_regions} '
+                  f'percent={args.hotspot_write_percent} '
+                  f'first_two_owners_8_9={manifest["first_two_owners_8_9"]}', flush=True)
         if balanced:
             sampler = RegionBalancedSampler(args.seed, targeted_regions)
         else:
@@ -981,6 +1079,49 @@ def main():
                     index = len(scheduled)
                     if index >= len(positions):
                         break
+                    if args.workload == 'hotspot':
+                        # Hotspot write distribution: hot-pool picks with the
+                        # configured probability; otherwise a uniform pick.
+                        chosen_hot = write_rng.random() * 100 < args.hotspot_write_percent
+                        pos = None
+                        if chosen_hot and hotspot_idx < len(hot_pool):
+                            candidate = hot_pool[hotspot_idx]
+                            hotspot_idx += 1
+                            if candidate not in used_positions:
+                                pos = candidate
+                        if pos is None:
+                            chosen_hot = False
+                            while uniform_idx < len(uniform_positions):
+                                candidate = uniform_positions[uniform_idx]
+                                uniform_idx += 1
+                                if candidate not in used_positions:
+                                    pos = candidate
+                                    break
+                        if pos is None:
+                            break
+                        used_positions.add(pos)
+                        workload_class = 'hot' if chosen_hot else 'cold'
+                        chosen_targeted = False
+                        x, y = pos % 256, pos // 256
+                        color = '#%06X' % rng.randrange(0x1000000)
+                        gateways = list(range(2, 8)) if args.gateway_mode == 'healthy' else list(cluster.peers)
+                        node = gateways[index % len(gateways)]
+                        metadata = {'attempt': index, 'time_s': round(elapsed, 3),
+                                    'phase': phase_name(elapsed, args.churn_profile)
+                                              if args.churn_profile in ('predictive-churn', 'stress50-spread')
+                                              else 'standard',
+                                    'workload_class': workload_class,
+                                    'via_node': node, 'region': (y // 16)*16 + x//16,
+                                    'x': x, 'y': y, 'color': color}
+                        future = pool.submit(one_put, cluster.peers[node].ws_port,
+                                             x, y, color, args.put_timeout)
+                        scheduled[index] = True
+                        inflight[future] = metadata
+                        next_dispatch += 1.0 / args.rate
+                        if next_dispatch < time.monotonic()-0.5:
+                            next_dispatch = time.monotonic()
+                        time.sleep(0.012)
+                        continue
                     target_pct = (stress50_target_percent(elapsed, args.targeted_write_percent)
                                   if balanced else args.targeted_write_percent)
                     chosen_targeted = (target_pct > 0 and
