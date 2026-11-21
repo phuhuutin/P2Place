@@ -96,6 +96,55 @@ private:
     struct Snapshot { std::uint32_t next_key=0; };
     std::map<int,Snapshot> snapshots_;
 
+    // Bounded browser-PUT buffer used ONLY while this already-committed peer
+    // is frozen by a placement transition. A queued PUT is not a successful
+    // write: it is admitted here and replayed later through the normal
+    // ReplicationManager path (fresh Lamport tick, current placement).
+    // All access is on the single EventLoop thread; no locks.
+    struct PendingBrowserPut {
+        int browser_fd = -1;
+        // Process-unique WebSocket session identity captured at admission.
+        // The fd alone is not durable: Linux reuses descriptors.
+        std::uint64_t session_generation = 0;
+        std::uint16_t x = 0;
+        std::uint16_t y = 0;
+        std::uint32_t color = 0;
+        std::chrono::steady_clock::time_point enqueued_at{};
+    };
+    static constexpr std::size_t MAX_PENDING_BROWSER_PUTS = 4096;
+    static constexpr std::size_t MAX_REPLAY_PER_TICK = 32;
+    std::deque<PendingBrowserPut> pending_browser_puts_;
+
+    // Enqueue only when capacity remains. Returns false when full.
+    bool queue_browser_put(int browser_fd, std::uint64_t session_generation,
+                           std::uint16_t x, std::uint16_t y,
+                           std::uint32_t color);
+    // Replay at most MAX_REPLAY_PER_TICK entries when placement is safe.
+    void drain_browser_puts();
+    // Drop every queued entry for one exact (fd, generation) session.
+    void discard_browser_puts(int browser_fd, std::uint64_t session_generation,
+                              bool membership_reset);
+    // Drop the whole queue (membership reset / departure).
+    void discard_all_browser_puts(bool membership_reset);
+    // Execute one admitted browser PUT through the existing replication path.
+    // Strategy C admission counting happens before this call exactly once.
+    void execute_browser_put(int browser_fd, std::uint64_t session_generation,
+                             std::uint16_t x, std::uint16_t y,
+                             std::uint32_t color, bool replayed);
+    // Error to the browser only if that exact session is still alive.
+    void report_browser_error_to_session(int browser_fd,
+                                         std::uint64_t session_generation,
+                                         const std::string& error);
+
+    // Explicit lifecycle accounting. QUEUED != REPLAYED != QUORUM_SUCCESS.
+    std::uint64_t put_buffer_enqueued_ = 0;
+    std::uint64_t put_buffer_full_rejected_ = 0;
+    std::uint64_t put_buffer_replayed_ = 0;
+    std::uint64_t put_buffer_discarded_disconnected_ = 0;
+    std::uint64_t put_buffer_discarded_membership_reset_ = 0;
+    std::uint64_t put_buffer_replay_quorum_success_ = 0;
+    std::uint64_t put_buffer_replay_quorum_failed_ = 0;
+
     // Strategy B state. policy_table_ must be constructed BEFORE
     // replication_strategy_ (the churn strategy holds a reference to it).
     core::PolicyTable policy_table_{3};
@@ -244,14 +293,20 @@ private:
         std::string_view message
     );
 
+    // The session generation is resolved by on_browser_command while the
+    // session is known live; it travels with a queued PUT so a reused fd
+    // can never receive or execute another browser's buffered write.
     void handle_put(
         int fd,
+        std::uint64_t session_generation,
         std::uint16_t x,
         std::uint16_t y,
         std::uint32_t color
     );
 
     void handle_get_canvas(int fd);
+
+    friend struct PeerNodeTestAccess;
 };
 
 } // namespace p2place::peer

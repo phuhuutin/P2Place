@@ -328,3 +328,11 @@ add_executable(p2place-test-policy-b
 target_link_libraries(p2place-test-policy-b PRIVATE p2place)
 add_test(NAME policy-b COMMAND p2place-test-policy-b)
 set_tests_properties(policy-b PROPERTIES LABELS "lab06;strategy-b")
+
+# Bounded browser PUT buffer during placement transitions: admission,
+# FIFO replay, capacity, session identity, abort/uncertain-commit safety.
+add_executable(p2place-test-put-buffer
+    tests/test_put_buffer.cpp)
+target_link_libraries(p2place-test-put-buffer PRIVATE p2place)
+add_test(NAME put-buffer COMMAND p2place-test-put-buffer)
+set_tests_properties(put-buffer PROPERTIES LABELS "lab06;put-buffer")

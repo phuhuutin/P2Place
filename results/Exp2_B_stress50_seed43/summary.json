@@ -1,0 +1,1218 @@
+{
+  "strategy": "B",
+  "seed": 43,
+  "duration_s": 600,
+  "nodes": 10,
+  "churn_profile": "stress50-spread",
+  "rate_target": 16.0,
+  "gateway_mode": "healthy",
+  "targeted_write_percent": 92.0,
+  "planned_faults": 120,
+  "executed_faults": [
+    {
+      "planned_at_s": 20,
+      "actual_at_s": 20.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 31,
+      "actual_at_s": 31.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 43,
+      "actual_at_s": 43.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 54,
+      "actual_at_s": 54.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 66,
+      "actual_at_s": 66.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 77,
+      "actual_at_s": 77.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 89,
+      "actual_at_s": 89.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 100,
+      "actual_at_s": 100.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 112,
+      "actual_at_s": 112.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 123,
+      "actual_at_s": 123.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 135,
+      "actual_at_s": 135.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 146,
+      "actual_at_s": 146.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 180,
+      "actual_at_s": 180.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 180,
+      "actual_at_s": 180.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 192,
+      "actual_at_s": 192.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 192,
+      "actual_at_s": 192.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 195,
+      "actual_at_s": 195.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 195,
+      "actual_at_s": 195.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 207,
+      "actual_at_s": 207.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 207,
+      "actual_at_s": 207.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 210,
+      "actual_at_s": 210.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 210,
+      "actual_at_s": 210.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 222,
+      "actual_at_s": 222.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 222,
+      "actual_at_s": 222.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 225,
+      "actual_at_s": 225.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 225,
+      "actual_at_s": 225.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 237,
+      "actual_at_s": 237.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 237,
+      "actual_at_s": 237.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 240,
+      "actual_at_s": 240.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 240,
+      "actual_at_s": 240.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 252,
+      "actual_at_s": 252.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 252,
+      "actual_at_s": 252.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 255,
+      "actual_at_s": 255.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 255,
+      "actual_at_s": 255.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 267,
+      "actual_at_s": 267.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 267,
+      "actual_at_s": 267.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 270,
+      "actual_at_s": 270.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 270,
+      "actual_at_s": 270.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 282,
+      "actual_at_s": 282.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 282,
+      "actual_at_s": 282.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 285,
+      "actual_at_s": 285.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 285,
+      "actual_at_s": 285.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 297,
+      "actual_at_s": 297.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 297,
+      "actual_at_s": 297.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 300,
+      "actual_at_s": 300.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 300,
+      "actual_at_s": 300.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 312,
+      "actual_at_s": 312.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 312,
+      "actual_at_s": 312.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 315,
+      "actual_at_s": 315.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 315,
+      "actual_at_s": 315.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 327,
+      "actual_at_s": 327.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 327,
+      "actual_at_s": 327.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 330,
+      "actual_at_s": 330.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 330,
+      "actual_at_s": 330.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 342,
+      "actual_at_s": 342.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 342,
+      "actual_at_s": 342.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 345,
+      "actual_at_s": 345.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 345,
+      "actual_at_s": 345.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 357,
+      "actual_at_s": 357.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 357,
+      "actual_at_s": 357.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 360,
+      "actual_at_s": 360.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 360,
+      "actual_at_s": 360.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 372,
+      "actual_at_s": 372.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 372,
+      "actual_at_s": 372.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 375,
+      "actual_at_s": 375.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 375,
+      "actual_at_s": 375.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 387,
+      "actual_at_s": 387.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 387,
+      "actual_at_s": 387.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 390,
+      "actual_at_s": 390.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 390,
+      "actual_at_s": 390.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 402,
+      "actual_at_s": 402.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 402,
+      "actual_at_s": 402.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 405,
+      "actual_at_s": 405.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 405,
+      "actual_at_s": 405.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 417,
+      "actual_at_s": 417.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 417,
+      "actual_at_s": 417.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 420,
+      "actual_at_s": 420.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 420,
+      "actual_at_s": 420.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 432,
+      "actual_at_s": 432.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 432,
+      "actual_at_s": 432.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 435,
+      "actual_at_s": 435.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 435,
+      "actual_at_s": 435.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 447,
+      "actual_at_s": 447.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 447,
+      "actual_at_s": 447.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 450,
+      "actual_at_s": 450.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 450,
+      "actual_at_s": 450.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 462,
+      "actual_at_s": 462.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 462,
+      "actual_at_s": 462.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 465,
+      "actual_at_s": 465.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 465,
+      "actual_at_s": 465.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 477,
+      "actual_at_s": 477.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 477,
+      "actual_at_s": 477.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 480,
+      "actual_at_s": 480.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 480,
+      "actual_at_s": 480.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 492,
+      "actual_at_s": 492.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 492,
+      "actual_at_s": 492.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 495,
+      "actual_at_s": 495.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 495,
+      "actual_at_s": 495.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 507,
+      "actual_at_s": 507.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 507,
+      "actual_at_s": 507.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 510,
+      "actual_at_s": 510.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 510,
+      "actual_at_s": 510.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 522,
+      "actual_at_s": 522.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 522,
+      "actual_at_s": 522.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 525,
+      "actual_at_s": 525.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 525,
+      "actual_at_s": 525.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 537,
+      "actual_at_s": 537.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 537,
+      "actual_at_s": 537.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 540,
+      "actual_at_s": 540.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 540,
+      "actual_at_s": 540.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 552,
+      "actual_at_s": 552.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 552,
+      "actual_at_s": 552.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 555,
+      "actual_at_s": 555.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 555,
+      "actual_at_s": 555.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 567,
+      "actual_at_s": 567.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 567,
+      "actual_at_s": 567.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 570,
+      "actual_at_s": 570.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 570,
+      "actual_at_s": 570.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 582,
+      "actual_at_s": 582.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 582,
+      "actual_at_s": 582.0,
+      "action": "restart",
+      "node": 9
+    }
+  ],
+  "startup_ok": true,
+  "targeted_regions": [
+    13,
+    22,
+    23,
+    24,
+    25,
+    26,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    222,
+    223
+  ],
+  "pixel_distribution": "balanced-round-robin-per-region",
+  "profile_hypothesis": "Strategy A expected ~50% write availability under idealized N3/W2 replica assumptions; outcomes are not forced and depend on cluster behavior.",
+  "targeted_unique_coordinate_capacity": 12800,
+  "time_base": {
+    "workload_start_monotonic_ns": 3722861947771,
+    "source": "time.monotonic_ns() / CLOCK_MONOTONIC"
+  },
+  "pre_double_failure_policy": {
+    "broadcast": "[policy-broadcast] node=1 gen=10 epoch=2 n2=180 n3=0 n4=76 other=0",
+    "counts": {
+      "n2": 180,
+      "n3": 0,
+      "n4": 76
+    }
+  },
+  "by_phase_and_workload": {
+    "backfill/uniform": {
+      "attempts": 480,
+      "acked": 480,
+      "failed": 0,
+      "error_categories": {},
+      "success_pct": 100.0
+    },
+    "baseline/uniform": {
+      "attempts": 320,
+      "acked": 320,
+      "failed": 0,
+      "error_categories": {},
+      "success_pct": 100.0
+    },
+    "double_failure/targeted": {
+      "attempts": 4786,
+      "acked": 4786,
+      "failed": 0,
+      "error_categories": {},
+      "success_pct": 100.0
+    },
+    "double_failure/uniform": {
+      "attempts": 1646,
+      "acked": 1645,
+      "failed": 1,
+      "error_categories": {
+        "quorum_or_replica": 1
+      },
+      "success_pct": 99.94
+    },
+    "recovery/uniform": {
+      "attempts": 288,
+      "acked": 288,
+      "failed": 0,
+      "error_categories": {},
+      "success_pct": 100.0
+    },
+    "training/uniform": {
+      "attempts": 2080,
+      "acked": 2058,
+      "failed": 22,
+      "error_categories": {
+        "quorum_or_replica": 22
+      },
+      "success_pct": 98.94
+    }
+  },
+  "verification_immediate": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 47,
+    "read_failures": [],
+    "examples": [
+      {
+        "reader": 1,
+        "x": 52,
+        "y": 137,
+        "expected": "#C4560E",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 59,
+        "y": 133,
+        "expected": "#B1F71A",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 55,
+        "y": 132,
+        "expected": "#710BB6",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 234,
+        "y": 68,
+        "expected": "#560273",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 54,
+        "y": 136,
+        "expected": "#8B21D1",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 198,
+        "y": 202,
+        "expected": "#B13D75",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 55,
+        "y": 128,
+        "expected": "#BA6AF6",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 216,
+        "y": 74,
+        "expected": "#0179BE",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 50,
+        "y": 142,
+        "expected": "#D702CB",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 62,
+        "y": 136,
+        "expected": "#9C61F7",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 199,
+        "y": 204,
+        "expected": "#24306E",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 67,
+        "y": 131,
+        "expected": "#69076D",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 168,
+        "y": 81,
+        "expected": "#78CBAD",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 36,
+        "y": 141,
+        "expected": "#CD3E83",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 11,
+        "y": 142,
+        "expected": "#4669AA",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 163,
+        "y": 82,
+        "expected": "#811F7A",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 6,
+        "y": 130,
+        "expected": "#C6330F",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 175,
+        "y": 84,
+        "expected": "#32CA2F",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 72,
+        "y": 142,
+        "expected": "#E8469A",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 66,
+        "y": 133,
+        "expected": "#69AA54",
+        "actual": null
+      }
+    ],
+    "elapsed_since_writes_s": 0.829
+  },
+  "verification_after_settle": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 0,
+    "read_failures": [],
+    "examples": [],
+    "elapsed_since_writes_s": 120.922
+  },
+  "verification": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 0,
+    "read_failures": [],
+    "examples": [],
+    "elapsed_since_writes_s": 120.922
+  },
+  "verification_comparison": {
+    "same_sample": true,
+    "requested_settle_s": 120.0,
+    "immediate_missing_comparisons": 47,
+    "followup_missing_comparisons": 0,
+    "net_mismatch_reduction": 47,
+    "note": "Counts are pixel-reader comparisons, not necessarily unique pixels. A reduction does not prove every copy converged."
+  },
+  "attempts": 9600,
+  "acked": 9577,
+  "failed": 23,
+  "success_pct": 99.76,
+  "latency_ms_acked_avg": 1.97,
+  "stress50": {
+    "planned_double_outage_s": 324,
+    "predicted_fixed_n3_failure_exposure_pct": 49.68,
+    "attempts_during_planned_overlap": 5184,
+    "acked_during_planned_overlap": 5183,
+    "targeted_during_planned_overlap": 4786,
+    "actual_overall_write_availability_pct": 99.76,
+    "limitation": "Expected failure exposure is a scheduling hypothesis, not guaranteed failures; actual port/cluster behavior may vary."
+  },
+  "final_placement": {
+    "1": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "2": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "3": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "4": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "5": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "6": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "7": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "8": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "9": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "10": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "replication_timeline": {
+    "enabled": true,
+    "complete": true,
+    "sample_interval_s": 1.0,
+    "initial_policy_time_s": -12.410956564,
+    "policy_changes": 328,
+    "placement_changes": 9,
+    "authority_changes": 1,
+    "conflicts": 0,
+    "missing_intervals_s": 0.0,
+    "metrics_dropped": 0,
+    "outputs": [
+      "region_replication_events.csv",
+      "placement_snapshots.jsonl",
+      "node_replication_timeline.csv",
+      "replication_summary.csv"
+    ]
+  }
+}

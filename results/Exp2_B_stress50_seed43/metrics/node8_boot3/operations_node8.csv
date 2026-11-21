@@ -1,0 +1,18 @@
+run_id,time_s,op,region,success,latency_ms,error
+node8_boot3,3.50745,GET,13,true,0,
+node8_boot3,4.00853,GET,20,false,0,read quorum unavailable
+node8_boot3,4.5104,GET,20,true,0,
+node8_boot3,5.01169,GET,22,true,0,
+node8_boot3,5.51243,GET,23,true,0,
+node8_boot3,6.01403,GET,24,true,0,
+node8_boot3,6.51485,GET,25,true,0,
+node8_boot3,7.01582,GET,26,true,0,
+node8_boot3,7.51682,GET,34,true,0,
+node8_boot3,8.01783,GET,35,true,0,
+node8_boot3,8.51834,GET,36,true,0,
+node8_boot3,9.01917,GET,37,true,0,
+node8_boot3,9.5203,GET,38,true,0,
+node8_boot3,10.0222,GET,39,true,0,
+node8_boot3,10.5236,GET,40,true,0,
+node8_boot3,11.0247,GET,41,true,0,
+node8_boot3,11.5256,GET,42,true,0,

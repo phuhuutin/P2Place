@@ -1,0 +1,2113 @@
+run_id,time_s,op,region,success,latency_ms,error
+node3_boot1,12.1728,PUT,90,true,0,
+node3_boot1,12.557,PUT,174,true,0,
+node3_boot1,12.9313,PUT,99,true,0,
+node3_boot1,13.3036,PUT,213,true,0,
+node3_boot1,13.6772,PUT,58,true,0,
+node3_boot1,14.0489,PUT,15,true,0,
+node3_boot1,14.432,PUT,237,true,0,
+node3_boot1,14.8043,PUT,183,true,0,
+node3_boot1,15.1759,PUT,29,true,0,
+node3_boot1,15.5482,PUT,233,true,0,
+node3_boot1,15.932,PUT,155,true,0,
+node3_boot1,16.3021,PUT,23,true,0,
+node3_boot1,16.6759,PUT,87,true,0,
+node3_boot1,17.048,PUT,66,true,0,
+node3_boot1,17.4206,PUT,145,true,0,
+node3_boot1,17.8048,PUT,124,true,0,
+node3_boot1,18.1779,PUT,13,true,0,
+node3_boot1,18.5496,PUT,226,true,0,
+node3_boot1,18.9237,PUT,248,true,0,
+node3_boot1,19.2954,PUT,231,true,0,
+node3_boot1,19.6796,PUT,7,true,0,
+node3_boot1,20.0526,PUT,190,true,0,
+node3_boot1,20.4273,PUT,53,true,0,
+node3_boot1,20.7984,PUT,75,true,0,
+node3_boot1,21.1718,PUT,182,true,0,
+node3_boot1,21.5579,PUT,120,true,0,
+node3_boot1,21.9297,PUT,5,true,0,
+node3_boot1,22.3056,PUT,191,true,0,
+node3_boot1,22.6734,PUT,123,true,0,
+node3_boot1,23.0464,PUT,142,true,0,
+node3_boot1,23.432,PUT,56,true,0,
+node3_boot1,23.8049,PUT,122,true,0,
+node3_boot1,24.1823,PUT,17,true,0,
+node3_boot1,24.5542,PUT,31,true,0,
+node3_boot1,24.9284,PUT,251,true,0,
+node3_boot1,25.2999,PUT,184,true,0,
+node3_boot1,25.6725,PUT,83,true,0,
+node3_boot1,26.0458,PUT,239,true,0,
+node3_boot1,26.432,PUT,193,true,0,
+node3_boot1,26.8032,PUT,54,true,0,
+node3_boot1,27.1747,PUT,219,true,0,
+node3_boot1,27.5508,PUT,125,true,0,
+node3_boot1,27.925,PUT,67,true,0,
+node3_boot1,28.2962,PUT,10,true,0,
+node3_boot1,28.6806,PUT,4,true,0,
+node3_boot1,29.0553,PUT,204,true,0,
+node3_boot1,29.4302,PUT,50,true,0,
+node3_boot1,29.8014,PUT,168,true,0,
+node3_boot1,30.177,PUT,218,true,0,
+node3_boot1,30.5492,PUT,30,true,0,
+node3_boot1,30.9242,PUT,81,true,0,
+node3_boot1,31.2974,PUT,28,true,0,
+node3_boot1,31.6704,PUT,228,true,0,
+node3_boot1,32.0565,PUT,150,true,0,
+node3_boot1,32.4316,PUT,1,true,0,
+node3_boot1,32.8049,PUT,33,true,0,
+node3_boot1,33.1773,PUT,72,true,0,
+node3_boot1,33.5494,PUT,104,true,0,
+node3_boot1,33.923,PUT,62,true,0,
+node3_boot1,34.307,PUT,166,true,0,
+node3_boot1,34.6807,PUT,244,true,0,
+node3_boot1,35.0551,PUT,71,true,0,
+node3_boot1,35.4279,PUT,64,true,0,
+node3_boot1,35.8026,PUT,162,true,0,
+node3_boot1,36.1762,PUT,121,true,0,
+node3_boot1,36.5483,PUT,27,true,0,
+node3_boot1,36.9209,PUT,45,true,0,
+node3_boot1,37.3069,PUT,26,true,0,
+node3_boot1,37.6775,PUT,181,true,0,
+node3_boot1,38.0521,PUT,109,true,0,
+node3_boot1,38.4256,PUT,188,true,0,
+node3_boot1,38.8003,PUT,135,true,0,
+node3_boot1,39.1791,PUT,153,true,0,
+node3_boot1,39.5485,PUT,111,true,0,
+node3_boot1,39.9241,PUT,51,true,0,
+node3_boot1,40.2964,PUT,169,true,0,
+node3_boot1,40.6817,PUT,97,true,0,
+node3_boot1,41.0536,PUT,133,true,0,
+node3_boot1,41.4268,PUT,103,true,0,
+node3_boot1,41.7987,PUT,14,true,0,
+node3_boot1,42.1737,PUT,151,true,0,
+node3_boot1,42.556,PUT,246,true,0,
+node3_boot1,42.9318,PUT,194,true,0,
+node3_boot1,43.306,PUT,3,true,0,
+node3_boot1,43.6796,PUT,134,true,0,
+node3_boot1,44.0528,PUT,143,true,0,
+node3_boot1,44.427,PUT,186,true,0,
+node3_boot1,44.7988,PUT,199,true,0,
+node3_boot1,45.1717,PUT,107,true,0,
+node3_boot1,45.5469,PUT,212,true,0,
+node3_boot1,45.9205,PUT,214,true,0,
+node3_boot1,46.3071,PUT,102,true,0,
+node3_boot1,46.6786,PUT,227,true,0,
+node3_boot1,47.0508,PUT,36,true,0,
+node3_boot1,47.4235,PUT,106,true,0,
+node3_boot1,47.7959,PUT,172,true,0,
+node3_boot1,48.181,PUT,173,true,0,
+node3_boot1,48.5554,PUT,68,true,0,
+node3_boot1,48.9287,PUT,60,true,0,
+node3_boot1,49.3023,PUT,132,true,0,
+node3_boot1,49.674,PUT,110,true,0,
+node3_boot1,50.0472,PUT,154,true,0,
+node3_boot1,50.4327,PUT,46,true,0,
+node3_boot1,50.8033,PUT,156,true,0,
+node3_boot1,51.1766,PUT,207,true,0,
+node3_boot1,51.5487,PUT,89,true,0,
+node3_boot1,51.9203,PUT,203,true,0,
+node3_boot1,52.296,PUT,63,true,0,
+node3_boot1,52.6824,PUT,52,true,0,
+node3_boot1,53.0567,PUT,79,true,0,
+node3_boot1,53.4285,PUT,11,true,0,
+node3_boot1,53.8004,PUT,238,true,0,
+node3_boot1,54.1724,PUT,127,true,0,
+node3_boot1,54.5471,PUT,255,true,0,
+node3_boot1,54.9212,PUT,232,true,0,
+node3_boot1,55.2955,PUT,171,true,0,
+node3_boot1,55.6796,PUT,187,true,0,
+node3_boot1,56.0554,PUT,243,true,0,
+node3_boot1,56.4267,PUT,92,true,0,
+node3_boot1,56.8009,PUT,158,true,0,
+node3_boot1,57.1761,PUT,18,true,0,
+node3_boot1,57.5496,PUT,0,true,0,
+node3_boot1,57.9237,PUT,78,true,0,
+node3_boot1,58.2982,PUT,43,true,0,
+node3_boot1,58.6828,PUT,138,true,0,
+node3_boot1,59.0562,PUT,234,true,0,
+node3_boot1,59.4302,PUT,129,true,0,
+node3_boot1,59.8027,PUT,139,true,0,
+node3_boot1,60.1756,PUT,90,true,0,
+node3_boot1,60.5497,PUT,174,true,0,
+node3_boot1,60.9241,PUT,99,true,0,
+node3_boot1,61.2961,PUT,213,true,0,
+node3_boot1,61.6806,PUT,58,true,0,
+node3_boot1,62.0552,PUT,15,true,0,
+node3_boot1,62.4274,PUT,237,true,0,
+node3_boot1,62.801,PUT,183,true,0,
+node3_boot1,63.1733,PUT,29,true,0,
+node3_boot1,63.5488,PUT,233,true,0,
+node3_boot1,63.922,PUT,155,true,0,
+node3_boot1,64.3063,PUT,23,true,0,
+node3_boot1,64.6767,PUT,87,true,0,
+node3_boot1,65.0498,PUT,66,true,0,
+node3_boot1,65.4237,PUT,145,true,0,
+node3_boot1,65.7962,PUT,124,true,0,
+node3_boot1,66.1719,PUT,13,true,0,
+node3_boot1,66.5452,PUT,226,true,0,
+node3_boot1,66.9297,PUT,248,true,0,
+node3_boot1,67.3019,PUT,231,true,0,
+node3_boot1,67.6761,PUT,7,true,0,
+node3_boot1,68.0493,PUT,190,true,0,
+node3_boot1,68.4226,PUT,53,true,0,
+node3_boot1,68.7959,PUT,75,true,0,
+node3_boot1,69.1809,PUT,182,true,0,
+node3_boot1,69.5532,PUT,120,true,0,
+node3_boot1,69.9259,PUT,5,true,0,
+node3_boot1,70.2989,PUT,191,true,0,
+node3_boot1,70.6709,PUT,123,true,0,
+node3_boot1,71.0571,PUT,142,true,0,
+node3_boot1,71.429,PUT,56,true,0,
+node3_boot1,71.8026,PUT,122,true,0,
+node3_boot1,72.1749,PUT,17,true,0,
+node3_boot1,72.5485,PUT,31,true,0,
+node3_boot1,72.9214,PUT,251,true,0,
+node3_boot1,73.2963,PUT,184,true,0,
+node3_boot1,73.6794,PUT,83,true,0,
+node3_boot1,74.0509,PUT,239,true,0,
+node3_boot1,74.4222,PUT,193,true,0,
+node3_boot1,74.8073,PUT,54,true,0,
+node3_boot1,75.1795,PUT,219,true,0,
+node3_boot1,75.5522,PUT,125,true,0,
+node3_boot1,75.9238,PUT,67,true,0,
+node3_boot1,76.2963,PUT,10,true,0,
+node3_boot1,76.6813,PUT,4,true,0,
+node3_boot1,77.0545,PUT,204,true,0,
+node3_boot1,77.4238,PUT,50,true,0,
+node3_boot1,77.7972,PUT,168,true,0,
+node3_boot1,78.1732,PUT,218,true,0,
+node3_boot1,78.5458,PUT,30,true,0,
+node3_boot1,78.9302,PUT,81,true,0,
+node3_boot1,79.303,PUT,28,true,0,
+node3_boot1,79.6752,PUT,228,true,0,
+node3_boot1,80.0487,PUT,150,true,0,
+node3_boot1,80.4316,PUT,1,true,0,
+node3_boot1,80.8044,PUT,33,true,0,
+node3_boot1,81.1765,PUT,72,true,0,
+node3_boot1,81.5494,PUT,104,true,0,
+node3_boot1,81.9231,PUT,62,true,0,
+node3_boot1,82.2965,PUT,166,true,0,
+node3_boot1,82.681,PUT,244,true,0,
+node3_boot1,83.0563,PUT,71,true,0,
+node3_boot1,83.429,PUT,64,true,0,
+node3_boot1,83.8022,PUT,162,true,0,
+node3_boot1,84.1742,PUT,121,true,0,
+node3_boot1,84.547,PUT,27,true,0,
+node3_boot1,84.9311,PUT,45,true,0,
+node3_boot1,85.3062,PUT,26,true,0,
+node3_boot1,85.6781,PUT,181,true,0,
+node3_boot1,86.0508,PUT,109,true,0,
+node3_boot1,86.4246,PUT,188,true,0,
+node3_boot1,86.7955,PUT,135,true,0,
+node3_boot1,87.1813,PUT,153,true,0,
+node3_boot1,87.555,PUT,111,true,0,
+node3_boot1,87.9283,PUT,51,true,0,
+node3_boot1,88.3025,PUT,169,true,0,
+node3_boot1,88.6722,PUT,97,true,0,
+node3_boot1,89.0472,PUT,133,true,0,
+node3_boot1,89.4214,PUT,103,true,0,
+node3_boot1,89.8068,PUT,14,true,0,
+node3_boot1,90.1788,PUT,151,true,0,
+node3_boot1,90.552,PUT,246,true,0,
+node3_boot1,90.9254,PUT,194,true,0,
+node3_boot1,91.2957,PUT,3,true,0,
+node3_boot1,91.675,PUT,134,true,0,
+node3_boot1,92.0493,PUT,143,true,0,
+node3_boot1,92.4218,PUT,186,true,0,
+node3_boot1,92.8064,PUT,199,true,0,
+node3_boot1,93.1804,PUT,107,true,0,
+node3_boot1,93.5531,PUT,212,true,0,
+node3_boot1,93.9276,PUT,214,true,0,
+node3_boot1,94.2998,PUT,102,true,0,
+node3_boot1,94.6823,PUT,227,true,0,
+node3_boot1,95.0544,PUT,36,true,0,
+node3_boot1,95.4275,PUT,106,true,0,
+node3_boot1,95.7995,PUT,172,true,0,
+node3_boot1,96.1733,PUT,173,true,0,
+node3_boot1,96.5492,PUT,68,true,0,
+node3_boot1,96.9321,PUT,60,true,0,
+node3_boot1,97.3053,PUT,132,true,0,
+node3_boot1,97.6766,PUT,110,true,0,
+node3_boot1,98.0483,PUT,154,true,0,
+node3_boot1,98.4221,PUT,46,true,0,
+node3_boot1,98.7951,PUT,156,true,0,
+node3_boot1,99.179,PUT,207,true,0,
+node3_boot1,99.5506,PUT,89,true,0,
+node3_boot1,99.9223,PUT,203,true,0,
+node3_boot1,100.307,PUT,63,true,0,
+node3_boot1,100.68,PUT,52,true,0,
+node3_boot1,101.053,PUT,79,true,0,
+node3_boot1,101.425,PUT,11,true,0,
+node3_boot1,101.799,PUT,238,true,0,
+node3_boot1,102.173,PUT,127,true,0,
+node3_boot1,102.546,PUT,255,true,0,
+node3_boot1,102.921,PUT,232,true,0,
+node3_boot1,103.304,PUT,171,true,0,
+node3_boot1,103.678,PUT,187,true,0,
+node3_boot1,104.049,PUT,243,true,0,
+node3_boot1,104.424,PUT,92,true,0,
+node3_boot1,104.796,PUT,158,true,0,
+node3_boot1,105.18,PUT,18,true,0,
+node3_boot1,105.553,PUT,0,true,0,
+node3_boot1,105.932,PUT,78,true,0,
+node3_boot1,106.3,PUT,43,true,0,
+node3_boot1,106.672,PUT,138,true,0,
+node3_boot1,107.046,PUT,234,true,0,
+node3_boot1,107.432,PUT,129,true,0,
+node3_boot1,107.805,PUT,139,true,0,
+node3_boot1,108.178,PUT,90,true,0,
+node3_boot1,108.547,PUT,174,true,0,
+node3_boot1,108.931,PUT,99,true,0,
+node3_boot1,109.306,PUT,213,true,0,
+node3_boot1,109.679,PUT,58,true,0,
+node3_boot1,110.05,PUT,15,true,0,
+node3_boot1,110.424,PUT,237,true,0,
+node3_boot1,110.797,PUT,183,true,0,
+node3_boot1,111.172,PUT,29,true,0,
+node3_boot1,111.558,PUT,233,true,0,
+node3_boot1,111.929,PUT,155,true,0,
+node3_boot1,112.303,PUT,23,true,0,
+node3_boot1,112.674,PUT,87,true,0,
+node3_boot1,113.048,PUT,66,true,0,
+node3_boot1,113.421,PUT,145,true,0,
+node3_boot1,113.795,PUT,124,true,0,
+node3_boot1,114.18,PUT,13,true,0,
+node3_boot1,114.552,PUT,226,true,0,
+node3_boot1,114.925,PUT,248,true,0,
+node3_boot1,115.298,PUT,231,true,0,
+node3_boot1,115.672,PUT,7,true,0,
+node3_boot1,116.046,PUT,190,true,0,
+node3_boot1,116.42,PUT,53,true,0,
+node3_boot1,116.806,PUT,75,true,0,
+node3_boot1,117.177,PUT,182,true,0,
+node3_boot1,117.549,PUT,120,true,0,
+node3_boot1,117.929,PUT,5,true,0,
+node3_boot1,118.3,PUT,191,true,0,
+node3_boot1,118.674,PUT,123,true,0,
+node3_boot1,119.057,PUT,142,true,0,
+node3_boot1,119.431,PUT,56,true,0,
+node3_boot1,119.803,PUT,122,true,0,
+node3_boot1,120.176,PUT,17,true,0,
+node3_boot1,120.548,PUT,31,true,0,
+node3_boot1,120.921,PUT,251,true,0,
+node3_boot1,121.305,PUT,184,true,0,
+node3_boot1,121.676,PUT,83,true,0,
+node3_boot1,122.049,PUT,239,true,0,
+node3_boot1,122.422,PUT,193,true,0,
+node3_boot1,122.796,PUT,54,true,0,
+node3_boot1,123.171,PUT,219,true,0,
+node3_boot1,123.557,PUT,125,true,0,
+node3_boot1,123.929,PUT,67,true,0,
+node3_boot1,124.304,PUT,10,true,0,
+node3_boot1,124.678,PUT,4,true,0,
+node3_boot1,125.048,PUT,204,true,0,
+node3_boot1,125.422,PUT,50,true,0,
+node3_boot1,125.806,PUT,168,true,0,
+node3_boot1,126.173,PUT,218,true,0,
+node3_boot1,126.548,PUT,30,true,0,
+node3_boot1,126.931,PUT,81,true,0,
+node3_boot1,127.304,PUT,28,true,0,
+node3_boot1,127.679,PUT,228,true,0,
+node3_boot1,128.05,PUT,150,true,0,
+node3_boot1,128.424,PUT,1,true,0,
+node3_boot1,128.797,PUT,33,true,0,
+node3_boot1,129.171,PUT,72,true,0,
+node3_boot1,129.554,PUT,104,true,0,
+node3_boot1,129.926,PUT,62,true,0,
+node3_boot1,130.299,PUT,166,true,0,
+node3_boot1,130.673,PUT,244,true,0,
+node3_boot1,131.047,PUT,71,true,0,
+node3_boot1,131.422,PUT,64,true,0,
+node3_boot1,131.807,PUT,162,true,0,
+node3_boot1,132.18,PUT,121,true,0,
+node3_boot1,132.553,PUT,27,true,0,
+node3_boot1,132.928,PUT,45,true,0,
+node3_boot1,133.302,PUT,26,true,0,
+node3_boot1,133.675,PUT,181,true,0,
+node3_boot1,134.048,PUT,109,true,0,
+node3_boot1,134.42,PUT,188,true,0,
+node3_boot1,134.795,PUT,135,true,0,
+node3_boot1,135.181,PUT,153,true,0,
+node3_boot1,135.556,PUT,111,true,0,
+node3_boot1,135.929,PUT,51,true,0,
+node3_boot1,136.303,PUT,169,true,0,
+node3_boot1,136.677,PUT,97,true,0,
+node3_boot1,137.049,PUT,133,true,0,
+node3_boot1,137.423,PUT,103,true,0,
+node3_boot1,137.796,PUT,14,true,0,
+node3_boot1,138.18,PUT,151,true,0,
+node3_boot1,138.553,PUT,246,true,0,
+node3_boot1,138.926,PUT,194,true,0,
+node3_boot1,139.298,PUT,3,true,0,
+node3_boot1,139.671,PUT,134,true,0,
+node3_boot1,140.046,PUT,143,true,0,
+node3_boot1,140.431,PUT,186,true,0,
+node3_boot1,140.804,PUT,199,true,0,
+node3_boot1,141.18,PUT,107,true,0,
+node3_boot1,141.555,PUT,212,true,0,
+node3_boot1,141.927,PUT,214,true,0,
+node3_boot1,142.3,PUT,102,true,0,
+node3_boot1,142.671,PUT,227,true,0,
+node3_boot1,143.057,PUT,36,true,0,
+node3_boot1,143.43,PUT,106,true,0,
+node3_boot1,143.802,PUT,172,true,0,
+node3_boot1,144.175,PUT,173,true,0,
+node3_boot1,144.551,PUT,68,true,0,
+node3_boot1,144.924,PUT,60,true,0,
+node3_boot1,145.298,PUT,132,true,0,
+node3_boot1,145.67,PUT,110,true,0,
+node3_boot1,146.055,PUT,154,true,0,
+node3_boot1,146.429,PUT,46,true,0,
+node3_boot1,146.801,PUT,156,true,0,
+node3_boot1,147.175,PUT,207,true,0,
+node3_boot1,147.547,PUT,89,true,0,
+node3_boot1,147.92,PUT,203,true,0,
+node3_boot1,148.306,PUT,63,true,0,
+node3_boot1,148.68,PUT,52,true,0,
+node3_boot1,149.052,PUT,79,true,0,
+node3_boot1,149.427,PUT,11,true,0,
+node3_boot1,149.8,PUT,238,true,0,
+node3_boot1,150.176,PUT,127,true,0,
+node3_boot1,150.551,PUT,255,true,0,
+node3_boot1,150.926,PUT,232,true,0,
+node3_boot1,151.301,PUT,171,true,0,
+node3_boot1,151.675,PUT,187,true,0,
+node3_boot1,152.055,PUT,243,true,0,
+node3_boot1,152.432,PUT,92,true,0,
+node3_boot1,152.804,PUT,158,true,0,
+node3_boot1,153.179,PUT,18,true,0,
+node3_boot1,153.553,PUT,0,true,0,
+node3_boot1,153.928,PUT,78,true,0,
+node3_boot1,154.303,PUT,43,true,0,
+node3_boot1,154.675,PUT,138,true,0,
+node3_boot1,155.048,PUT,234,true,0,
+node3_boot1,155.423,PUT,129,true,0,
+node3_boot1,155.796,PUT,139,true,0,
+node3_boot1,156.172,PUT,90,true,0,
+node3_boot1,156.546,PUT,174,true,0,
+node3_boot1,156.929,PUT,99,true,0,
+node3_boot1,157.3,PUT,213,true,0,
+node3_boot1,157.674,PUT,58,true,0,
+node3_boot1,158.048,PUT,15,true,0,
+node3_boot1,158.424,PUT,237,true,0,
+node3_boot1,158.797,PUT,183,true,0,
+node3_boot1,159.182,PUT,29,true,0,
+node3_boot1,159.557,PUT,233,true,0,
+node3_boot1,159.929,PUT,155,true,0,
+node3_boot1,160.301,PUT,23,true,0,
+node3_boot1,160.676,PUT,87,true,0,
+node3_boot1,161.05,PUT,66,true,0,
+node3_boot1,161.433,PUT,145,true,0,
+node3_boot1,161.806,PUT,124,true,0,
+node3_boot1,162.181,PUT,13,true,0,
+node3_boot1,162.553,PUT,226,true,0,
+node3_boot1,162.925,PUT,248,true,0,
+node3_boot1,163.299,PUT,231,true,0,
+node3_boot1,163.671,PUT,7,true,0,
+node3_boot1,164.058,PUT,190,true,0,
+node3_boot1,164.429,PUT,53,true,0,
+node3_boot1,164.8,PUT,75,true,0,
+node3_boot1,165.174,PUT,182,true,0,
+node3_boot1,165.548,PUT,120,true,0,
+node3_boot1,165.92,PUT,5,true,0,
+node3_boot1,166.296,PUT,191,true,0,
+node3_boot1,166.681,PUT,123,true,0,
+node3_boot1,167.055,PUT,142,true,0,
+node3_boot1,167.429,PUT,56,true,0,
+node3_boot1,167.803,PUT,122,true,0,
+node3_boot1,168.176,PUT,17,true,0,
+node3_boot1,168.551,PUT,31,true,0,
+node3_boot1,168.931,PUT,251,true,0,
+node3_boot1,169.3,PUT,184,true,0,
+node3_boot1,169.674,PUT,83,true,0,
+node3_boot1,170.047,PUT,239,true,0,
+node3_boot1,170.421,PUT,193,true,0,
+node3_boot1,170.804,PUT,54,true,0,
+node3_boot1,171.177,PUT,219,true,0,
+node3_boot1,171.55,PUT,125,true,0,
+node3_boot1,171.923,PUT,67,true,0,
+node3_boot1,172.296,PUT,10,true,0,
+node3_boot1,172.681,PUT,4,true,0,
+node3_boot1,173.056,PUT,204,true,0,
+node3_boot1,173.429,PUT,50,true,0,
+node3_boot1,173.802,PUT,168,true,0,
+node3_boot1,174.175,PUT,218,true,0,
+node3_boot1,174.548,PUT,30,true,0,
+node3_boot1,174.922,PUT,81,true,0,
+node3_boot1,175.307,PUT,28,true,0,
+node3_boot1,175.677,PUT,228,true,0,
+node3_boot1,176.05,PUT,150,true,0,
+node3_boot1,176.422,PUT,1,true,0,
+node3_boot1,176.804,PUT,33,true,0,
+node3_boot1,177.176,PUT,72,true,0,
+node3_boot1,177.548,PUT,104,true,0,
+node3_boot1,177.921,PUT,62,true,0,
+node3_boot1,178.307,PUT,166,true,0,
+node3_boot1,178.681,PUT,244,true,0,
+node3_boot1,179.053,PUT,71,true,0,
+node3_boot1,179.426,PUT,64,true,0,
+node3_boot1,179.799,PUT,162,true,0,
+node3_boot1,180.171,PUT,121,true,0,
+node3_boot1,180.556,PUT,27,true,0,
+node3_boot1,180.931,PUT,45,true,0,
+node3_boot1,181.304,PUT,26,true,0,
+node3_boot1,181.674,PUT,181,true,0,
+node3_boot1,182.048,PUT,109,true,0,
+node3_boot1,182.42,PUT,188,true,0,
+node3_boot1,182.806,PUT,135,true,0,
+node3_boot1,183.179,PUT,153,true,0,
+node3_boot1,183.552,PUT,111,true,0,
+node3_boot1,183.924,PUT,51,true,0,
+node3_boot1,184.296,PUT,169,true,0,
+node3_boot1,184.681,PUT,97,true,0,
+node3_boot1,185.055,PUT,133,true,0,
+node3_boot1,185.425,PUT,103,true,0,
+node3_boot1,185.8,PUT,14,true,0,
+node3_boot1,186.174,PUT,151,true,0,
+node3_boot1,186.548,PUT,246,true,0,
+node3_boot1,186.922,PUT,194,true,0,
+node3_boot1,187.301,PUT,3,true,0,
+node3_boot1,187.673,PUT,134,true,0,
+node3_boot1,188.049,PUT,143,true,0,
+node3_boot1,188.421,PUT,186,true,0,
+node3_boot1,188.805,PUT,199,true,0,
+node3_boot1,189.178,PUT,107,true,0,
+node3_boot1,189.553,PUT,212,true,0,
+node3_boot1,189.924,PUT,214,true,0,
+node3_boot1,190.298,PUT,102,true,0,
+node3_boot1,190.671,PUT,227,true,0,
+node3_boot1,191.056,PUT,36,true,0,
+node3_boot1,191.428,PUT,106,true,0,
+node3_boot1,191.799,PUT,172,true,0,
+node3_boot1,192.174,PUT,45,false,0,write quorum unavailable
+node3_boot1,192.547,PUT,129,false,0,write quorum unavailable
+node3_boot1,192.921,PUT,223,false,0,write quorum unavailable
+node3_boot1,193.295,PUT,88,false,0,write quorum unavailable
+node3_boot1,193.67,PUT,173,true,0,
+node3_boot1,194.058,PUT,133,false,0,write quorum unavailable
+node3_boot1,194.429,PUT,44,false,0,write quorum unavailable
+node3_boot1,194.803,PUT,13,false,0,write quorum unavailable
+node3_boot1,195.177,PUT,214,false,0,write quorum unavailable
+node3_boot1,195.552,PUT,213,false,0,write quorum unavailable
+node3_boot1,195.926,PUT,43,false,0,write quorum unavailable
+node3_boot1,196.303,PUT,86,false,0,write quorum unavailable
+node3_boot1,196.677,PUT,48,false,0,write quorum unavailable
+node3_boot1,197.052,PUT,25,false,0,write quorum unavailable
+node3_boot1,197.424,PUT,39,true,0,
+node3_boot1,197.801,PUT,24,false,0,write quorum unavailable
+node3_boot1,198.176,PUT,131,false,0,write quorum unavailable
+node3_boot1,198.549,PUT,33,true,0,
+node3_boot1,198.924,PUT,26,false,0,write quorum unavailable
+node3_boot1,199.299,PUT,222,false,0,write quorum unavailable
+node3_boot1,199.673,PUT,90,false,0,write quorum unavailable
+node3_boot1,200.049,PUT,42,false,0,write quorum unavailable
+node3_boot1,200.426,PUT,66,true,0,
+node3_boot1,200.8,PUT,220,false,0,write quorum unavailable
+node3_boot1,201.175,PUT,130,false,0,write quorum unavailable
+node3_boot1,201.552,PUT,219,false,0,write quorum unavailable
+node3_boot1,201.928,PUT,13,false,0,write quorum unavailable
+node3_boot1,202.304,PUT,49,false,0,write quorum unavailable
+node3_boot1,202.678,PUT,218,false,0,write quorum unavailable
+node3_boot1,203.05,PUT,43,false,0,write quorum unavailable
+node3_boot1,203.423,PUT,86,false,0,write quorum unavailable
+node3_boot1,203.799,PUT,48,false,0,write quorum unavailable
+node3_boot1,204.177,PUT,145,true,0,
+node3_boot1,204.551,PUT,124,true,0,
+node3_boot1,204.923,PUT,13,false,0,write quorum unavailable
+node3_boot1,205.296,PUT,226,true,0,
+node3_boot1,205.673,PUT,248,true,0,
+node3_boot1,206.046,PUT,231,true,0,
+node3_boot1,206.431,PUT,7,true,0,
+node3_boot1,206.803,PUT,190,true,0,
+node3_boot1,207.177,PUT,91,false,0,write quorum unavailable
+node3_boot1,207.551,PUT,133,false,0,write quorum unavailable
+node3_boot1,207.924,PUT,44,false,0,write quorum unavailable
+node3_boot1,208.298,PUT,128,false,0,write quorum unavailable
+node3_boot1,208.674,PUT,53,false,0,write quorum unavailable
+node3_boot1,209.05,PUT,45,false,0,write quorum unavailable
+node3_boot1,209.425,PUT,93,false,0,write quorum unavailable
+node3_boot1,209.801,PUT,42,false,0,write quorum unavailable
+node3_boot1,210.175,PUT,47,false,0,write quorum unavailable
+node3_boot1,210.551,PUT,216,false,0,write quorum unavailable
+node3_boot1,210.927,PUT,53,false,0,write quorum unavailable
+node3_boot1,211.304,PUT,131,false,0,write quorum unavailable
+node3_boot1,211.677,PUT,134,false,0,write quorum unavailable
+node3_boot1,212.052,PUT,27,true,0,
+node3_boot1,212.425,PUT,222,false,0,write quorum unavailable
+node3_boot1,212.799,PUT,90,false,0,write quorum unavailable
+node3_boot1,213.173,PUT,42,false,0,write quorum unavailable
+node3_boot1,213.548,PUT,47,false,0,write quorum unavailable
+node3_boot1,213.932,PUT,95,false,0,write quorum unavailable
+node3_boot1,214.305,PUT,215,false,0,write quorum unavailable
+node3_boot1,214.681,PUT,75,true,0,
+node3_boot1,215.057,PUT,13,false,0,write quorum unavailable
+node3_boot1,215.43,PUT,92,false,0,write quorum unavailable
+node3_boot1,215.803,PUT,218,false,0,write quorum unavailable
+node3_boot1,216.177,PUT,79,true,0,
+node3_boot1,216.55,PUT,23,false,0,write quorum unavailable
+node3_boot1,216.924,PUT,46,false,0,write quorum unavailable
+node3_boot1,217.3,PUT,220,false,0,write quorum unavailable
+node3_boot1,217.675,PUT,87,false,0,write quorum unavailable
+node3_boot1,218.05,PUT,94,false,0,write quorum unavailable
+node3_boot1,218.423,PUT,131,false,0,write quorum unavailable
+node3_boot1,218.797,PUT,13,false,0,write quorum unavailable
+node3_boot1,219.174,PUT,19,true,0,
+node3_boot1,219.548,PUT,93,false,0,write quorum unavailable
+node3_boot1,219.92,PUT,167,true,0,
+node3_boot1,220.306,PUT,9,true,0,
+node3_boot1,220.68,PUT,211,true,0,
+node3_boot1,221.053,PUT,216,false,0,write quorum unavailable
+node3_boot1,221.425,PUT,76,true,0,
+node3_boot1,221.807,PUT,189,true,0,
+node3_boot1,222.171,PUT,92,false,0,write quorum unavailable
+node3_boot1,222.556,PUT,45,false,0,write quorum unavailable
+node3_boot1,222.93,PUT,93,false,0,write quorum unavailable
+node3_boot1,223.305,PUT,117,true,0,
+node3_boot1,223.679,PUT,88,false,0,write quorum unavailable
+node3_boot1,224.055,PUT,97,true,0,
+node3_boot1,224.431,PUT,130,false,0,write quorum unavailable
+node3_boot1,224.805,PUT,219,false,0,write quorum unavailable
+node3_boot1,225.182,PUT,13,false,0,write quorum unavailable
+node3_boot1,225.558,PUT,92,false,0,write quorum unavailable
+node3_boot1,225.92,PUT,222,false,0,write quorum unavailable
+node3_boot1,226.307,PUT,90,false,0,write quorum unavailable
+node3_boot1,226.68,PUT,42,false,0,write quorum unavailable
+node3_boot1,227.057,PUT,47,false,0,write quorum unavailable
+node3_boot1,227.428,PUT,216,false,0,write quorum unavailable
+node3_boot1,227.802,PUT,53,false,0,write quorum unavailable
+node3_boot1,228.179,PUT,89,false,0,write quorum unavailable
+node3_boot1,228.553,PUT,50,false,0,write quorum unavailable
+node3_boot1,228.926,PUT,137,false,0,write quorum unavailable
+node3_boot1,229.3,PUT,22,false,0,write quorum unavailable
+node3_boot1,229.673,PUT,251,true,0,
+node3_boot1,230.046,PUT,119,true,0,
+node3_boot1,230.421,PUT,221,false,0,write quorum unavailable
+node3_boot1,230.798,PUT,133,false,0,write quorum unavailable
+node3_boot1,231.174,PUT,215,false,0,write quorum unavailable
+node3_boot1,231.549,PUT,44,false,0,write quorum unavailable
+node3_boot1,231.924,PUT,128,false,0,write quorum unavailable
+node3_boot1,232.3,PUT,184,true,0,
+node3_boot1,232.673,PUT,218,false,0,write quorum unavailable
+node3_boot1,233.047,PUT,43,false,0,write quorum unavailable
+node3_boot1,233.421,PUT,86,false,0,write quorum unavailable
+node3_boot1,233.801,PUT,48,false,0,write quorum unavailable
+node3_boot1,234.179,PUT,0,true,0,
+node3_boot1,234.552,PUT,78,true,0,
+node3_boot1,234.925,PUT,43,false,0,write quorum unavailable
+node3_boot1,235.3,PUT,138,true,0,
+node3_boot1,235.672,PUT,234,true,0,
+node3_boot1,236.057,PUT,129,false,0,write quorum unavailable
+node3_boot1,236.429,PUT,139,true,0,
+node3_boot1,236.803,PUT,90,false,0,write quorum unavailable
+node3_boot1,237.177,PUT,69,true,0,
+node3_boot1,237.549,PUT,130,false,0,write quorum unavailable
+node3_boot1,237.923,PUT,94,false,0,write quorum unavailable
+node3_boot1,238.298,PUT,135,false,0,write quorum unavailable
+node3_boot1,238.673,PUT,214,false,0,write quorum unavailable
+node3_boot1,239.049,PUT,218,false,0,write quorum unavailable
+node3_boot1,239.426,PUT,129,false,0,write quorum unavailable
+node3_boot1,239.799,PUT,223,false,0,write quorum unavailable
+node3_boot1,240.173,PUT,48,false,0,write quorum unavailable
+node3_boot1,240.548,PUT,40,true,0,
+node3_boot1,240.921,PUT,87,false,0,write quorum unavailable
+node3_boot1,241.295,PUT,94,false,0,write quorum unavailable
+node3_boot1,241.683,PUT,85,false,0,write quorum unavailable
+node3_boot1,242.056,PUT,214,false,0,write quorum unavailable
+node3_boot1,242.432,PUT,218,false,0,write quorum unavailable
+node3_boot1,242.806,PUT,129,false,0,write quorum unavailable
+node3_boot1,243.181,PUT,223,false,0,write quorum unavailable
+node3_boot1,243.556,PUT,46,false,0,write quorum unavailable
+node3_boot1,243.931,PUT,25,false,0,write quorum unavailable
+node3_boot1,244.295,PUT,87,false,0,write quorum unavailable
+node3_boot1,244.681,PUT,94,false,0,write quorum unavailable
+node3_boot1,245.045,PUT,131,false,0,write quorum unavailable
+node3_boot1,245.421,PUT,134,false,0,write quorum unavailable
+node3_boot1,245.796,PUT,213,false,0,write quorum unavailable
+node3_boot1,246.171,PUT,43,false,0,write quorum unavailable
+node3_boot1,246.545,PUT,86,false,0,write quorum unavailable
+node3_boot1,246.921,PUT,48,false,0,write quorum unavailable
+node3_boot1,247.296,PUT,91,false,0,write quorum unavailable
+node3_boot1,247.681,PUT,133,false,0,write quorum unavailable
+node3_boot1,248.056,PUT,44,false,0,write quorum unavailable
+node3_boot1,248.427,PUT,13,false,0,write quorum unavailable
+node3_boot1,248.799,PUT,92,false,0,write quorum unavailable
+node3_boot1,249.177,PUT,116,true,0,
+node3_boot1,249.552,PUT,242,true,0,
+node3_boot1,249.928,PUT,247,true,0,
+node3_boot1,250.301,PUT,131,false,0,write quorum unavailable
+node3_boot1,250.675,PUT,137,false,0,write quorum unavailable
+node3_boot1,251.049,PUT,220,false,0,write quorum unavailable
+node3_boot1,251.424,PUT,65,true,0,
+node3_boot1,251.796,PUT,59,true,0,
+node3_boot1,252.172,PUT,45,false,0,write quorum unavailable
+node3_boot1,252.547,PUT,43,false,0,write quorum unavailable
+node3_boot1,252.92,PUT,86,false,0,write quorum unavailable
+node3_boot1,253.296,PUT,48,false,0,write quorum unavailable
+node3_boot1,253.681,PUT,91,false,0,write quorum unavailable
+node3_boot1,254.056,PUT,133,false,0,write quorum unavailable
+node3_boot1,254.43,PUT,44,false,0,write quorum unavailable
+node3_boot1,254.805,PUT,128,false,0,write quorum unavailable
+node3_boot1,255.18,PUT,26,false,0,write quorum unavailable
+node3_boot1,255.555,PUT,52,false,0,write quorum unavailable
+node3_boot1,255.928,PUT,90,false,0,write quorum unavailable
+node3_boot1,256.305,PUT,68,true,0,
+node3_boot1,256.68,PUT,39,true,0,
+node3_boot1,257.054,PUT,91,false,0,write quorum unavailable
+node3_boot1,257.426,PUT,133,false,0,write quorum unavailable
+node3_boot1,257.8,PUT,33,true,0,
+node3_boot1,258.175,PUT,135,false,0,write quorum unavailable
+node3_boot1,258.549,PUT,49,false,0,write quorum unavailable
+node3_boot1,258.924,PUT,45,false,0,write quorum unavailable
+node3_boot1,259.301,PUT,93,false,0,write quorum unavailable
+node3_boot1,259.675,PUT,42,false,0,write quorum unavailable
+node3_boot1,260.05,PUT,47,false,0,write quorum unavailable
+node3_boot1,260.424,PUT,95,false,0,write quorum unavailable
+node3_boot1,260.799,PUT,215,false,0,write quorum unavailable
+node3_boot1,261.175,PUT,89,false,0,write quorum unavailable
+node3_boot1,261.551,PUT,13,false,0,write quorum unavailable
+node3_boot1,261.927,PUT,92,false,0,write quorum unavailable
+node3_boot1,262.304,PUT,222,false,0,write quorum unavailable
+node3_boot1,262.678,PUT,90,false,0,write quorum unavailable
+node3_boot1,263.053,PUT,42,false,0,write quorum unavailable
+node3_boot1,263.427,PUT,47,false,0,write quorum unavailable
+node3_boot1,263.801,PUT,95,false,0,write quorum unavailable
+node3_boot1,264.177,PUT,32,true,0,
+node3_boot1,264.554,PUT,47,false,0,write quorum unavailable
+node3_boot1,264.927,PUT,55,true,0,
+node3_boot1,265.3,PUT,140,true,0,
+node3_boot1,265.671,PUT,25,false,0,write quorum unavailable
+node3_boot1,266.057,PUT,230,true,0,
+node3_boot1,266.431,PUT,148,true,0,
+node3_boot1,266.805,PUT,215,false,0,write quorum unavailable
+node3_boot1,267.172,PUT,215,false,0,write quorum unavailable
+node3_boot1,267.557,PUT,89,false,0,write quorum unavailable
+node3_boot1,267.931,PUT,128,false,0,write quorum unavailable
+node3_boot1,268.307,PUT,26,false,0,write quorum unavailable
+node3_boot1,268.681,PUT,235,true,0,
+node3_boot1,269.056,PUT,90,false,0,write quorum unavailable
+node3_boot1,269.433,PUT,42,false,0,write quorum unavailable
+node3_boot1,269.796,PUT,77,true,0,
+node3_boot1,270.183,PUT,91,false,0,write quorum unavailable
+node3_boot1,270.556,PUT,130,false,0,write quorum unavailable
+node3_boot1,270.931,PUT,219,false,0,write quorum unavailable
+node3_boot1,271.305,PUT,13,false,0,write quorum unavailable
+node3_boot1,271.68,PUT,92,false,0,write quorum unavailable
+node3_boot1,272.056,PUT,222,false,0,write quorum unavailable
+node3_boot1,272.43,PUT,93,false,0,write quorum unavailable
+node3_boot1,272.805,PUT,42,false,0,write quorum unavailable
+node3_boot1,273.179,PUT,47,false,0,write quorum unavailable
+node3_boot1,273.553,PUT,95,false,0,write quorum unavailable
+node3_boot1,273.929,PUT,215,false,0,write quorum unavailable
+node3_boot1,274.304,PUT,89,false,0,write quorum unavailable
+node3_boot1,274.671,PUT,128,false,0,write quorum unavailable
+node3_boot1,275.046,PUT,26,false,0,write quorum unavailable
+node3_boot1,275.421,PUT,222,false,0,write quorum unavailable
+node3_boot1,275.796,PUT,90,false,0,write quorum unavailable
+node3_boot1,276.171,PUT,132,false,0,write quorum unavailable
+node3_boot1,276.556,PUT,47,false,0,write quorum unavailable
+node3_boot1,276.931,PUT,216,false,0,write quorum unavailable
+node3_boot1,277.306,PUT,215,false,0,write quorum unavailable
+node3_boot1,277.679,PUT,89,false,0,write quorum unavailable
+node3_boot1,278.053,PUT,45,false,0,write quorum unavailable
+node3_boot1,278.428,PUT,26,false,0,write quorum unavailable
+node3_boot1,278.802,PUT,179,true,0,
+node3_boot1,279.181,PUT,41,true,0,
+node3_boot1,279.552,PUT,24,false,0,write quorum unavailable
+node3_boot1,279.924,PUT,205,true,0,
+node3_boot1,280.297,PUT,70,true,0,
+node3_boot1,280.681,PUT,252,true,0,
+node3_boot1,281.055,PUT,118,true,0,
+node3_boot1,281.428,PUT,197,true,0,
+node3_boot1,281.801,PUT,113,true,0,
+node3_boot1,282.176,PUT,90,false,0,write quorum unavailable
+node3_boot1,282.551,PUT,132,false,0,write quorum unavailable
+node3_boot1,282.921,PUT,221,false,0,write quorum unavailable
+node3_boot1,283.298,PUT,216,false,0,write quorum unavailable
+node3_boot1,283.674,PUT,53,false,0,write quorum unavailable
+node3_boot1,284.05,PUT,131,false,0,write quorum unavailable
+node3_boot1,284.422,PUT,189,true,0,
+node3_boot1,284.795,PUT,92,false,0,write quorum unavailable
+node3_boot1,285.17,PUT,45,false,0,write quorum unavailable
+node3_boot1,285.547,PUT,93,false,0,write quorum unavailable
+node3_boot1,285.921,PUT,223,false,0,write quorum unavailable
+node3_boot1,286.298,PUT,88,false,0,write quorum unavailable
+node3_boot1,286.673,PUT,95,false,0,write quorum unavailable
+node3_boot1,287.049,PUT,133,false,0,write quorum unavailable
+node3_boot1,287.423,PUT,44,false,0,write quorum unavailable
+node3_boot1,287.801,PUT,128,false,0,write quorum unavailable
+node3_boot1,288.177,PUT,26,false,0,write quorum unavailable
+node3_boot1,288.553,PUT,52,false,0,write quorum unavailable
+node3_boot1,288.928,PUT,51,false,0,write quorum unavailable
+node3_boot1,289.305,PUT,136,false,0,write quorum unavailable
+node3_boot1,289.682,PUT,25,false,0,write quorum unavailable
+node3_boot1,290.057,PUT,87,false,0,write quorum unavailable
+node3_boot1,290.432,PUT,31,true,0,
+node3_boot1,290.805,PUT,97,true,0,
+node3_boot1,291.181,PUT,128,false,0,write quorum unavailable
+node3_boot1,291.545,PUT,26,false,0,write quorum unavailable
+node3_boot1,291.92,PUT,52,false,0,write quorum unavailable
+node3_boot1,292.295,PUT,90,false,0,write quorum unavailable
+node3_boot1,292.682,PUT,42,false,0,write quorum unavailable
+node3_boot1,293.057,PUT,47,false,0,write quorum unavailable
+node3_boot1,293.431,PUT,95,false,0,write quorum unavailable
+node3_boot1,293.805,PUT,251,true,0,
+node3_boot1,294.18,PUT,133,false,0,write quorum unavailable
+node3_boot1,294.556,PUT,103,true,0,
+node3_boot1,294.928,PUT,14,true,0,
+node3_boot1,295.303,PUT,151,true,0,
+node3_boot1,295.677,PUT,246,true,0,
+node3_boot1,296.052,PUT,194,true,0,
+node3_boot1,296.426,PUT,3,true,0,
+node3_boot1,296.799,PUT,134,false,0,write quorum unavailable
+node3_boot1,297.178,PUT,44,false,0,write quorum unavailable
+node3_boot1,297.556,PUT,128,false,0,write quorum unavailable
+node3_boot1,297.92,PUT,49,false,0,write quorum unavailable
+node3_boot1,298.298,PUT,45,false,0,write quorum unavailable
+node3_boot1,298.678,PUT,93,false,0,write quorum unavailable
+node3_boot1,299.051,PUT,42,false,0,write quorum unavailable
+node3_boot1,299.427,PUT,88,false,0,write quorum unavailable
+node3_boot1,299.805,PUT,10,true,0,
+node3_boot1,300.18,PUT,87,false,0,write quorum unavailable
+node3_boot1,300.555,PUT,94,false,0,write quorum unavailable
+node3_boot1,300.92,PUT,85,false,0,write quorum unavailable
+node3_boot1,301.305,PUT,214,false,0,write quorum unavailable
+node3_boot1,301.679,PUT,213,false,0,write quorum unavailable
+node3_boot1,302.052,PUT,43,false,0,write quorum unavailable
+node3_boot1,302.424,PUT,86,false,0,write quorum unavailable
+node3_boot1,302.797,PUT,48,false,0,write quorum unavailable
+node3_boot1,303.173,PUT,91,false,0,write quorum unavailable
+node3_boot1,303.548,PUT,133,false,0,write quorum unavailable
+node3_boot1,303.921,PUT,44,false,0,write quorum unavailable
+node3_boot1,304.296,PUT,13,false,0,write quorum unavailable
+node3_boot1,304.681,PUT,174,true,0,
+node3_boot1,305.058,PUT,196,true,0,
+node3_boot1,305.421,PUT,129,false,0,write quorum unavailable
+node3_boot1,305.807,PUT,86,false,0,write quorum unavailable
+node3_boot1,306.181,PUT,46,false,0,write quorum unavailable
+node3_boot1,306.557,PUT,221,false,0,write quorum unavailable
+node3_boot1,306.931,PUT,217,false,0,write quorum unavailable
+node3_boot1,307.305,PUT,24,false,0,write quorum unavailable
+node3_boot1,307.679,PUT,85,false,0,write quorum unavailable
+node3_boot1,308.058,PUT,214,false,0,write quorum unavailable
+node3_boot1,308.431,PUT,218,false,0,write quorum unavailable
+node3_boot1,308.805,PUT,43,false,0,write quorum unavailable
+node3_boot1,309.18,PUT,204,true,0,
+node3_boot1,309.555,PUT,50,false,0,write quorum unavailable
+node3_boot1,309.928,PUT,168,true,0,
+node3_boot1,310.302,PUT,218,false,0,write quorum unavailable
+node3_boot1,310.675,PUT,30,true,0,
+node3_boot1,311.049,PUT,81,true,0,
+node3_boot1,311.421,PUT,28,true,0,
+node3_boot1,311.796,PUT,228,true,0,
+node3_boot1,312.174,PUT,86,false,0,write quorum unavailable
+node3_boot1,312.55,PUT,132,false,0,write quorum unavailable
+node3_boot1,312.926,PUT,221,false,0,write quorum unavailable
+node3_boot1,313.301,PUT,217,false,0,write quorum unavailable
+node3_boot1,313.674,PUT,24,false,0,write quorum unavailable
+node3_boot1,314.05,PUT,85,false,0,write quorum unavailable
+node3_boot1,314.424,PUT,214,false,0,write quorum unavailable
+node3_boot1,314.798,PUT,218,false,0,write quorum unavailable
+node3_boot1,315.173,PUT,129,false,0,write quorum unavailable
+node3_boot1,315.55,PUT,173,true,0,
+node3_boot1,315.925,PUT,48,false,0,write quorum unavailable
+node3_boot1,316.3,PUT,91,false,0,write quorum unavailable
+node3_boot1,316.672,PUT,133,false,0,write quorum unavailable
+node3_boot1,317.048,PUT,219,false,0,write quorum unavailable
+node3_boot1,317.426,PUT,23,false,0,write quorum unavailable
+node3_boot1,317.799,PUT,214,false,0,write quorum unavailable
+node3_boot1,318.175,PUT,213,false,0,write quorum unavailable
+node3_boot1,318.55,PUT,22,false,0,write quorum unavailable
+node3_boot1,318.926,PUT,51,false,0,write quorum unavailable
+node3_boot1,319.303,PUT,136,false,0,write quorum unavailable
+node3_boot1,319.677,PUT,221,false,0,write quorum unavailable
+node3_boot1,320.053,PUT,217,false,0,write quorum unavailable
+node3_boot1,320.426,PUT,24,false,0,write quorum unavailable
+node3_boot1,320.8,PUT,89,false,0,write quorum unavailable
+node3_boot1,321.173,PUT,144,true,0,
+node3_boot1,321.546,PUT,92,false,0,write quorum unavailable
+node3_boot1,321.921,PUT,222,false,0,write quorum unavailable
+node3_boot1,322.3,PUT,90,false,0,write quorum unavailable
+node3_boot1,322.672,PUT,132,false,0,write quorum unavailable
+node3_boot1,323.046,PUT,221,false,0,write quorum unavailable
+node3_boot1,323.42,PUT,216,false,0,write quorum unavailable
+node3_boot1,323.805,PUT,53,false,0,write quorum unavailable
+node3_boot1,324.182,PUT,66,true,0,
+node3_boot1,324.554,PUT,145,true,0,
+node3_boot1,324.928,PUT,124,true,0,
+node3_boot1,325.3,PUT,13,false,0,write quorum unavailable
+node3_boot1,325.673,PUT,226,true,0,
+node3_boot1,326.045,PUT,248,true,0,
+node3_boot1,326.431,PUT,231,true,0,
+node3_boot1,326.803,PUT,7,true,0,
+node3_boot1,327.177,PUT,131,false,0,write quorum unavailable
+node3_boot1,327.551,PUT,134,false,0,write quorum unavailable
+node3_boot1,327.925,PUT,137,false,0,write quorum unavailable
+node3_boot1,328.299,PUT,22,false,0,write quorum unavailable
+node3_boot1,328.674,PUT,23,false,0,write quorum unavailable
+node3_boot1,329.05,PUT,46,false,0,write quorum unavailable
+node3_boot1,329.427,PUT,220,false,0,write quorum unavailable
+node3_boot1,329.801,PUT,130,false,0,write quorum unavailable
+node3_boot1,330.176,PUT,219,false,0,write quorum unavailable
+node3_boot1,330.551,PUT,13,false,0,write quorum unavailable
+node3_boot1,330.927,PUT,164,true,0,
+node3_boot1,331.301,PUT,218,false,0,write quorum unavailable
+node3_boot1,331.676,PUT,129,false,0,write quorum unavailable
+node3_boot1,332.051,PUT,223,false,0,write quorum unavailable
+node3_boot1,332.428,PUT,235,true,0,
+node3_boot1,332.804,PUT,220,false,0,write quorum unavailable
+node3_boot1,333.18,PUT,130,false,0,write quorum unavailable
+node3_boot1,333.554,PUT,219,false,0,write quorum unavailable
+node3_boot1,333.929,PUT,13,false,0,write quorum unavailable
+node3_boot1,334.304,PUT,214,false,0,write quorum unavailable
+node3_boot1,334.68,PUT,213,false,0,write quorum unavailable
+node3_boot1,335.054,PUT,43,false,0,write quorum unavailable
+node3_boot1,335.428,PUT,86,false,0,write quorum unavailable
+node3_boot1,335.806,PUT,48,false,0,write quorum unavailable
+node3_boot1,336.181,PUT,91,false,0,write quorum unavailable
+node3_boot1,336.554,PUT,133,false,0,write quorum unavailable
+node3_boot1,336.931,PUT,210,true,0,
+node3_boot1,337.306,PUT,135,false,0,write quorum unavailable
+node3_boot1,337.68,PUT,214,false,0,write quorum unavailable
+node3_boot1,338.055,PUT,213,false,0,write quorum unavailable
+node3_boot1,338.43,PUT,43,false,0,write quorum unavailable
+node3_boot1,338.807,PUT,86,false,0,write quorum unavailable
+node3_boot1,339.174,PUT,75,true,0,
+node3_boot1,339.547,PUT,182,true,0,
+node3_boot1,339.921,PUT,120,true,0,
+node3_boot1,340.306,PUT,5,true,0,
+node3_boot1,340.679,PUT,191,true,0,
+node3_boot1,341.05,PUT,123,true,0,
+node3_boot1,341.425,PUT,142,true,0,
+node3_boot1,341.796,PUT,56,true,0,
+node3_boot1,342.172,PUT,48,false,0,write quorum unavailable
+node3_boot1,342.546,PUT,91,false,0,write quorum unavailable
+node3_boot1,342.921,PUT,133,false,0,write quorum unavailable
+node3_boot1,343.3,PUT,44,false,0,write quorum unavailable
+node3_boot1,343.673,PUT,13,false,0,write quorum unavailable
+node3_boot1,344.057,PUT,49,false,0,write quorum unavailable
+node3_boot1,344.42,PUT,213,false,0,write quorum unavailable
+node3_boot1,344.795,PUT,52,false,0,write quorum unavailable
+node3_boot1,345.172,PUT,51,false,0,write quorum unavailable
+node3_boot1,345.551,PUT,136,false,0,write quorum unavailable
+node3_boot1,345.925,PUT,22,false,0,write quorum unavailable
+node3_boot1,346.302,PUT,217,false,0,write quorum unavailable
+node3_boot1,346.674,PUT,24,false,0,write quorum unavailable
+node3_boot1,347.049,PUT,85,false,0,write quorum unavailable
+node3_boot1,347.424,PUT,214,false,0,write quorum unavailable
+node3_boot1,347.798,PUT,137,false,0,write quorum unavailable
+node3_boot1,348.172,PUT,22,false,0,write quorum unavailable
+node3_boot1,348.548,PUT,90,false,0,write quorum unavailable
+node3_boot1,348.924,PUT,92,false,0,write quorum unavailable
+node3_boot1,349.298,PUT,88,false,0,write quorum unavailable
+node3_boot1,349.674,PUT,95,false,0,write quorum unavailable
+node3_boot1,350.049,PUT,215,false,0,write quorum unavailable
+node3_boot1,350.422,PUT,89,false,0,write quorum unavailable
+node3_boot1,350.798,PUT,50,false,0,write quorum unavailable
+node3_boot1,351.176,PUT,137,false,0,write quorum unavailable
+node3_boot1,351.551,PUT,22,false,0,write quorum unavailable
+node3_boot1,351.924,PUT,23,false,0,write quorum unavailable
+node3_boot1,352.298,PUT,136,false,0,write quorum unavailable
+node3_boot1,352.67,PUT,25,false,0,write quorum unavailable
+node3_boot1,353.055,PUT,87,false,0,write quorum unavailable
+node3_boot1,353.43,PUT,97,true,0,
+node3_boot1,353.805,PUT,131,false,0,write quorum unavailable
+node3_boot1,354.176,PUT,158,true,0,
+node3_boot1,354.549,PUT,18,true,0,
+node3_boot1,354.921,PUT,0,true,0,
+node3_boot1,355.297,PUT,78,true,0,
+node3_boot1,355.681,PUT,43,false,0,write quorum unavailable
+node3_boot1,356.055,PUT,138,true,0,
+node3_boot1,356.428,PUT,234,true,0,
+node3_boot1,356.804,PUT,129,false,0,write quorum unavailable
+node3_boot1,357.179,PUT,134,false,0,write quorum unavailable
+node3_boot1,357.553,PUT,213,false,0,write quorum unavailable
+node3_boot1,357.927,PUT,43,false,0,write quorum unavailable
+node3_boot1,358.3,PUT,23,false,0,write quorum unavailable
+node3_boot1,358.676,PUT,46,false,0,write quorum unavailable
+node3_boot1,359.052,PUT,221,false,0,write quorum unavailable
+node3_boot1,359.427,PUT,217,false,0,write quorum unavailable
+node3_boot1,359.804,PUT,24,false,0,write quorum unavailable
+node3_boot1,360.181,PUT,85,false,0,write quorum unavailable
+node3_boot1,360.556,PUT,134,false,0,write quorum unavailable
+node3_boot1,360.932,PUT,213,false,0,write quorum unavailable
+node3_boot1,361.306,PUT,43,false,0,write quorum unavailable
+node3_boot1,361.68,PUT,23,false,0,write quorum unavailable
+node3_boot1,362.052,PUT,136,false,0,write quorum unavailable
+node3_boot1,362.429,PUT,25,false,0,write quorum unavailable
+node3_boot1,362.803,PUT,87,false,0,write quorum unavailable
+node3_boot1,363.176,PUT,94,false,0,write quorum unavailable
+node3_boot1,363.547,PUT,135,false,0,write quorum unavailable
+node3_boot1,363.921,PUT,8,true,0,
+node3_boot1,364.296,PUT,213,false,0,write quorum unavailable
+node3_boot1,364.671,PUT,52,false,0,write quorum unavailable
+node3_boot1,365.046,PUT,51,false,0,write quorum unavailable
+node3_boot1,365.423,PUT,136,false,0,write quorum unavailable
+node3_boot1,365.796,PUT,221,false,0,write quorum unavailable
+node3_boot1,366.171,PUT,217,false,0,write quorum unavailable
+node3_boot1,366.557,PUT,186,true,0,
+node3_boot1,366.932,PUT,89,false,0,write quorum unavailable
+node3_boot1,367.295,PUT,174,true,0,
+node3_boot1,367.682,PUT,26,false,0,write quorum unavailable
+node3_boot1,368.056,PUT,222,false,0,write quorum unavailable
+node3_boot1,368.421,PUT,90,false,0,write quorum unavailable
+node3_boot1,368.806,PUT,132,false,0,write quorum unavailable
+node3_boot1,369.174,PUT,40,true,0,
+node3_boot1,369.548,PUT,163,true,0,
+node3_boot1,369.921,PUT,74,true,0,
+node3_boot1,370.304,PUT,2,true,0,
+node3_boot1,370.679,PUT,108,true,0,
+node3_boot1,371.052,PUT,201,true,0,
+node3_boot1,371.426,PUT,157,true,0,
+node3_boot1,371.8,PUT,101,true,0,
+node3_boot1,372.176,PUT,221,false,0,write quorum unavailable
+node3_boot1,372.551,PUT,217,false,0,write quorum unavailable
+node3_boot1,372.925,PUT,24,false,0,write quorum unavailable
+node3_boot1,373.303,PUT,85,false,0,write quorum unavailable
+node3_boot1,373.682,PUT,214,false,0,write quorum unavailable
+node3_boot1,374.047,PUT,213,false,0,write quorum unavailable
+node3_boot1,374.42,PUT,22,false,0,write quorum unavailable
+node3_boot1,374.796,PUT,51,false,0,write quorum unavailable
+node3_boot1,375.17,PUT,136,false,0,write quorum unavailable
+node3_boot1,375.556,PUT,25,false,0,write quorum unavailable
+node3_boot1,375.932,PUT,217,false,0,write quorum unavailable
+node3_boot1,376.295,PUT,24,false,0,write quorum unavailable
+node3_boot1,376.672,PUT,131,false,0,write quorum unavailable
+node3_boot1,377.057,PUT,50,false,0,write quorum unavailable
+node3_boot1,377.431,PUT,137,false,0,write quorum unavailable
+node3_boot1,377.804,PUT,22,false,0,write quorum unavailable
+node3_boot1,378.177,PUT,23,false,0,write quorum unavailable
+node3_boot1,378.551,PUT,46,false,0,write quorum unavailable
+node3_boot1,378.924,PUT,220,false,0,write quorum unavailable
+node3_boot1,379.296,PUT,130,false,0,write quorum unavailable
+node3_boot1,379.671,PUT,219,false,0,write quorum unavailable
+node3_boot1,380.046,PUT,13,false,0,write quorum unavailable
+node3_boot1,380.421,PUT,92,false,0,write quorum unavailable
+node3_boot1,380.796,PUT,222,false,0,write quorum unavailable
+node3_boot1,381.173,PUT,93,false,0,write quorum unavailable
+node3_boot1,381.549,PUT,42,false,0,write quorum unavailable
+node3_boot1,381.924,PUT,47,false,0,write quorum unavailable
+node3_boot1,382.305,PUT,216,false,0,write quorum unavailable
+node3_boot1,382.679,PUT,53,false,0,write quorum unavailable
+node3_boot1,383.057,PUT,89,false,0,write quorum unavailable
+node3_boot1,383.422,PUT,128,false,0,write quorum unavailable
+node3_boot1,383.798,PUT,26,false,0,write quorum unavailable
+node3_boot1,384.176,PUT,224,true,0,
+node3_boot1,384.551,PUT,130,false,0,write quorum unavailable
+node3_boot1,384.924,PUT,180,true,0,
+node3_boot1,385.297,PUT,245,true,0,
+node3_boot1,385.671,PUT,202,true,0,
+node3_boot1,386.056,PUT,42,false,0,write quorum unavailable
+node3_boot1,386.426,PUT,229,true,0,
+node3_boot1,386.799,PUT,149,true,0,
+node3_boot1,387.177,PUT,222,false,0,write quorum unavailable
+node3_boot1,387.551,PUT,90,false,0,write quorum unavailable
+node3_boot1,387.924,PUT,132,false,0,write quorum unavailable
+node3_boot1,388.296,PUT,221,false,0,write quorum unavailable
+node3_boot1,388.671,PUT,217,false,0,write quorum unavailable
+node3_boot1,389.057,PUT,24,false,0,write quorum unavailable
+node3_boot1,389.431,PUT,231,true,0,
+node3_boot1,389.803,PUT,134,false,0,write quorum unavailable
+node3_boot1,390.177,PUT,64,true,0,
+node3_boot1,390.551,PUT,52,false,0,write quorum unavailable
+node3_boot1,390.925,PUT,51,false,0,write quorum unavailable
+node3_boot1,391.3,PUT,132,false,0,write quorum unavailable
+node3_boot1,391.673,PUT,221,false,0,write quorum unavailable
+node3_boot1,392.048,PUT,217,false,0,write quorum unavailable
+node3_boot1,392.421,PUT,24,false,0,write quorum unavailable
+node3_boot1,392.796,PUT,131,false,0,write quorum unavailable
+node3_boot1,393.17,PUT,134,false,0,write quorum unavailable
+node3_boot1,393.546,PUT,26,false,0,write quorum unavailable
+node3_boot1,393.932,PUT,52,false,0,write quorum unavailable
+node3_boot1,394.305,PUT,51,false,0,write quorum unavailable
+node3_boot1,394.678,PUT,136,false,0,write quorum unavailable
+node3_boot1,395.051,PUT,25,false,0,write quorum unavailable
+node3_boot1,395.427,PUT,217,false,0,write quorum unavailable
+node3_boot1,395.799,PUT,24,false,0,write quorum unavailable
+node3_boot1,396.174,PUT,85,false,0,write quorum unavailable
+node3_boot1,396.547,PUT,214,false,0,write quorum unavailable
+node3_boot1,396.921,PUT,218,false,0,write quorum unavailable
+node3_boot1,397.297,PUT,129,false,0,write quorum unavailable
+node3_boot1,397.672,PUT,223,false,0,write quorum unavailable
+node3_boot1,398.048,PUT,88,false,0,write quorum unavailable
+node3_boot1,398.422,PUT,91,false,0,write quorum unavailable
+node3_boot1,398.807,PUT,133,false,0,write quorum unavailable
+node3_boot1,399.172,PUT,61,true,0,
+node3_boot1,399.545,PUT,77,true,0,
+node3_boot1,399.922,PUT,225,true,0,
+node3_boot1,400.296,PUT,41,true,0,
+node3_boot1,400.68,PUT,24,false,0,write quorum unavailable
+node3_boot1,401.054,PUT,205,true,0,
+node3_boot1,401.428,PUT,70,true,0,
+node3_boot1,401.801,PUT,252,true,0,
+node3_boot1,402.177,PUT,219,false,0,write quorum unavailable
+node3_boot1,402.553,PUT,13,false,0,write quorum unavailable
+node3_boot1,402.925,PUT,92,false,0,write quorum unavailable
+node3_boot1,403.301,PUT,222,false,0,write quorum unavailable
+node3_boot1,403.677,PUT,90,false,0,write quorum unavailable
+node3_boot1,404.051,PUT,132,false,0,write quorum unavailable
+node3_boot1,404.425,PUT,221,false,0,write quorum unavailable
+node3_boot1,404.799,PUT,217,false,0,write quorum unavailable
+node3_boot1,405.171,PUT,24,false,0,write quorum unavailable
+node3_boot1,405.545,PUT,85,false,0,write quorum unavailable
+node3_boot1,405.921,PUT,214,false,0,write quorum unavailable
+node3_boot1,406.296,PUT,218,false,0,write quorum unavailable
+node3_boot1,406.682,PUT,129,false,0,write quorum unavailable
+node3_boot1,407.057,PUT,223,false,0,write quorum unavailable
+node3_boot1,407.433,PUT,88,false,0,write quorum unavailable
+node3_boot1,407.797,PUT,95,false,0,write quorum unavailable
+node3_boot1,408.171,PUT,215,false,0,write quorum unavailable
+node3_boot1,408.549,PUT,44,false,0,write quorum unavailable
+node3_boot1,408.924,PUT,128,false,0,write quorum unavailable
+node3_boot1,409.297,PUT,92,false,0,write quorum unavailable
+node3_boot1,409.671,PUT,153,true,0,
+node3_boot1,410.045,PUT,43,false,0,write quorum unavailable
+node3_boot1,410.432,PUT,51,false,0,write quorum unavailable
+node3_boot1,410.806,PUT,132,false,0,write quorum unavailable
+node3_boot1,411.179,PUT,47,false,0,write quorum unavailable
+node3_boot1,411.552,PUT,95,false,0,write quorum unavailable
+node3_boot1,411.927,PUT,215,false,0,write quorum unavailable
+node3_boot1,412.3,PUT,89,false,0,write quorum unavailable
+node3_boot1,412.671,PUT,50,false,0,write quorum unavailable
+node3_boot1,413.052,PUT,137,false,0,write quorum unavailable
+node3_boot1,413.428,PUT,22,false,0,write quorum unavailable
+node3_boot1,413.803,PUT,23,false,0,write quorum unavailable
+node3_boot1,414.177,PUT,82,true,0,
+node3_boot1,414.551,PUT,223,false,0,write quorum unavailable
+node3_boot1,414.924,PUT,165,true,0,
+node3_boot1,415.299,PUT,20,true,0,
+node3_boot1,415.672,PUT,6,true,0,
+node3_boot1,416.056,PUT,37,true,0,
+node3_boot1,416.43,PUT,98,true,0,
+node3_boot1,416.803,PUT,114,true,0,
+node3_boot1,417.18,PUT,46,false,0,write quorum unavailable
+node3_boot1,417.545,PUT,220,false,0,write quorum unavailable
+node3_boot1,417.921,PUT,130,false,0,write quorum unavailable
+node3_boot1,418.296,PUT,219,false,0,write quorum unavailable
+node3_boot1,418.672,PUT,13,false,0,write quorum unavailable
+node3_boot1,419.049,PUT,92,false,0,write quorum unavailable
+node3_boot1,419.425,PUT,73,true,0,
+node3_boot1,419.801,PUT,129,false,0,write quorum unavailable
+node3_boot1,420.177,PUT,23,false,0,write quorum unavailable
+node3_boot1,420.552,PUT,136,false,0,write quorum unavailable
+node3_boot1,420.927,PUT,25,false,0,write quorum unavailable
+node3_boot1,421.306,PUT,216,false,0,write quorum unavailable
+node3_boot1,421.679,PUT,53,false,0,write quorum unavailable
+node3_boot1,422.055,PUT,131,false,0,write quorum unavailable
+node3_boot1,422.431,PUT,134,false,0,write quorum unavailable
+node3_boot1,422.807,PUT,213,false,0,write quorum unavailable
+node3_boot1,423.171,PUT,43,false,0,write quorum unavailable
+node3_boot1,423.545,PUT,234,true,0,
+node3_boot1,423.931,PUT,132,false,0,write quorum unavailable
+node3_boot1,424.306,PUT,221,false,0,write quorum unavailable
+node3_boot1,424.671,PUT,217,false,0,write quorum unavailable
+node3_boot1,425.046,PUT,24,false,0,write quorum unavailable
+node3_boot1,425.424,PUT,85,false,0,write quorum unavailable
+node3_boot1,425.799,PUT,214,false,0,write quorum unavailable
+node3_boot1,426.174,PUT,213,false,0,write quorum unavailable
+node3_boot1,426.551,PUT,43,false,0,write quorum unavailable
+node3_boot1,426.925,PUT,23,false,0,write quorum unavailable
+node3_boot1,427.3,PUT,223,false,0,write quorum unavailable
+node3_boot1,427.676,PUT,88,false,0,write quorum unavailable
+node3_boot1,428.052,PUT,200,true,0,
+node3_boot1,428.427,PUT,130,false,0,write quorum unavailable
+node3_boot1,428.795,PUT,219,false,0,write quorum unavailable
+node3_boot1,429.182,PUT,221,false,0,write quorum unavailable
+node3_boot1,429.554,PUT,8,true,0,
+node3_boot1,429.93,PUT,69,true,0,
+node3_boot1,430.304,PUT,217,false,0,write quorum unavailable
+node3_boot1,430.676,PUT,177,true,0,
+node3_boot1,431.05,PUT,141,true,0,
+node3_boot1,431.425,PUT,240,true,0,
+node3_boot1,431.797,PUT,161,true,0,
+node3_boot1,432.176,PUT,13,false,0,write quorum unavailable
+node3_boot1,432.553,PUT,49,false,0,write quorum unavailable
+node3_boot1,432.929,PUT,45,false,0,write quorum unavailable
+node3_boot1,433.303,PUT,43,false,0,write quorum unavailable
+node3_boot1,433.678,PUT,157,true,0,
+node3_boot1,434.054,PUT,132,false,0,write quorum unavailable
+node3_boot1,434.432,PUT,47,false,0,write quorum unavailable
+node3_boot1,434.805,PUT,216,false,0,write quorum unavailable
+node3_boot1,435.173,PUT,53,false,0,write quorum unavailable
+node3_boot1,435.552,PUT,89,false,0,write quorum unavailable
+node3_boot1,435.929,PUT,50,false,0,write quorum unavailable
+node3_boot1,436.305,PUT,137,false,0,write quorum unavailable
+node3_boot1,436.681,PUT,220,false,0,write quorum unavailable
+node3_boot1,437.056,PUT,93,false,0,write quorum unavailable
+node3_boot1,437.421,PUT,42,false,0,write quorum unavailable
+node3_boot1,437.797,PUT,47,false,0,write quorum unavailable
+node3_boot1,438.173,PUT,216,false,0,write quorum unavailable
+node3_boot1,438.551,PUT,53,false,0,write quorum unavailable
+node3_boot1,438.927,PUT,131,false,0,write quorum unavailable
+node3_boot1,439.301,PUT,134,false,0,write quorum unavailable
+node3_boot1,439.675,PUT,213,false,0,write quorum unavailable
+node3_boot1,440.051,PUT,43,false,0,write quorum unavailable
+node3_boot1,440.426,PUT,101,true,0,
+node3_boot1,440.801,PUT,136,false,0,write quorum unavailable
+node3_boot1,441.178,PUT,25,false,0,write quorum unavailable
+node3_boot1,441.553,PUT,217,false,0,write quorum unavailable
+node3_boot1,441.926,PUT,233,true,0,
+node3_boot1,442.301,PUT,89,false,0,write quorum unavailable
+node3_boot1,442.678,PUT,50,false,0,write quorum unavailable
+node3_boot1,443.055,PUT,137,false,0,write quorum unavailable
+node3_boot1,443.43,PUT,22,false,0,write quorum unavailable
+node3_boot1,443.804,PUT,51,false,0,write quorum unavailable
+node3_boot1,444.173,PUT,172,true,0,
+node3_boot1,444.55,PUT,173,true,0,
+node3_boot1,444.926,PUT,68,true,0,
+node3_boot1,445.303,PUT,60,true,0,
+node3_boot1,445.676,PUT,132,false,0,write quorum unavailable
+node3_boot1,446.05,PUT,110,true,0,
+node3_boot1,446.424,PUT,154,true,0,
+node3_boot1,446.795,PUT,46,false,0,write quorum unavailable
+node3_boot1,447.172,PUT,136,false,0,write quorum unavailable
+node3_boot1,447.548,PUT,25,false,0,write quorum unavailable
+node3_boot1,447.925,PUT,87,false,0,write quorum unavailable
+node3_boot1,448.3,PUT,94,false,0,write quorum unavailable
+node3_boot1,448.675,PUT,135,false,0,write quorum unavailable
+node3_boot1,449.052,PUT,49,false,0,write quorum unavailable
+node3_boot1,449.431,PUT,25,false,0,write quorum unavailable
+node3_boot1,449.805,PUT,129,false,0,write quorum unavailable
+node3_boot1,450.181,PUT,86,false,0,write quorum unavailable
+node3_boot1,450.556,PUT,46,false,0,write quorum unavailable
+node3_boot1,450.931,PUT,25,false,0,write quorum unavailable
+node3_boot1,451.304,PUT,87,false,0,write quorum unavailable
+node3_boot1,451.679,PUT,94,false,0,write quorum unavailable
+node3_boot1,452.055,PUT,85,false,0,write quorum unavailable
+node3_boot1,452.43,PUT,214,false,0,write quorum unavailable
+node3_boot1,452.803,PUT,218,false,0,write quorum unavailable
+node3_boot1,453.176,PUT,43,false,0,write quorum unavailable
+node3_boot1,453.549,PUT,86,false,0,write quorum unavailable
+node3_boot1,453.925,PUT,48,false,0,write quorum unavailable
+node3_boot1,454.301,PUT,91,false,0,write quorum unavailable
+node3_boot1,454.675,PUT,133,false,0,write quorum unavailable
+node3_boot1,455.054,PUT,44,false,0,write quorum unavailable
+node3_boot1,455.428,PUT,128,false,0,write quorum unavailable
+node3_boot1,455.805,PUT,26,false,0,write quorum unavailable
+node3_boot1,456.174,PUT,52,false,0,write quorum unavailable
+node3_boot1,456.547,PUT,51,false,0,write quorum unavailable
+node3_boot1,456.924,PUT,132,false,0,write quorum unavailable
+node3_boot1,457.296,PUT,47,false,0,write quorum unavailable
+node3_boot1,457.672,PUT,216,false,0,write quorum unavailable
+node3_boot1,458.047,PUT,215,false,0,write quorum unavailable
+node3_boot1,458.423,PUT,89,false,0,write quorum unavailable
+node3_boot1,458.797,PUT,50,false,0,write quorum unavailable
+node3_boot1,459.177,PUT,44,false,0,write quorum unavailable
+node3_boot1,459.55,PUT,94,false,0,write quorum unavailable
+node3_boot1,459.923,PUT,164,true,0,
+node3_boot1,460.298,PUT,210,true,0,
+node3_boot1,460.675,PUT,249,true,0,
+node3_boot1,461.05,PUT,88,false,0,write quorum unavailable
+node3_boot1,461.426,PUT,19,true,0,
+node3_boot1,461.799,PUT,93,false,0,write quorum unavailable
+node3_boot1,462.176,PUT,137,false,0,write quorum unavailable
+node3_boot1,462.548,PUT,191,true,0,
+node3_boot1,462.923,PUT,51,false,0,write quorum unavailable
+node3_boot1,463.3,PUT,167,true,0,
+node3_boot1,463.676,PUT,221,false,0,write quorum unavailable
+node3_boot1,464.053,PUT,217,false,0,write quorum unavailable
+node3_boot1,464.429,PUT,188,true,0,
+node3_boot1,464.807,PUT,100,true,0,
+node3_boot1,465.173,PUT,50,false,0,write quorum unavailable
+node3_boot1,465.548,PUT,26,false,0,write quorum unavailable
+node3_boot1,465.925,PUT,252,true,0,
+node3_boot1,466.301,PUT,90,false,0,write quorum unavailable
+node3_boot1,466.676,PUT,123,true,0,
+node3_boot1,467.053,PUT,88,false,0,write quorum unavailable
+node3_boot1,467.425,PUT,91,false,0,write quorum unavailable
+node3_boot1,467.799,PUT,133,false,0,write quorum unavailable
+node3_boot1,468.177,PUT,44,false,0,write quorum unavailable
+node3_boot1,468.551,PUT,128,false,0,write quorum unavailable
+node3_boot1,468.927,PUT,26,false,0,write quorum unavailable
+node3_boot1,469.302,PUT,45,false,0,write quorum unavailable
+node3_boot1,469.676,PUT,93,false,0,write quorum unavailable
+node3_boot1,470.05,PUT,42,false,0,write quorum unavailable
+node3_boot1,470.425,PUT,47,false,0,write quorum unavailable
+node3_boot1,470.8,PUT,95,false,0,write quorum unavailable
+node3_boot1,471.176,PUT,215,false,0,write quorum unavailable
+node3_boot1,471.553,PUT,89,false,0,write quorum unavailable
+node3_boot1,471.928,PUT,50,false,0,write quorum unavailable
+node3_boot1,472.305,PUT,137,false,0,write quorum unavailable
+node3_boot1,472.68,PUT,22,false,0,write quorum unavailable
+node3_boot1,473.056,PUT,23,false,0,write quorum unavailable
+node3_boot1,473.43,PUT,132,false,0,write quorum unavailable
+node3_boot1,473.799,PUT,221,false,0,write quorum unavailable
+node3_boot1,474.174,PUT,147,true,0,
+node3_boot1,474.548,PUT,82,true,0,
+node3_boot1,474.924,PUT,223,false,0,write quorum unavailable
+node3_boot1,475.298,PUT,165,true,0,
+node3_boot1,475.67,PUT,20,true,0,
+node3_boot1,476.056,PUT,6,true,0,
+node3_boot1,476.431,PUT,37,true,0,
+node3_boot1,476.805,PUT,98,true,0,
+node3_boot1,477.178,PUT,217,false,0,write quorum unavailable
+node3_boot1,477.552,PUT,24,false,0,write quorum unavailable
+node3_boot1,477.925,PUT,85,false,0,write quorum unavailable
+node3_boot1,478.299,PUT,214,false,0,write quorum unavailable
+node3_boot1,478.674,PUT,114,true,0,
+node3_boot1,479.047,PUT,43,false,0,write quorum unavailable
+node3_boot1,479.431,PUT,90,false,0,write quorum unavailable
+node3_boot1,479.805,PUT,132,false,0,write quorum unavailable
+node3_boot1,480.177,PUT,221,false,0,write quorum unavailable
+node3_boot1,480.551,PUT,217,false,0,write quorum unavailable
+node3_boot1,480.925,PUT,53,false,0,write quorum unavailable
+node3_boot1,481.299,PUT,89,false,0,write quorum unavailable
+node3_boot1,481.672,PUT,50,false,0,write quorum unavailable
+node3_boot1,482.048,PUT,26,false,0,write quorum unavailable
+node3_boot1,482.425,PUT,52,false,0,write quorum unavailable
+node3_boot1,482.799,PUT,51,false,0,write quorum unavailable
+node3_boot1,483.171,PUT,136,false,0,write quorum unavailable
+node3_boot1,483.546,PUT,25,false,0,write quorum unavailable
+node3_boot1,483.921,PUT,217,false,0,write quorum unavailable
+node3_boot1,484.296,PUT,24,false,0,write quorum unavailable
+node3_boot1,484.671,PUT,85,false,0,write quorum unavailable
+node3_boot1,485.045,PUT,50,false,0,write quorum unavailable
+node3_boot1,485.423,PUT,137,false,0,write quorum unavailable
+node3_boot1,485.797,PUT,22,false,0,write quorum unavailable
+node3_boot1,486.171,PUT,51,false,0,write quorum unavailable
+node3_boot1,486.546,PUT,136,false,0,write quorum unavailable
+node3_boot1,486.924,PUT,25,false,0,write quorum unavailable
+node3_boot1,487.3,PUT,87,false,0,write quorum unavailable
+node3_boot1,487.676,PUT,24,false,0,write quorum unavailable
+node3_boot1,488.05,PUT,85,false,0,write quorum unavailable
+node3_boot1,488.43,PUT,194,true,0,
+node3_boot1,488.804,PUT,213,false,0,write quorum unavailable
+node3_boot1,489.171,PUT,234,true,0,
+node3_boot1,489.546,PUT,129,false,0,write quorum unavailable
+node3_boot1,489.921,PUT,139,true,0,
+node3_boot1,490.296,PUT,90,false,0,write quorum unavailable
+node3_boot1,490.672,PUT,174,true,0,
+node3_boot1,491.057,PUT,99,true,0,
+node3_boot1,491.432,PUT,213,false,0,write quorum unavailable
+node3_boot1,491.806,PUT,58,true,0,
+node3_boot1,492.181,PUT,240,true,0,
+node3_boot1,492.553,PUT,23,false,0,write quorum unavailable
+node3_boot1,492.928,PUT,46,false,0,write quorum unavailable
+node3_boot1,493.301,PUT,220,false,0,write quorum unavailable
+node3_boot1,493.678,PUT,130,false,0,write quorum unavailable
+node3_boot1,494.05,PUT,219,false,0,write quorum unavailable
+node3_boot1,494.425,PUT,85,false,0,write quorum unavailable
+node3_boot1,494.797,PUT,214,false,0,write quorum unavailable
+node3_boot1,495.171,PUT,218,false,0,write quorum unavailable
+node3_boot1,495.555,PUT,218,false,0,write quorum unavailable
+node3_boot1,495.925,PUT,23,false,0,write quorum unavailable
+node3_boot1,496.299,PUT,136,false,0,write quorum unavailable
+node3_boot1,496.672,PUT,25,false,0,write quorum unavailable
+node3_boot1,497.047,PUT,87,false,0,write quorum unavailable
+node3_boot1,497.42,PUT,24,false,0,write quorum unavailable
+node3_boot1,497.799,PUT,85,false,0,write quorum unavailable
+node3_boot1,498.172,PUT,30,true,0,
+node3_boot1,498.545,PUT,201,true,0,
+node3_boot1,498.929,PUT,222,false,0,write quorum unavailable
+node3_boot1,499.303,PUT,90,false,0,write quorum unavailable
+node3_boot1,499.677,PUT,132,false,0,write quorum unavailable
+node3_boot1,500.053,PUT,221,false,0,write quorum unavailable
+node3_boot1,500.429,PUT,217,false,0,write quorum unavailable
+node3_boot1,500.801,PUT,24,false,0,write quorum unavailable
+node3_boot1,501.178,PUT,57,true,0,
+node3_boot1,501.552,PUT,128,false,0,write quorum unavailable
+node3_boot1,501.927,PUT,92,false,0,write quorum unavailable
+node3_boot1,502.3,PUT,45,false,0,write quorum unavailable
+node3_boot1,502.673,PUT,93,false,0,write quorum unavailable
+node3_boot1,503.048,PUT,42,false,0,write quorum unavailable
+node3_boot1,503.422,PUT,47,false,0,write quorum unavailable
+node3_boot1,503.796,PUT,216,false,0,write quorum unavailable
+node3_boot1,504.172,PUT,36,true,0,
+node3_boot1,504.547,PUT,106,true,0,
+node3_boot1,504.92,PUT,172,true,0,
+node3_boot1,505.305,PUT,173,true,0,
+node3_boot1,505.678,PUT,68,true,0,
+node3_boot1,506.053,PUT,60,true,0,
+node3_boot1,506.425,PUT,132,false,0,write quorum unavailable
+node3_boot1,506.801,PUT,110,true,0,
+node3_boot1,507.175,PUT,53,false,0,write quorum unavailable
+node3_boot1,507.554,PUT,44,false,0,write quorum unavailable
+node3_boot1,507.929,PUT,13,false,0,write quorum unavailable
+node3_boot1,508.305,PUT,92,false,0,write quorum unavailable
+node3_boot1,508.674,PUT,45,false,0,write quorum unavailable
+node3_boot1,509.049,PUT,93,false,0,write quorum unavailable
+node3_boot1,509.422,PUT,42,false,0,write quorum unavailable
+node3_boot1,509.796,PUT,47,false,0,write quorum unavailable
+node3_boot1,510.173,PUT,216,false,0,write quorum unavailable
+node3_boot1,510.546,PUT,53,false,0,write quorum unavailable
+node3_boot1,510.921,PUT,89,false,0,write quorum unavailable
+node3_boot1,511.295,PUT,50,false,0,write quorum unavailable
+node3_boot1,511.672,PUT,26,false,0,write quorum unavailable
+node3_boot1,512.048,PUT,52,false,0,write quorum unavailable
+node3_boot1,512.426,PUT,51,false,0,write quorum unavailable
+node3_boot1,512.801,PUT,136,false,0,write quorum unavailable
+node3_boot1,513.176,PUT,25,false,0,write quorum unavailable
+node3_boot1,513.551,PUT,87,false,0,write quorum unavailable
+node3_boot1,513.927,PUT,94,false,0,write quorum unavailable
+node3_boot1,514.302,PUT,135,false,0,write quorum unavailable
+node3_boot1,514.678,PUT,49,false,0,write quorum unavailable
+node3_boot1,515.054,PUT,45,false,0,write quorum unavailable
+node3_boot1,515.43,PUT,93,false,0,write quorum unavailable
+node3_boot1,515.802,PUT,223,false,0,write quorum unavailable
+node3_boot1,516.176,PUT,88,false,0,write quorum unavailable
+node3_boot1,516.551,PUT,95,false,0,write quorum unavailable
+node3_boot1,516.927,PUT,133,false,0,write quorum unavailable
+node3_boot1,517.304,PUT,44,false,0,write quorum unavailable
+node3_boot1,517.678,PUT,128,false,0,write quorum unavailable
+node3_boot1,518.052,PUT,26,false,0,write quorum unavailable
+node3_boot1,518.425,PUT,222,false,0,write quorum unavailable
+node3_boot1,518.798,PUT,93,false,0,write quorum unavailable
+node3_boot1,519.175,PUT,25,false,0,write quorum unavailable
+node3_boot1,519.549,PUT,230,true,0,
+node3_boot1,519.931,PUT,148,true,0,
+node3_boot1,520.302,PUT,215,false,0,write quorum unavailable
+node3_boot1,520.675,PUT,235,true,0,
+node3_boot1,521.049,PUT,178,true,0,
+node3_boot1,521.423,PUT,179,true,0,
+node3_boot1,521.807,PUT,152,true,0,
+node3_boot1,522.181,PUT,223,false,0,write quorum unavailable
+node3_boot1,522.557,PUT,96,true,0,
+node3_boot1,522.93,PUT,220,false,0,write quorum unavailable
+node3_boot1,523.307,PUT,87,false,0,write quorum unavailable
+node3_boot1,523.681,PUT,94,false,0,write quorum unavailable
+node3_boot1,524.055,PUT,131,false,0,write quorum unavailable
+node3_boot1,524.431,PUT,134,false,0,write quorum unavailable
+node3_boot1,524.796,PUT,137,false,0,write quorum unavailable
+node3_boot1,525.173,PUT,170,true,0,
+node3_boot1,525.548,PUT,127,true,0,
+node3_boot1,525.922,PUT,42,false,0,write quorum unavailable
+node3_boot1,526.295,PUT,47,false,0,write quorum unavailable
+node3_boot1,526.682,PUT,216,false,0,write quorum unavailable
+node3_boot1,527.055,PUT,215,false,0,write quorum unavailable
+node3_boot1,527.428,PUT,191,true,0,
+node3_boot1,527.805,PUT,13,false,0,write quorum unavailable
+node3_boot1,528.18,PUT,214,false,0,write quorum unavailable
+node3_boot1,528.554,PUT,218,false,0,write quorum unavailable
+node3_boot1,528.931,PUT,129,false,0,write quorum unavailable
+node3_boot1,529.295,PUT,86,false,0,write quorum unavailable
+node3_boot1,529.67,PUT,48,false,0,write quorum unavailable
+node3_boot1,530.045,PUT,91,false,0,write quorum unavailable
+node3_boot1,530.422,PUT,133,false,0,write quorum unavailable
+node3_boot1,530.797,PUT,44,false,0,write quorum unavailable
+node3_boot1,531.172,PUT,13,false,0,write quorum unavailable
+node3_boot1,531.549,PUT,214,false,0,write quorum unavailable
+node3_boot1,531.925,PUT,49,false,0,write quorum unavailable
+node3_boot1,532.3,PUT,22,false,0,write quorum unavailable
+node3_boot1,532.676,PUT,51,false,0,write quorum unavailable
+node3_boot1,533.05,PUT,136,false,0,write quorum unavailable
+node3_boot1,533.425,PUT,221,false,0,write quorum unavailable
+node3_boot1,533.801,PUT,217,false,0,write quorum unavailable
+node3_boot1,534.178,PUT,153,true,0,
+node3_boot1,534.552,PUT,111,true,0,
+node3_boot1,534.922,PUT,51,false,0,write quorum unavailable
+node3_boot1,535.296,PUT,169,true,0,
+node3_boot1,535.68,PUT,97,true,0,
+node3_boot1,536.053,PUT,133,false,0,write quorum unavailable
+node3_boot1,536.427,PUT,103,true,0,
+node3_boot1,536.801,PUT,14,true,0,
+node3_boot1,537.177,PUT,53,false,0,write quorum unavailable
+node3_boot1,537.551,PUT,131,false,0,write quorum unavailable
+node3_boot1,537.922,PUT,128,false,0,write quorum unavailable
+node3_boot1,538.296,PUT,49,false,0,write quorum unavailable
+node3_boot1,538.674,PUT,45,false,0,write quorum unavailable
+node3_boot1,539.052,PUT,93,false,0,write quorum unavailable
+node3_boot1,539.429,PUT,42,false,0,write quorum unavailable
+node3_boot1,539.801,PUT,47,false,0,write quorum unavailable
+node3_boot1,540.177,PUT,216,false,0,write quorum unavailable
+node3_boot1,540.549,PUT,215,false,0,write quorum unavailable
+node3_boot1,540.925,PUT,89,false,0,write quorum unavailable
+node3_boot1,541.3,PUT,128,false,0,write quorum unavailable
+node3_boot1,541.676,PUT,246,true,0,
+node3_boot1,542.049,PUT,45,false,0,write quorum unavailable
+node3_boot1,542.425,PUT,43,false,0,write quorum unavailable
+node3_boot1,542.804,PUT,90,false,0,write quorum unavailable
+node3_boot1,543.174,PUT,42,false,0,write quorum unavailable
+node3_boot1,543.549,PUT,88,false,0,write quorum unavailable
+node3_boot1,543.924,PUT,95,false,0,write quorum unavailable
+node3_boot1,544.298,PUT,215,false,0,write quorum unavailable
+node3_boot1,544.674,PUT,44,false,0,write quorum unavailable
+node3_boot1,545.048,PUT,128,false,0,write quorum unavailable
+node3_boot1,545.425,PUT,26,false,0,write quorum unavailable
+node3_boot1,545.8,PUT,52,false,0,write quorum unavailable
+node3_boot1,546.176,PUT,51,false,0,write quorum unavailable
+node3_boot1,546.55,PUT,132,false,0,write quorum unavailable
+node3_boot1,546.927,PUT,47,false,0,write quorum unavailable
+node3_boot1,547.301,PUT,216,false,0,write quorum unavailable
+node3_boot1,547.675,PUT,53,false,0,write quorum unavailable
+node3_boot1,548.047,PUT,131,false,0,write quorum unavailable
+node3_boot1,548.421,PUT,134,false,0,write quorum unavailable
+node3_boot1,548.797,PUT,213,false,0,write quorum unavailable
+node3_boot1,549.177,PUT,3,true,0,
+node3_boot1,549.551,PUT,134,false,0,write quorum unavailable
+node3_boot1,549.924,PUT,143,true,0,
+node3_boot1,550.295,PUT,186,true,0,
+node3_boot1,550.68,PUT,199,true,0,
+node3_boot1,551.053,PUT,107,true,0,
+node3_boot1,551.427,PUT,212,true,0,
+node3_boot1,551.799,PUT,214,false,0,write quorum unavailable
+node3_boot1,552.173,PUT,43,false,0,write quorum unavailable
+node3_boot1,552.547,PUT,86,false,0,write quorum unavailable
+node3_boot1,552.922,PUT,48,false,0,write quorum unavailable
+node3_boot1,553.296,PUT,25,false,0,write quorum unavailable
+node3_boot1,553.682,PUT,237,true,0,
+node3_boot1,554.058,PUT,215,false,0,write quorum unavailable
+node3_boot1,554.432,PUT,30,true,0,
+node3_boot1,554.805,PUT,128,false,0,write quorum unavailable
+node3_boot1,555.181,PUT,26,false,0,write quorum unavailable
+node3_boot1,555.556,PUT,52,false,0,write quorum unavailable
+node3_boot1,555.932,PUT,93,false,0,write quorum unavailable
+node3_boot1,556.298,PUT,42,false,0,write quorum unavailable
+node3_boot1,556.674,PUT,88,false,0,write quorum unavailable
+node3_boot1,557.049,PUT,95,false,0,write quorum unavailable
+node3_boot1,557.426,PUT,215,false,0,write quorum unavailable
+node3_boot1,557.805,PUT,89,false,0,write quorum unavailable
+node3_boot1,558.179,PUT,50,false,0,write quorum unavailable
+node3_boot1,558.553,PUT,137,false,0,write quorum unavailable
+node3_boot1,558.93,PUT,52,false,0,write quorum unavailable
+node3_boot1,559.304,PUT,51,false,0,write quorum unavailable
+node3_boot1,559.674,PUT,136,false,0,write quorum unavailable
+node3_boot1,560.051,PUT,25,false,0,write quorum unavailable
+node3_boot1,560.424,PUT,87,false,0,write quorum unavailable
+node3_boot1,560.8,PUT,24,false,0,write quorum unavailable
+node3_boot1,561.177,PUT,131,false,0,write quorum unavailable
+node3_boot1,561.552,PUT,134,false,0,write quorum unavailable
+node3_boot1,561.925,PUT,36,true,0,
+node3_boot1,562.302,PUT,52,false,0,write quorum unavailable
+node3_boot1,562.673,PUT,51,false,0,write quorum unavailable
+node3_boot1,563.048,PUT,42,false,0,write quorum unavailable
+node3_boot1,563.432,PUT,47,false,0,write quorum unavailable
+node3_boot1,563.795,PUT,216,false,0,write quorum unavailable
+node3_boot1,564.172,PUT,28,true,0,
+node3_boot1,564.556,PUT,228,true,0,
+node3_boot1,564.926,PUT,150,true,0,
+node3_boot1,565.299,PUT,1,true,0,
+node3_boot1,565.672,PUT,33,true,0,
+node3_boot1,566.046,PUT,72,true,0,
+node3_boot1,566.43,PUT,104,true,0,
+node3_boot1,566.804,PUT,62,true,0,
+node3_boot1,567.18,PUT,53,false,0,write quorum unavailable
+node3_boot1,567.556,PUT,89,false,0,write quorum unavailable
+node3_boot1,567.928,PUT,128,false,0,write quorum unavailable
+node3_boot1,568.3,PUT,26,false,0,write quorum unavailable
+node3_boot1,568.676,PUT,52,false,0,write quorum unavailable
+node3_boot1,569.051,PUT,51,false,0,write quorum unavailable
+node3_boot1,569.427,PUT,136,false,0,write quorum unavailable
+node3_boot1,569.8,PUT,46,false,0,write quorum unavailable
+node3_boot1,570.177,PUT,95,false,0,write quorum unavailable
+node3_boot1,570.552,PUT,215,false,0,write quorum unavailable
+node3_boot1,570.926,PUT,89,false,0,write quorum unavailable
+node3_boot1,571.299,PUT,128,false,0,write quorum unavailable
+node3_boot1,571.672,PUT,26,false,0,write quorum unavailable
+node3_boot1,572.057,PUT,222,false,0,write quorum unavailable
+node3_boot1,572.42,PUT,90,false,0,write quorum unavailable
+node3_boot1,572.795,PUT,42,false,0,write quorum unavailable
+node3_boot1,573.181,PUT,47,false,0,write quorum unavailable
+node3_boot1,573.555,PUT,216,false,0,write quorum unavailable
+node3_boot1,573.931,PUT,215,false,0,write quorum unavailable
+node3_boot1,574.305,PUT,89,false,0,write quorum unavailable
+node3_boot1,574.68,PUT,50,false,0,write quorum unavailable
+node3_boot1,575.055,PUT,26,false,0,write quorum unavailable
+node3_boot1,575.42,PUT,52,false,0,write quorum unavailable
+node3_boot1,575.795,PUT,90,false,0,write quorum unavailable
+node3_boot1,576.181,PUT,42,false,0,write quorum unavailable
+node3_boot1,576.555,PUT,88,false,0,write quorum unavailable
+node3_boot1,576.925,PUT,95,false,0,write quorum unavailable
+node3_boot1,577.298,PUT,215,false,0,write quorum unavailable
+node3_boot1,577.68,PUT,89,false,0,write quorum unavailable
+node3_boot1,578.056,PUT,50,false,0,write quorum unavailable
+node3_boot1,578.43,PUT,26,false,0,write quorum unavailable
+node3_boot1,578.806,PUT,52,false,0,write quorum unavailable
+node3_boot1,579.171,PUT,112,true,0,
+node3_boot1,579.547,PUT,126,true,0,
+node3_boot1,579.921,PUT,61,true,0,
+node3_boot1,580.297,PUT,77,true,0,
+node3_boot1,580.671,PUT,225,true,0,
+node3_boot1,581.046,PUT,41,true,0,
+node3_boot1,581.43,PUT,24,false,0,write quorum unavailable
+node3_boot1,581.804,PUT,205,true,0,
+node3_boot1,582.177,PUT,90,false,0,write quorum unavailable
+node3_boot1,582.552,PUT,132,false,0,write quorum unavailable
+node3_boot1,582.927,PUT,221,false,0,write quorum unavailable
+node3_boot1,583.299,PUT,216,false,0,write quorum unavailable
+node3_boot1,583.674,PUT,70,true,0,
+node3_boot1,584.05,PUT,44,false,0,write quorum unavailable
+node3_boot1,584.424,PUT,167,true,0,
+node3_boot1,584.799,PUT,188,true,0,
+node3_boot1,585.173,PUT,213,false,0,write quorum unavailable
+node3_boot1,585.549,PUT,43,false,0,write quorum unavailable
+node3_boot1,585.927,PUT,86,false,0,write quorum unavailable
+node3_boot1,586.305,PUT,48,false,0,write quorum unavailable
+node3_boot1,586.671,PUT,220,false,0,write quorum unavailable
+node3_boot1,587.047,PUT,123,true,0,
+node3_boot1,587.42,PUT,94,false,0,write quorum unavailable
+node3_boot1,587.807,PUT,135,false,0,write quorum unavailable
+node3_boot1,588.17,PUT,49,false,0,write quorum unavailable
+node3_boot1,588.546,PUT,45,false,0,write quorum unavailable
+node3_boot1,588.922,PUT,93,false,0,write quorum unavailable
+node3_boot1,589.298,PUT,42,false,0,write quorum unavailable
+node3_boot1,589.672,PUT,47,false,0,write quorum unavailable
+node3_boot1,590.047,PUT,9,true,0,
+node3_boot1,590.42,PUT,215,false,0,write quorum unavailable
+node3_boot1,590.807,PUT,89,false,0,write quorum unavailable
+node3_boot1,591.182,PUT,128,false,0,write quorum unavailable
+node3_boot1,591.557,PUT,26,false,0,write quorum unavailable
+node3_boot1,591.92,PUT,52,false,0,write quorum unavailable
+node3_boot1,592.297,PUT,90,false,0,write quorum unavailable
+node3_boot1,592.682,PUT,132,false,0,write quorum unavailable
+node3_boot1,593.057,PUT,221,false,0,write quorum unavailable
+node3_boot1,593.432,PUT,217,false,0,write quorum unavailable
+node3_boot1,593.795,PUT,53,false,0,write quorum unavailable
+node3_boot1,594.172,PUT,142,true,0,
+node3_boot1,594.557,PUT,56,true,0,
+node3_boot1,594.928,PUT,122,true,0,
+node3_boot1,595.305,PUT,17,true,0,
+node3_boot1,595.679,PUT,31,true,0,
+node3_boot1,596.052,PUT,251,true,0,
+node3_boot1,596.426,PUT,184,true,0,
+node3_boot1,596.799,PUT,83,true,0,
+node3_boot1,597.172,PUT,239,true,0,
+node3_boot1,597.557,PUT,193,true,0,
+node3_boot1,597.92,PUT,54,true,0,
+node3_boot1,598.304,PUT,219,false,0,write quorum unavailable
+node3_boot1,598.677,PUT,125,true,0,
+node3_boot1,599.051,PUT,67,true,0,
+node3_boot1,599.424,PUT,10,true,0,
+node3_boot1,599.797,PUT,4,true,0,
+node3_boot1,600.171,PUT,204,true,0,
+node3_boot1,600.556,PUT,50,true,0,
+node3_boot1,600.929,PUT,168,true,0,
+node3_boot1,601.303,PUT,218,true,0,
+node3_boot1,601.675,PUT,30,true,0,
+node3_boot1,602.049,PUT,81,true,0,
+node3_boot1,602.421,PUT,28,true,0,
+node3_boot1,602.804,PUT,228,true,0,
+node3_boot1,603.176,PUT,150,true,0,
+node3_boot1,603.548,PUT,1,true,0,
+node3_boot1,603.924,PUT,33,true,0,
+node3_boot1,604.295,PUT,72,true,0,
+node3_boot1,604.679,PUT,104,true,0,
+node3_boot1,605.05,PUT,62,true,0,
+node3_boot1,605.423,PUT,166,true,0,
+node3_boot1,605.807,PUT,244,true,0,
+node3_boot1,606.18,PUT,71,true,0,
+node3_boot1,606.552,PUT,64,true,0,
+node3_boot1,606.925,PUT,162,true,0,
+node3_boot1,607.298,PUT,121,true,0,
+node3_boot1,607.672,PUT,27,true,0,
+node3_boot1,608.056,PUT,45,true,0,
+node3_boot1,608.429,PUT,26,true,0,
+node3_boot1,608.802,PUT,181,true,0,
+node3_boot1,609.175,PUT,109,true,0,
+node3_boot1,609.548,PUT,188,true,0,
+node3_boot1,609.923,PUT,135,true,0,
+node3_boot1,610.296,PUT,153,true,0,
+node3_boot1,610.682,PUT,111,true,0,
+node3_boot1,611.055,PUT,51,true,0,
+node3_boot1,611.428,PUT,169,true,0,
+node3_boot1,611.802,PUT,97,true,0,
+node3_boot1,612.581,GET,0,true,0,
+node3_boot1,612.582,GET,1,true,0,
+node3_boot1,612.583,GET,2,true,0,
+node3_boot1,612.583,GET,3,true,0,
+node3_boot1,612.584,GET,4,true,0,
+node3_boot1,612.584,GET,5,true,0,
+node3_boot1,612.585,GET,6,true,0,
+node3_boot1,612.586,GET,7,true,0,
+node3_boot1,612.586,GET,8,true,0,
+node3_boot1,612.587,GET,9,true,0,
+node3_boot1,612.588,GET,10,true,0,
+node3_boot1,612.588,GET,11,true,0,
+node3_boot1,612.589,GET,12,true,0,
+node3_boot1,612.59,GET,13,true,0,
+node3_boot1,612.59,GET,14,true,0,
+node3_boot1,612.591,GET,15,true,0,
+node3_boot1,612.591,GET,16,true,0,
+node3_boot1,612.592,GET,17,true,0,
+node3_boot1,612.593,GET,18,true,0,
+node3_boot1,612.594,GET,19,true,0,
+node3_boot1,612.595,GET,20,true,0,
+node3_boot1,612.595,GET,21,true,0,
+node3_boot1,612.596,GET,22,true,0,
+node3_boot1,612.598,GET,23,true,0,
+node3_boot1,612.599,GET,24,true,0,
+node3_boot1,612.6,GET,25,true,0,
+node3_boot1,612.601,GET,26,true,0,
+node3_boot1,612.601,GET,27,true,0,
+node3_boot1,612.602,GET,28,true,0,
+node3_boot1,612.603,GET,29,true,0,
+node3_boot1,612.603,GET,30,true,0,
+node3_boot1,612.604,GET,31,true,0,
+node3_boot1,612.605,GET,32,true,0,
+node3_boot1,612.605,GET,33,true,0,
+node3_boot1,612.606,GET,34,true,0,
+node3_boot1,612.607,GET,35,true,0,
+node3_boot1,612.608,GET,36,true,0,
+node3_boot1,612.609,GET,37,true,0,
+node3_boot1,612.609,GET,38,true,0,
+node3_boot1,612.61,GET,39,true,0,
+node3_boot1,612.611,GET,40,true,0,
+node3_boot1,612.612,GET,41,true,0,
+node3_boot1,612.613,GET,42,true,0,
+node3_boot1,612.615,GET,43,true,0,
+node3_boot1,612.617,GET,44,true,0,
+node3_boot1,612.619,GET,45,true,0,
+node3_boot1,612.62,GET,46,true,0,
+node3_boot1,612.622,GET,47,true,0,
+node3_boot1,612.624,GET,48,true,0,
+node3_boot1,612.626,GET,49,true,0,
+node3_boot1,612.627,GET,50,true,0,
+node3_boot1,612.627,GET,51,true,0,
+node3_boot1,612.628,GET,52,true,0,
+node3_boot1,612.629,GET,53,true,0,
+node3_boot1,612.629,GET,54,true,0,
+node3_boot1,612.63,GET,55,true,0,
+node3_boot1,612.631,GET,56,true,0,
+node3_boot1,612.631,GET,57,true,0,
+node3_boot1,612.632,GET,58,true,0,
+node3_boot1,612.633,GET,59,true,0,
+node3_boot1,612.633,GET,60,true,0,
+node3_boot1,612.634,GET,61,true,0,
+node3_boot1,612.635,GET,62,true,0,
+node3_boot1,612.635,GET,63,true,0,
+node3_boot1,612.636,GET,64,true,0,
+node3_boot1,612.637,GET,65,true,0,
+node3_boot1,612.637,GET,66,true,0,
+node3_boot1,612.638,GET,67,true,0,
+node3_boot1,612.639,GET,68,true,0,
+node3_boot1,612.64,GET,69,true,0,
+node3_boot1,612.64,GET,70,true,0,
+node3_boot1,612.641,GET,71,true,0,
+node3_boot1,612.641,GET,72,true,0,
+node3_boot1,612.642,GET,73,true,0,
+node3_boot1,612.642,GET,74,true,0,
+node3_boot1,612.643,GET,75,true,0,
+node3_boot1,612.644,GET,76,true,0,
+node3_boot1,612.645,GET,77,true,0,
+node3_boot1,612.645,GET,78,true,0,
+node3_boot1,612.646,GET,79,true,0,
+node3_boot1,612.647,GET,80,true,0,
+node3_boot1,612.647,GET,81,true,0,
+node3_boot1,612.648,GET,82,true,0,
+node3_boot1,612.649,GET,83,true,0,
+node3_boot1,612.649,GET,84,true,0,
+node3_boot1,612.65,GET,85,true,0,
+node3_boot1,612.652,GET,86,true,0,
+node3_boot1,612.654,GET,87,true,0,
+node3_boot1,612.655,GET,88,true,0,
+node3_boot1,612.657,GET,89,true,0,
+node3_boot1,612.658,GET,90,true,0,
+node3_boot1,612.66,GET,91,true,0,
+node3_boot1,612.661,GET,92,true,0,
+node3_boot1,612.662,GET,93,true,0,
+node3_boot1,612.663,GET,94,true,0,
+node3_boot1,612.663,GET,95,true,0,
+node3_boot1,612.664,GET,96,true,0,
+node3_boot1,612.665,GET,97,true,0,
+node3_boot1,612.666,GET,98,true,0,
+node3_boot1,612.667,GET,99,true,0,
+node3_boot1,612.667,GET,100,true,0,
+node3_boot1,612.668,GET,101,true,0,
+node3_boot1,612.669,GET,102,true,0,
+node3_boot1,612.669,GET,103,true,0,
+node3_boot1,612.67,GET,104,true,0,
+node3_boot1,612.671,GET,105,true,0,
+node3_boot1,612.672,GET,106,true,0,
+node3_boot1,612.672,GET,107,true,0,
+node3_boot1,612.673,GET,108,true,0,
+node3_boot1,612.674,GET,109,true,0,
+node3_boot1,612.675,GET,110,true,0,
+node3_boot1,612.675,GET,111,true,0,
+node3_boot1,612.676,GET,112,true,0,
+node3_boot1,612.677,GET,113,true,0,
+node3_boot1,612.677,GET,114,true,0,
+node3_boot1,612.678,GET,115,true,0,
+node3_boot1,612.679,GET,116,true,0,
+node3_boot1,612.68,GET,117,true,0,
+node3_boot1,612.681,GET,118,true,0,
+node3_boot1,612.681,GET,119,true,0,
+node3_boot1,612.682,GET,120,true,0,
+node3_boot1,612.683,GET,121,true,0,
+node3_boot1,612.683,GET,122,true,0,
+node3_boot1,612.684,GET,123,true,0,
+node3_boot1,612.685,GET,124,true,0,
+node3_boot1,612.685,GET,125,true,0,
+node3_boot1,612.686,GET,126,true,0,
+node3_boot1,612.687,GET,127,true,0,
+node3_boot1,612.687,GET,128,true,0,
+node3_boot1,612.689,GET,129,true,0,
+node3_boot1,612.691,GET,130,true,0,
+node3_boot1,612.693,GET,131,true,0,
+node3_boot1,612.693,GET,132,true,0,
+node3_boot1,612.693,GET,133,true,0,
+node3_boot1,612.694,GET,134,true,0,
+node3_boot1,612.695,GET,135,true,0,
+node3_boot1,612.696,GET,136,true,0,
+node3_boot1,612.696,GET,137,true,0,
+node3_boot1,612.697,GET,138,true,0,
+node3_boot1,612.698,GET,139,true,0,
+node3_boot1,612.699,GET,140,true,0,
+node3_boot1,612.7,GET,141,true,0,
+node3_boot1,612.7,GET,142,true,0,
+node3_boot1,612.701,GET,143,true,0,
+node3_boot1,612.702,GET,144,true,0,
+node3_boot1,612.702,GET,145,true,0,
+node3_boot1,612.703,GET,146,true,0,
+node3_boot1,612.704,GET,147,true,0,
+node3_boot1,612.704,GET,148,true,0,
+node3_boot1,612.705,GET,149,true,0,
+node3_boot1,612.706,GET,150,true,0,
+node3_boot1,612.707,GET,151,true,0,
+node3_boot1,612.707,GET,152,true,0,
+node3_boot1,612.708,GET,153,true,0,
+node3_boot1,612.709,GET,154,true,0,
+node3_boot1,612.709,GET,155,true,0,
+node3_boot1,612.71,GET,156,true,0,
+node3_boot1,612.711,GET,157,true,0,
+node3_boot1,612.711,GET,158,true,0,
+node3_boot1,612.712,GET,159,true,0,
+node3_boot1,612.713,GET,160,true,0,
+node3_boot1,612.714,GET,161,true,0,
+node3_boot1,612.714,GET,162,true,0,
+node3_boot1,612.715,GET,163,true,0,
+node3_boot1,612.716,GET,164,true,0,
+node3_boot1,612.717,GET,165,true,0,
+node3_boot1,612.718,GET,166,true,0,
+node3_boot1,612.718,GET,167,true,0,
+node3_boot1,612.719,GET,168,true,0,
+node3_boot1,612.72,GET,169,true,0,
+node3_boot1,612.721,GET,170,true,0,
+node3_boot1,612.721,GET,171,true,0,
+node3_boot1,612.722,GET,172,true,0,
+node3_boot1,612.723,GET,173,true,0,
+node3_boot1,612.724,GET,174,true,0,
+node3_boot1,612.725,GET,175,true,0,
+node3_boot1,612.725,GET,176,true,0,
+node3_boot1,612.726,GET,177,true,0,
+node3_boot1,612.727,GET,178,true,0,
+node3_boot1,612.728,GET,179,true,0,
+node3_boot1,612.728,GET,180,true,0,
+node3_boot1,612.729,GET,181,true,0,
+node3_boot1,612.73,GET,182,true,0,
+node3_boot1,612.731,GET,183,true,0,
+node3_boot1,612.732,GET,184,true,0,
+node3_boot1,612.733,GET,185,true,0,
+node3_boot1,612.733,GET,186,true,0,
+node3_boot1,612.734,GET,187,true,0,
+node3_boot1,612.735,GET,188,true,0,
+node3_boot1,612.736,GET,189,true,0,
+node3_boot1,612.736,GET,190,true,0,
+node3_boot1,612.737,GET,191,true,0,
+node3_boot1,612.738,GET,192,true,0,
+node3_boot1,612.738,GET,193,true,0,
+node3_boot1,612.739,GET,194,true,0,
+node3_boot1,612.74,GET,195,true,0,
+node3_boot1,612.74,GET,196,true,0,
+node3_boot1,612.741,GET,197,true,0,
+node3_boot1,612.742,GET,198,true,0,
+node3_boot1,612.743,GET,199,true,0,
+node3_boot1,612.743,GET,200,true,0,
+node3_boot1,612.744,GET,201,true,0,
+node3_boot1,612.745,GET,202,true,0,
+node3_boot1,612.746,GET,203,true,0,
+node3_boot1,612.747,GET,204,true,0,
+node3_boot1,612.747,GET,205,true,0,
+node3_boot1,612.748,GET,206,true,0,
+node3_boot1,612.749,GET,207,true,0,
+node3_boot1,612.749,GET,208,true,0,
+node3_boot1,612.75,GET,209,true,0,
+node3_boot1,612.751,GET,210,true,0,
+node3_boot1,612.752,GET,211,true,0,
+node3_boot1,612.752,GET,212,true,0,
+node3_boot1,612.753,GET,213,true,0,
+node3_boot1,612.753,GET,214,true,0,
+node3_boot1,612.755,GET,215,true,0,
+node3_boot1,612.757,GET,216,true,0,
+node3_boot1,612.757,GET,217,true,0,
+node3_boot1,612.759,GET,218,true,0,
+node3_boot1,612.761,GET,219,true,0,
+node3_boot1,612.762,GET,220,true,0,
+node3_boot1,612.763,GET,221,true,0,
+node3_boot1,612.764,GET,222,true,0,
+node3_boot1,612.764,GET,223,true,0,
+node3_boot1,612.765,GET,224,true,0,
+node3_boot1,612.765,GET,225,true,0,
+node3_boot1,612.766,GET,226,true,0,
+node3_boot1,612.767,GET,227,true,0,
+node3_boot1,612.768,GET,228,true,0,
+node3_boot1,612.769,GET,229,true,0,
+node3_boot1,612.769,GET,230,true,0,
+node3_boot1,612.77,GET,231,true,0,
+node3_boot1,612.771,GET,232,true,0,
+node3_boot1,612.771,GET,233,true,0,
+node3_boot1,612.772,GET,234,true,0,
+node3_boot1,612.772,GET,235,true,0,
+node3_boot1,612.773,GET,236,true,0,
+node3_boot1,612.774,GET,237,true,1,
+node3_boot1,612.775,GET,238,true,0,
+node3_boot1,612.776,GET,239,true,0,
+node3_boot1,612.777,GET,240,true,0,
+node3_boot1,612.777,GET,241,true,0,
+node3_boot1,612.778,GET,242,true,0,
+node3_boot1,612.779,GET,243,true,0,
+node3_boot1,612.779,GET,244,true,0,
+node3_boot1,612.78,GET,245,true,0,
+node3_boot1,612.781,GET,246,true,0,
+node3_boot1,612.781,GET,247,true,0,
+node3_boot1,612.782,GET,248,true,0,
+node3_boot1,612.783,GET,249,true,0,
+node3_boot1,612.783,GET,250,true,0,
+node3_boot1,612.784,GET,251,true,0,
+node3_boot1,612.785,GET,252,true,0,
+node3_boot1,612.785,GET,253,true,0,
+node3_boot1,612.786,GET,254,true,0,
+node3_boot1,612.787,GET,255,true,0,
+node3_boot1,732.68,GET,0,true,0,
+node3_boot1,732.681,GET,1,true,0,
+node3_boot1,732.682,GET,2,true,0,
+node3_boot1,732.683,GET,3,true,0,
+node3_boot1,732.683,GET,4,true,0,
+node3_boot1,732.684,GET,5,true,0,
+node3_boot1,732.685,GET,6,true,0,
+node3_boot1,732.685,GET,7,true,0,
+node3_boot1,732.686,GET,8,true,0,
+node3_boot1,732.686,GET,9,true,0,
+node3_boot1,732.687,GET,10,true,0,
+node3_boot1,732.687,GET,11,true,0,
+node3_boot1,732.688,GET,12,true,0,
+node3_boot1,732.689,GET,13,true,0,
+node3_boot1,732.69,GET,14,true,0,
+node3_boot1,732.69,GET,15,true,0,
+node3_boot1,732.691,GET,16,true,0,
+node3_boot1,732.692,GET,17,true,0,
+node3_boot1,732.693,GET,18,true,0,
+node3_boot1,732.693,GET,19,true,0,
+node3_boot1,732.694,GET,20,true,0,
+node3_boot1,732.695,GET,21,true,0,
+node3_boot1,732.695,GET,22,true,0,
+node3_boot1,732.697,GET,23,true,0,
+node3_boot1,732.698,GET,24,true,0,
+node3_boot1,732.698,GET,25,true,0,
+node3_boot1,732.699,GET,26,true,0,
+node3_boot1,732.7,GET,27,true,0,
+node3_boot1,732.701,GET,28,true,0,
+node3_boot1,732.701,GET,29,true,0,
+node3_boot1,732.702,GET,30,true,0,
+node3_boot1,732.703,GET,31,true,0,
+node3_boot1,732.703,GET,32,true,0,
+node3_boot1,732.704,GET,33,true,0,
+node3_boot1,732.705,GET,34,true,0,
+node3_boot1,732.706,GET,35,true,0,
+node3_boot1,732.706,GET,36,true,0,
+node3_boot1,732.707,GET,37,true,0,
+node3_boot1,732.708,GET,38,true,0,
+node3_boot1,732.709,GET,39,true,0,
+node3_boot1,732.71,GET,40,true,0,
+node3_boot1,732.71,GET,41,true,0,
+node3_boot1,732.711,GET,42,true,0,
+node3_boot1,732.712,GET,43,true,0,
+node3_boot1,732.714,GET,44,true,0,
+node3_boot1,732.715,GET,45,true,0,
+node3_boot1,732.717,GET,46,true,0,
+node3_boot1,732.718,GET,47,true,0,
+node3_boot1,732.72,GET,48,true,0,
+node3_boot1,732.722,GET,49,true,0,
+node3_boot1,732.722,GET,50,true,0,
+node3_boot1,732.723,GET,51,true,0,
+node3_boot1,732.724,GET,52,true,0,
+node3_boot1,732.724,GET,53,true,0,
+node3_boot1,732.725,GET,54,true,0,
+node3_boot1,732.726,GET,55,true,0,
+node3_boot1,732.726,GET,56,true,0,
+node3_boot1,732.727,GET,57,true,0,
+node3_boot1,732.728,GET,58,true,0,
+node3_boot1,732.728,GET,59,true,0,
+node3_boot1,732.729,GET,60,true,0,
+node3_boot1,732.729,GET,61,true,0,
+node3_boot1,732.73,GET,62,true,0,
+node3_boot1,732.731,GET,63,true,0,
+node3_boot1,732.731,GET,64,true,0,
+node3_boot1,732.732,GET,65,true,0,
+node3_boot1,732.733,GET,66,true,0,
+node3_boot1,732.733,GET,67,true,0,
+node3_boot1,732.734,GET,68,true,0,
+node3_boot1,732.734,GET,69,true,0,
+node3_boot1,732.735,GET,70,true,0,
+node3_boot1,732.736,GET,71,true,0,
+node3_boot1,732.736,GET,72,true,0,
+node3_boot1,732.737,GET,73,true,0,
+node3_boot1,732.737,GET,74,true,0,
+node3_boot1,732.738,GET,75,true,0,
+node3_boot1,732.739,GET,76,true,0,
+node3_boot1,732.739,GET,77,true,0,
+node3_boot1,732.74,GET,78,true,0,
+node3_boot1,732.741,GET,79,true,0,
+node3_boot1,732.742,GET,80,true,0,
+node3_boot1,732.742,GET,81,true,0,
+node3_boot1,732.743,GET,82,true,0,
+node3_boot1,732.743,GET,83,true,0,
+node3_boot1,732.744,GET,84,true,0,
+node3_boot1,732.745,GET,85,true,0,
+node3_boot1,732.746,GET,86,true,0,
+node3_boot1,732.748,GET,87,true,0,
+node3_boot1,732.749,GET,88,true,0,
+node3_boot1,732.751,GET,89,true,0,
+node3_boot1,732.753,GET,90,true,0,
+node3_boot1,732.754,GET,91,true,0,
+node3_boot1,732.755,GET,92,true,0,
+node3_boot1,732.755,GET,93,true,0,
+node3_boot1,732.756,GET,94,true,0,
+node3_boot1,732.757,GET,95,true,0,
+node3_boot1,732.757,GET,96,true,0,
+node3_boot1,732.758,GET,97,true,0,
+node3_boot1,732.759,GET,98,true,0,
+node3_boot1,732.759,GET,99,true,0,
+node3_boot1,732.76,GET,100,true,0,
+node3_boot1,732.76,GET,101,true,0,
+node3_boot1,732.761,GET,102,true,0,
+node3_boot1,732.762,GET,103,true,0,
+node3_boot1,732.762,GET,104,true,0,
+node3_boot1,732.763,GET,105,true,0,
+node3_boot1,732.763,GET,106,true,0,
+node3_boot1,732.764,GET,107,true,0,
+node3_boot1,732.764,GET,108,true,0,
+node3_boot1,732.765,GET,109,true,0,
+node3_boot1,732.765,GET,110,true,0,
+node3_boot1,732.766,GET,111,true,0,
+node3_boot1,732.767,GET,112,true,0,
+node3_boot1,732.767,GET,113,true,0,
+node3_boot1,732.768,GET,114,true,0,
+node3_boot1,732.768,GET,115,true,0,
+node3_boot1,732.769,GET,116,true,0,
+node3_boot1,732.77,GET,117,true,0,
+node3_boot1,732.77,GET,118,true,0,
+node3_boot1,732.771,GET,119,true,0,
+node3_boot1,732.771,GET,120,true,0,
+node3_boot1,732.772,GET,121,true,0,
+node3_boot1,732.772,GET,122,true,0,
+node3_boot1,732.773,GET,123,true,0,
+node3_boot1,732.774,GET,124,true,0,
+node3_boot1,732.774,GET,125,true,0,
+node3_boot1,732.775,GET,126,true,0,
+node3_boot1,732.775,GET,127,true,0,
+node3_boot1,732.776,GET,128,true,0,
+node3_boot1,732.778,GET,129,true,0,
+node3_boot1,732.779,GET,130,true,0,
+node3_boot1,732.781,GET,131,true,0,
+node3_boot1,732.783,GET,132,true,0,
+node3_boot1,732.785,GET,133,true,0,
+node3_boot1,732.785,GET,134,true,0,
+node3_boot1,732.786,GET,135,true,0,
+node3_boot1,732.786,GET,136,true,0,
+node3_boot1,732.787,GET,137,true,0,
+node3_boot1,732.788,GET,138,true,0,
+node3_boot1,732.788,GET,139,true,0,
+node3_boot1,732.789,GET,140,true,0,
+node3_boot1,732.79,GET,141,true,1,
+node3_boot1,732.791,GET,142,true,0,
+node3_boot1,732.792,GET,143,true,0,
+node3_boot1,732.793,GET,144,true,0,
+node3_boot1,732.793,GET,145,true,0,
+node3_boot1,732.794,GET,146,true,0,
+node3_boot1,732.795,GET,147,true,0,
+node3_boot1,732.795,GET,148,true,0,
+node3_boot1,732.796,GET,149,true,0,
+node3_boot1,732.797,GET,150,true,0,
+node3_boot1,732.797,GET,151,true,0,
+node3_boot1,732.798,GET,152,true,0,
+node3_boot1,732.799,GET,153,true,0,
+node3_boot1,732.799,GET,154,true,0,
+node3_boot1,732.8,GET,155,true,0,
+node3_boot1,732.801,GET,156,true,0,
+node3_boot1,732.801,GET,157,true,0,
+node3_boot1,732.802,GET,158,true,0,
+node3_boot1,732.803,GET,159,true,0,
+node3_boot1,732.804,GET,160,true,0,
+node3_boot1,732.805,GET,161,true,0,
+node3_boot1,732.805,GET,162,true,0,
+node3_boot1,732.806,GET,163,true,0,
+node3_boot1,732.807,GET,164,true,0,
+node3_boot1,732.807,GET,165,true,0,
+node3_boot1,732.808,GET,166,true,0,
+node3_boot1,732.809,GET,167,true,0,
+node3_boot1,732.809,GET,168,true,0,
+node3_boot1,732.81,GET,169,true,0,
+node3_boot1,732.811,GET,170,true,0,
+node3_boot1,732.811,GET,171,true,0,
+node3_boot1,732.812,GET,172,true,0,
+node3_boot1,732.812,GET,173,true,0,
+node3_boot1,732.813,GET,174,true,0,
+node3_boot1,732.814,GET,175,true,0,
+node3_boot1,732.814,GET,176,true,0,
+node3_boot1,732.815,GET,177,true,0,
+node3_boot1,732.815,GET,178,true,0,
+node3_boot1,732.816,GET,179,true,0,
+node3_boot1,732.817,GET,180,true,0,
+node3_boot1,732.817,GET,181,true,0,
+node3_boot1,732.818,GET,182,true,0,
+node3_boot1,732.819,GET,183,true,0,
+node3_boot1,732.82,GET,184,true,0,
+node3_boot1,732.821,GET,185,true,0,
+node3_boot1,732.822,GET,186,true,0,
+node3_boot1,732.822,GET,187,true,0,
+node3_boot1,732.823,GET,188,true,0,
+node3_boot1,732.824,GET,189,true,0,
+node3_boot1,732.824,GET,190,true,0,
+node3_boot1,732.825,GET,191,true,0,
+node3_boot1,732.825,GET,192,true,0,
+node3_boot1,732.826,GET,193,true,0,
+node3_boot1,732.827,GET,194,true,0,
+node3_boot1,732.827,GET,195,true,0,
+node3_boot1,732.828,GET,196,true,0,
+node3_boot1,732.829,GET,197,true,0,
+node3_boot1,732.829,GET,198,true,0,
+node3_boot1,732.83,GET,199,true,0,
+node3_boot1,732.83,GET,200,true,0,
+node3_boot1,732.831,GET,201,true,0,
+node3_boot1,732.832,GET,202,true,0,
+node3_boot1,732.832,GET,203,true,0,
+node3_boot1,732.833,GET,204,true,0,
+node3_boot1,732.834,GET,205,true,0,
+node3_boot1,732.834,GET,206,true,0,
+node3_boot1,732.835,GET,207,true,0,
+node3_boot1,732.836,GET,208,true,0,
+node3_boot1,732.836,GET,209,true,0,
+node3_boot1,732.837,GET,210,true,0,
+node3_boot1,732.838,GET,211,true,0,
+node3_boot1,732.838,GET,212,true,0,
+node3_boot1,732.839,GET,213,true,0,
+node3_boot1,732.841,GET,214,true,0,
+node3_boot1,732.842,GET,215,true,0,
+node3_boot1,732.844,GET,216,true,0,
+node3_boot1,732.845,GET,217,true,0,
+node3_boot1,732.847,GET,218,true,0,
+node3_boot1,732.848,GET,219,true,0,
+node3_boot1,732.85,GET,220,true,1,
+node3_boot1,732.851,GET,221,true,0,
+node3_boot1,732.852,GET,222,true,0,
+node3_boot1,732.853,GET,223,true,0,
+node3_boot1,732.853,GET,224,true,0,
+node3_boot1,732.854,GET,225,true,0,
+node3_boot1,732.855,GET,226,true,0,
+node3_boot1,732.856,GET,227,true,0,
+node3_boot1,732.857,GET,228,true,0,
+node3_boot1,732.857,GET,229,true,0,
+node3_boot1,732.858,GET,230,true,0,
+node3_boot1,732.859,GET,231,true,0,
+node3_boot1,732.859,GET,232,true,0,
+node3_boot1,732.86,GET,233,true,0,
+node3_boot1,732.86,GET,234,true,0,
+node3_boot1,732.861,GET,235,true,0,
+node3_boot1,732.861,GET,236,true,0,
+node3_boot1,732.862,GET,237,true,0,
+node3_boot1,732.863,GET,238,true,0,
+node3_boot1,732.863,GET,239,true,0,
+node3_boot1,732.864,GET,240,true,0,
+node3_boot1,732.865,GET,241,true,0,
+node3_boot1,732.865,GET,242,true,0,
+node3_boot1,732.866,GET,243,true,0,
+node3_boot1,732.866,GET,244,true,0,
+node3_boot1,732.867,GET,245,true,0,
+node3_boot1,732.867,GET,246,true,0,
+node3_boot1,732.868,GET,247,true,0,
+node3_boot1,732.869,GET,248,true,0,
+node3_boot1,732.87,GET,249,true,0,
+node3_boot1,732.87,GET,250,true,0,
+node3_boot1,732.871,GET,251,true,0,
+node3_boot1,732.872,GET,252,true,0,
+node3_boot1,732.872,GET,253,true,0,
+node3_boot1,732.873,GET,254,true,0,
+node3_boot1,732.873,GET,255,true,0,

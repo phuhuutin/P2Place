@@ -1,0 +1,147 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,result,reason
+node6_boot1,3716697498756,6,0,6,1,ok,classification=empty_valid attempts=1
+node6_boot1,3718201786487,6,1,7,1,ok,classification=empty_valid attempts=1
+node6_boot1,3719707749283,6,2,8,1,ok,classification=empty_valid attempts=1
+node6_boot1,3721219042103,6,3,9,1,ok,classification=empty_valid attempts=1
+node6_boot1,3722725098180,6,4,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3723226403698,6,5,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3723728227069,6,6,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3724229042661,6,7,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3724729925320,6,8,10,1,ok,classification=complete
+node6_boot1,3725232081325,6,9,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3725732929162,6,10,10,1,ok,classification=complete
+node6_boot1,3726234019803,6,11,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3726734728357,6,12,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3727235645602,6,13,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3727736246864,6,14,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3728237168209,6,15,10,1,ok,classification=complete
+node6_boot1,3728737989190,6,16,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3729239727061,6,17,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3729742498348,6,18,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3730244363426,6,19,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3730746460630,6,20,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3731246513079,6,21,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3731747737200,6,22,10,1,ok,classification=empty_valid attempts=1
+node6_boot1,3732248536909,6,23,10,1,ok,classification=complete
+node6_boot1,3732750200128,6,24,10,1,ok,classification=complete
+node6_boot1,3733251528415,6,25,10,1,ok,classification=complete
+node6_boot1,3733752036087,6,26,10,1,ok,classification=complete
+node6_boot1,3734254725107,6,27,10,1,ok,classification=complete
+node6_boot1,3734754260662,6,28,10,1,ok,classification=complete
+node6_boot1,3735254970894,6,29,10,1,ok,classification=complete
+node6_boot1,3735755489232,6,30,10,1,ok,classification=complete
+node6_boot1,3736256893850,6,31,10,1,ok,classification=complete
+node6_boot1,3736757576818,6,32,10,1,ok,classification=complete
+node6_boot1,3737258121314,6,33,10,1,ok,classification=complete
+node6_boot1,3737759660740,6,34,10,1,ok,classification=complete
+node6_boot1,3738260738609,6,35,10,1,ok,classification=complete
+node6_boot1,3738761885568,6,36,10,1,ok,classification=complete
+node6_boot1,3739262266507,6,37,10,1,ok,classification=complete
+node6_boot1,3739763901798,6,38,10,1,ok,classification=complete
+node6_boot1,3740265705621,6,39,10,1,ok,classification=complete
+node6_boot1,3740766352221,6,40,10,1,ok,classification=complete
+node6_boot1,3741267612791,6,41,10,1,ok,classification=complete
+node6_boot1,3741768345243,6,64,10,1,ok,classification=complete
+node6_boot1,3742270357171,6,65,10,1,ok,classification=complete
+node6_boot1,3742771812956,6,66,10,1,ok,classification=complete
+node6_boot1,3743272286462,6,67,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3743773227595,6,68,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3744275043356,6,69,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3744776813098,6,70,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3745278372057,6,71,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3745779446352,6,72,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3746280942751,6,73,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3746781849443,6,74,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3747282703996,6,75,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3747783910346,6,76,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3748286028474,6,77,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3748787417017,6,78,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3749289245723,6,79,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3749790040478,6,80,10,1,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3750291309790,6,20,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3750792888511,6,34,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3751293566991,6,35,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3751794672669,6,36,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3752295524546,6,37,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3752796546916,6,38,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3753297662224,6,39,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3753798614736,6,40,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3754299286165,6,41,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3754803460824,6,77,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3755304655258,6,78,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3755805665526,6,79,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3756307081922,6,80,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3756808804301,6,81,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3757308233703,6,82,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3757809740718,6,83,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3758311042346,6,84,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3758813083113,6,192,10,2,ok,classification=complete
+node6_boot1,3759314683055,6,193,10,2,ok,classification=complete
+node6_boot1,3759814888310,6,194,10,2,ok,classification=complete
+node6_boot1,3760315210130,6,195,10,2,ok,classification=complete
+node6_boot1,3760816002261,6,196,10,2,ok,classification=complete
+node6_boot1,3761316093637,6,197,10,2,ok,classification=complete
+node6_boot1,3761816352909,6,198,10,2,ok,classification=complete
+node6_boot1,3762317985156,6,199,10,2,ok,classification=complete
+node6_boot1,3762819086675,6,200,10,2,ok,classification=complete
+node6_boot1,3763320603731,6,201,10,2,ok,classification=complete
+node6_boot1,3763821194276,6,202,10,2,ok,classification=complete
+node6_boot1,3764322537024,6,203,10,2,ok,classification=complete
+node6_boot1,3764823333576,6,204,10,2,ok,classification=complete
+node6_boot1,3765324770326,6,205,10,2,ok,classification=complete
+node6_boot1,3765826437302,6,206,10,2,ok,classification=complete
+node6_boot1,3766326531406,6,207,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3766826932784,6,208,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3767327963821,6,209,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3767828619940,6,210,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3768329757736,6,211,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,3768831106531,6,212,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node6_boot1,4402219456872,6,20,10,5,ok,classification=complete
+node6_boot1,4402720605337,6,34,10,5,ok,classification=complete
+node6_boot1,4403221133542,6,35,10,5,ok,classification=complete
+node6_boot1,4403722066253,6,36,10,5,ok,classification=complete
+node6_boot1,4404223326473,6,37,10,5,ok,classification=complete
+node6_boot1,4404725226128,6,38,10,5,ok,classification=complete
+node6_boot1,4405225800605,6,39,10,5,ok,classification=complete
+node6_boot1,4405727695705,6,40,10,5,ok,classification=complete
+node6_boot1,4406228544480,6,41,10,5,ok,classification=complete
+node6_boot1,4406729477115,6,77,10,5,ok,classification=complete
+node6_boot1,4407230707365,6,78,10,5,ok,classification=complete
+node6_boot1,4407731621606,6,79,10,5,ok,classification=complete
+node6_boot1,4408231841660,6,80,10,5,ok,classification=complete
+node6_boot1,4408733527462,6,81,10,5,ok,classification=complete
+node6_boot1,4409235167661,6,82,10,5,ok,classification=complete
+node6_boot1,4409735033818,6,83,10,5,ok,classification=complete
+node6_boot1,4410236343810,6,84,10,5,ok,classification=complete
+node6_boot1,4410738636408,6,204,10,5,ok,classification=complete
+node6_boot1,4411240711994,6,205,10,5,ok,classification=complete
+node6_boot1,4411741492337,6,206,10,5,ok,classification=complete
+node6_boot1,4412241777250,6,207,10,5,ok,classification=complete
+node6_boot1,4412744925586,6,208,10,5,ok,classification=complete
+node6_boot1,4413246196706,6,209,10,5,ok,classification=complete
+node6_boot1,4413748494845,6,210,10,5,ok,classification=complete
+node6_boot1,4414249092192,6,211,10,5,ok,classification=complete
+node6_boot1,4414748896381,6,212,10,5,ok,classification=complete
+node6_boot1,4432300314148,6,20,10,6,ok,classification=complete
+node6_boot1,4432801844346,6,34,10,6,ok,classification=complete
+node6_boot1,4433302421422,6,35,10,6,ok,classification=complete
+node6_boot1,4433803931466,6,36,10,6,ok,classification=complete
+node6_boot1,4434306999658,6,37,10,6,ok,classification=complete
+node6_boot1,4434810645623,6,38,10,6,ok,classification=complete
+node6_boot1,4435312370493,6,39,10,6,ok,classification=complete
+node6_boot1,4435814464788,6,40,10,6,ok,classification=complete
+node6_boot1,4436315932629,6,41,10,6,ok,classification=complete
+node6_boot1,4436817945512,6,77,10,6,ok,classification=complete
+node6_boot1,4437320030792,6,78,10,6,ok,classification=complete
+node6_boot1,4437821278005,6,79,10,6,ok,classification=complete
+node6_boot1,4438322063334,6,80,10,6,ok,classification=complete
+node6_boot1,4438822812925,6,81,10,6,ok,classification=complete
+node6_boot1,4439323549948,6,82,10,6,ok,classification=complete
+node6_boot1,4439825700981,6,83,10,6,ok,classification=complete
+node6_boot1,4440326920787,6,84,10,6,ok,classification=complete
+node6_boot1,4440828267253,6,204,10,6,ok,classification=complete
+node6_boot1,4441329857457,6,205,10,6,ok,classification=complete
+node6_boot1,4441830704113,6,206,10,6,ok,classification=complete
+node6_boot1,4442331390631,6,207,10,6,ok,classification=complete
+node6_boot1,4442834359175,6,208,10,6,ok,classification=complete
+node6_boot1,4443335173375,6,209,10,6,ok,classification=complete

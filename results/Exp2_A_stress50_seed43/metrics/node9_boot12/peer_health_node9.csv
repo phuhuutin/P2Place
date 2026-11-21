@@ -1,0 +1,5 @@
+run_id,time_s,node_id,state,observed_seconds,availability_score
+node9_boot12,0.00219726,1,HEALTHY,0,1
+node9_boot12,0.500838,8,HEALTHY,0,1
+node9_boot12,0.503023,10,HEALTHY,0,1
+node9_boot12,3.00261,8,SUSPECT,2.50177,1

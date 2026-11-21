@@ -1,0 +1,9 @@
+{"time_s": -12.411203908, "monotonic_ns": 3710450743863, "placement_gen": 2, "placement_fp": 18345150956728532549, "authority_node": 1, "member_ids": [1, 2]}
+{"time_s": -11.002018897, "monotonic_ns": 3711859928874, "placement_gen": 3, "placement_fp": 12722227713207109012, "authority_node": 1, "member_ids": [1, 2, 3]}
+{"time_s": -9.493745616, "monotonic_ns": 3713368202155, "placement_gen": 4, "placement_fp": 6138411189979820597, "authority_node": 1, "member_ids": [1, 2, 3, 4]}
+{"time_s": -7.982974859, "monotonic_ns": 3714878972912, "placement_gen": 5, "placement_fp": 12492808849396643957, "authority_node": 1, "member_ids": [1, 2, 3, 4, 5]}
+{"time_s": -6.376966338, "monotonic_ns": 3716484981433, "placement_gen": 6, "placement_fp": 12639488980670107873, "authority_node": 1, "member_ids": [1, 2, 3, 4, 5, 6]}
+{"time_s": -4.869707293, "monotonic_ns": 3717992240478, "placement_gen": 7, "placement_fp": 5740683018675030833, "authority_node": 1, "member_ids": [1, 2, 3, 4, 5, 6, 7]}
+{"time_s": -3.358046867, "monotonic_ns": 3719503900904, "placement_gen": 8, "placement_fp": 13078787153067162565, "authority_node": 1, "member_ids": [1, 2, 3, 4, 5, 6, 7, 8]}
+{"time_s": -1.846697568, "monotonic_ns": 3721015250203, "placement_gen": 9, "placement_fp": 6261366839176586593, "authority_node": 1, "member_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9]}
+{"time_s": -0.337981442, "monotonic_ns": 3722523966329, "placement_gen": 10, "placement_fp": 13788559444936516889, "authority_node": 1, "member_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}

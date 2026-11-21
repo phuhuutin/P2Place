@@ -1,0 +1,18 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,result,reason
+node8_boot3,3780385193709,8,13,10,2,ok,classification=complete
+node8_boot3,3780886081724,8,20,10,2,failed,read quorum unavailable classification=retry attempts=1
+node8_boot3,3781388108922,8,20,10,2,ok,classification=complete
+node8_boot3,3781889371737,8,22,10,2,ok,classification=complete
+node8_boot3,3782390107387,8,23,10,2,ok,classification=complete
+node8_boot3,3782891702759,8,24,10,2,ok,classification=complete
+node8_boot3,3783392533297,8,25,10,2,ok,classification=complete
+node8_boot3,3783893513668,8,26,10,2,ok,classification=complete
+node8_boot3,3784394519411,8,34,10,2,ok,classification=complete
+node8_boot3,3784895532499,8,35,10,2,ok,classification=complete
+node8_boot3,3785396038886,8,36,10,2,ok,classification=complete
+node8_boot3,3785896914684,8,37,10,2,ok,classification=complete
+node8_boot3,3786398010614,8,38,10,2,ok,classification=complete
+node8_boot3,3786899844847,8,39,10,2,ok,classification=complete
+node8_boot3,3787401246598,8,40,10,2,ok,classification=complete
+node8_boot3,3787902425606,8,41,10,2,ok,classification=complete
+node8_boot3,3788403321295,8,42,10,2,ok,classification=complete

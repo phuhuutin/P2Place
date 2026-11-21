@@ -1,0 +1,24 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,result,reason
+node8_boot4,3800368580973,8,13,10,2,failed,read quorum unavailable classification=retry attempts=1
+node8_boot4,3800870480052,8,13,10,2,ok,classification=complete
+node8_boot4,3801370110973,8,20,10,2,failed,read quorum unavailable classification=retry attempts=1
+node8_boot4,3801871352640,8,20,10,2,failed,read quorum unavailable classification=retry attempts=2
+node8_boot4,3802371842919,8,20,10,2,failed,read quorum unavailable classification=retry attempts=3
+node8_boot4,3802872217170,8,20,10,2,failed,read quorum unavailable classification=give_up attempts=4
+node8_boot4,3803373976050,8,22,10,2,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node8_boot4,3803875884203,8,23,10,2,ok,classification=complete
+node8_boot4,3804378085694,8,24,10,2,ok,classification=complete
+node8_boot4,3804878632506,8,25,10,2,ok,classification=complete
+node8_boot4,3805379669391,8,26,10,2,ok,classification=complete
+node8_boot4,3805880604554,8,34,10,2,ok,classification=complete
+node8_boot4,3806381395192,8,35,10,2,ok,classification=complete
+node8_boot4,3806882437148,8,36,10,2,ok,classification=complete
+node8_boot4,3807383274126,8,37,10,2,ok,classification=complete
+node8_boot4,3807884758485,8,38,10,2,ok,classification=complete
+node8_boot4,3808385894524,8,39,10,2,ok,classification=complete
+node8_boot4,3808887547767,8,40,10,2,ok,classification=complete
+node8_boot4,3809388751319,8,41,10,2,ok,classification=complete
+node8_boot4,3809890658189,8,42,10,2,ok,classification=complete
+node8_boot4,3810391456259,8,43,10,2,ok,classification=complete
+node8_boot4,3810892661750,8,44,10,2,ok,classification=complete
+node8_boot4,3811393455390,8,45,10,2,ok,classification=complete

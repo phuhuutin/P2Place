@@ -1,0 +1,726 @@
+{
+  "strategy": "B",
+  "seed": 43,
+  "duration_s": 300,
+  "nodes": 10,
+  "churn_profile": "aggressive",
+  "rate_target": 16.0,
+  "gateway_mode": "round-robin",
+  "targeted_write_percent": 0.0,
+  "planned_faults": 8,
+  "executed_faults": [
+    {
+      "planned_at_s": 48.0,
+      "actual_at_s": 48.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 78.0,
+      "actual_at_s": 78.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 114.0,
+      "actual_at_s": 114.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 126.0,
+      "actual_at_s": 126.01,
+      "action": "kill",
+      "node": 10
+    },
+    {
+      "planned_at_s": 159.0,
+      "actual_at_s": 159.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 171.0,
+      "actual_at_s": 171.0,
+      "action": "restart",
+      "node": 10
+    },
+    {
+      "planned_at_s": 207.0,
+      "actual_at_s": 207.01,
+      "action": "kill",
+      "node": 1
+    },
+    {
+      "planned_at_s": 237.0,
+      "actual_at_s": 237.01,
+      "action": "restart",
+      "node": 1
+    }
+  ],
+  "startup_ok": true,
+  "targeted_regions": [],
+  "pixel_distribution": "shuffled-global",
+  "profile_hypothesis": null,
+  "targeted_unique_coordinate_capacity": 0,
+  "time_base": {
+    "workload_start_monotonic_ns": 1896695705769,
+    "source": "time.monotonic_ns() / CLOCK_MONOTONIC"
+  },
+  "by_phase_and_workload": {
+    "standard/uniform": {
+      "attempts": 4800,
+      "acked": 4397,
+      "failed": 403,
+      "error_categories": {
+        "quorum_or_replica": 134,
+        "gateway_connection": 240,
+        "other": 29
+      },
+      "success_pct": 91.6
+    }
+  },
+  "verification_immediate": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 24,
+    "read_failures": [],
+    "examples": [
+      {
+        "reader": 1,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 7,
+        "y": 28,
+        "expected": "#39FD2B",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 179,
+        "y": 17,
+        "expected": "#B17BA7",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 174,
+        "y": 11,
+        "expected": "#CD4718",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 13,
+        "y": 25,
+        "expected": "#28DE59",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 7,
+        "y": 28,
+        "expected": "#39FD2B",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 179,
+        "y": 17,
+        "expected": "#B17BA7",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 174,
+        "y": 11,
+        "expected": "#CD4718",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 13,
+        "y": 25,
+        "expected": "#28DE59",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      }
+    ],
+    "elapsed_since_writes_s": 0.649
+  },
+  "verification_after_settle": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 24,
+    "read_failures": [],
+    "examples": [
+      {
+        "reader": 1,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 7,
+        "y": 28,
+        "expected": "#39FD2B",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 179,
+        "y": 17,
+        "expected": "#B17BA7",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 174,
+        "y": 11,
+        "expected": "#CD4718",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 13,
+        "y": 25,
+        "expected": "#28DE59",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 7,
+        "y": 28,
+        "expected": "#39FD2B",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 179,
+        "y": 17,
+        "expected": "#B17BA7",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 174,
+        "y": 11,
+        "expected": "#CD4718",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 13,
+        "y": 25,
+        "expected": "#28DE59",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      }
+    ],
+    "elapsed_since_writes_s": 120.753
+  },
+  "verification": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 24,
+    "read_failures": [],
+    "examples": [
+      {
+        "reader": 1,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 7,
+        "y": 28,
+        "expected": "#39FD2B",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 179,
+        "y": 17,
+        "expected": "#B17BA7",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 174,
+        "y": 11,
+        "expected": "#CD4718",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 13,
+        "y": 25,
+        "expected": "#28DE59",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 7,
+        "y": 28,
+        "expected": "#39FD2B",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 179,
+        "y": 17,
+        "expected": "#B17BA7",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 174,
+        "y": 11,
+        "expected": "#CD4718",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 13,
+        "y": 25,
+        "expected": "#28DE59",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 24,
+        "y": 25,
+        "expected": "#5C830A",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 185,
+        "y": 23,
+        "expected": "#58BEA1",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 192,
+        "y": 31,
+        "expected": "#F2B28B",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 214,
+        "y": 17,
+        "expected": "#98C7B6",
+        "actual": null
+      }
+    ],
+    "elapsed_since_writes_s": 120.753
+  },
+  "verification_comparison": {
+    "same_sample": true,
+    "requested_settle_s": 120.0,
+    "immediate_missing_comparisons": 24,
+    "followup_missing_comparisons": 24,
+    "net_mismatch_reduction": 0,
+    "note": "Counts are pixel-reader comparisons, not necessarily unique pixels. A reduction does not prove every copy converged."
+  },
+  "attempts": 4800,
+  "acked": 4397,
+  "failed": 403,
+  "success_pct": 91.604,
+  "latency_ms_acked_avg": 9.73,
+  "final_placement": {
+    "1": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "2": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "3": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "4": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "5": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "6": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "7": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "8": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "9": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "10": [
+      16,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "replication_timeline": {
+    "enabled": true,
+    "complete": false,
+    "sample_interval_s": 1.0,
+    "initial_policy_time_s": -12.394735625,
+    "policy_changes": 712,
+    "placement_changes": 15,
+    "authority_changes": 2,
+    "conflicts": 0,
+    "missing_intervals_s": 0.0,
+    "metrics_dropped": 0,
+    "outputs": [
+      "region_replication_events.csv",
+      "placement_snapshots.jsonl",
+      "node_replication_timeline.csv",
+      "replication_summary.csv"
+    ],
+    "error": "tuple.index(x): x not in tuple"
+  }
+}

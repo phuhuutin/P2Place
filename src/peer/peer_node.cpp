@@ -454,7 +454,11 @@ void PeerNode::log_peer_health(core::NodeId id, core::NodeStatus status) {
 }
 
 void PeerNode::reset_to_joiner(const std::string& why) {
-    if(!placement_ready_ && !staged_ && !frozen_)return;
+    if(!placement_ready_ && !staged_ && !frozen_ &&
+       pending_browser_puts_.empty())return;
+    // Buffered writes belong to the abandoned committed incarnation and must
+    // never replay from an unadmitted/stale joiner.
+    discard_all_browser_puts(/*membership_reset=*/true);
     const auto old_gen = placement_ready_ ? placement_.epoch() : 0;
     std::cout << "[peer-health] node=" << config_.id
               << " STALE->JOINER local_generation=" << old_gen
@@ -931,6 +935,11 @@ void PeerNode::on_tick() {
         replicator_->backfill_step();
     if (config_.id == authority_id_) progress_transition();
     else send_ready_if_quiescent();
+    // Safe replay runs only AFTER transition progression finalized this
+    // tick's frozen/phase flags (successful RELEASE, safe ABORT, or a
+    // completed removal). COMMIT UNCERTAIN leaves frozen_=true and never
+    // reaches the queue.
+    drain_browser_puts();
 }
 
 void PeerNode::send_write_report(std::chrono::steady_clock::time_point now) {
@@ -1018,6 +1027,12 @@ void PeerNode::run() {
         config_.ws_port,
         [this](int fd, std::string_view json) {
             on_browser_command(fd, json);
+        },
+        // A session ended: drop its private buffered PUTs immediately. The
+        // (fd, generation) pair prevents touching a newer session that later
+        // reuses the descriptor.
+        [this](int fd, std::uint64_t generation) {
+            discard_browser_puts(fd, generation, /*membership_reset=*/false);
         }
     );
 
@@ -1112,8 +1127,19 @@ void PeerNode::run() {
                 const auto color =
                     parse_color(color_string);
 
+                // Resolve the exact session instance now: a queued PUT keeps
+                // this token so descriptor reuse cannot misdeliver it later.
+                const auto generation =
+                    ws_server_->session_generation(fd);
+                if (!generation) {
+                    std::cerr << "[WebSocket] dropping PUT from vanished fd="
+                              << fd << '\n';
+                    return;
+                }
+
                 handle_put(
                     fd,
+                    *generation,
                     static_cast<std::uint16_t>(x),
                     static_cast<std::uint16_t>(y),
                     color
@@ -1152,32 +1178,236 @@ void PeerNode::run() {
     }
 
 
-    void PeerNode::handle_put(int fd,std::uint16_t x,std::uint16_t y,std::uint32_t color) {
-        if(frozen_ || !placement_ready_) {
-            report_browser_error(fd,"placement transition or join in progress");return;
+    bool PeerNode::queue_browser_put(int browser_fd,
+                                     std::uint64_t session_generation,
+                                     std::uint16_t x,std::uint16_t y,
+                                     std::uint32_t color) {
+        if(pending_browser_puts_.size()>=MAX_PENDING_BROWSER_PUTS)
+            return false;
+        pending_browser_puts_.push_back(PendingBrowserPut{
+            browser_fd,session_generation,x,y,color,
+            std::chrono::steady_clock::now()});
+        ++put_buffer_enqueued_;
+        std::cout << "[put-buffer] node=" << config_.id << " event=enqueue"
+                  << " depth=" << pending_browser_puts_.size()
+                  << " x=" << x << " y=" << y
+                  << " gen=" << session_generation << '\n';
+        return true;
+    }
+
+    void PeerNode::discard_browser_puts(int browser_fd,
+                                        std::uint64_t session_generation,
+                                        bool membership_reset) {
+        std::size_t discarded=0;
+        for(auto it=pending_browser_puts_.begin();
+            it!=pending_browser_puts_.end();) {
+            if(it->browser_fd==browser_fd &&
+               it->session_generation==session_generation) {
+                it=pending_browser_puts_.erase(it);
+                ++discarded;
+            } else {
+                ++it;
+            }
         }
+        if(discarded==0)return;
+        if(membership_reset)
+            put_buffer_discarded_membership_reset_+=discarded;
+        else
+            put_buffer_discarded_disconnected_+=discarded;
+        std::cout << "[put-buffer] node=" << config_.id
+                  << " event=discard"
+                  << (membership_reset?" reason=membership_reset"
+                                      :" reason=disconnected")
+                  << " count=" << discarded
+                  << " fd=" << browser_fd
+                  << " gen=" << session_generation
+                  << " depth=" << pending_browser_puts_.size() << '\n';
+    }
+
+    void PeerNode::discard_all_browser_puts(bool membership_reset) {
+        if(pending_browser_puts_.empty())return;
+        const auto discarded=pending_browser_puts_.size();
+        pending_browser_puts_.clear();
+        if(membership_reset)
+            put_buffer_discarded_membership_reset_+=discarded;
+        else
+            put_buffer_discarded_disconnected_+=discarded;
+        std::cout << "[put-buffer] node=" << config_.id
+                  << " event=discard_all"
+                  << (membership_reset?" reason=membership_reset"
+                                      :" reason=disconnected")
+                  << " count=" << discarded << " depth=0\n";
+    }
+
+    void PeerNode::report_browser_error_to_session(
+        int browser_fd,std::uint64_t session_generation,
+        const std::string& error) {
+        if(!ws_server_ ||
+           !ws_server_->session_is_open(browser_fd,session_generation)) {
+            // Never deliver an error (or later an ACK) to a different browser
+            // that happened to inherit the same descriptor number.
+            std::cout << "[put-buffer] node=" << config_.id
+                      << " event=delivery_skipped reason=session_closed"
+                      << " fd=" << browser_fd
+                      << " gen=" << session_generation << '\n';
+            return;
+        }
+        try {
+            const bool delivered=ws_server_->send_to(
+                browser_fd,json{{"op","error"},{"message",error}}.dump());
+            if(!delivered) {
+                std::cerr << "[put-buffer] node=" << config_.id
+                          << " event=delivery_failed fd=" << browser_fd
+                          << " gen=" << session_generation << '\n';
+            }
+        }
+        catch(const std::exception& e) {
+            std::cerr << "[put-buffer] node=" << config_.id
+                      << " event=delivery_failed fd=" << browser_fd
+                      << " gen=" << session_generation
+                      << " error=" << e.what() << '\n';
+        }
+    }
+
+    void PeerNode::execute_browser_put(int fd,std::uint64_t session_generation,
+                                       std::uint16_t x,std::uint16_t y,
+                                       std::uint32_t color,bool replayed) {
         const auto key=core::RegionStore::region_key(x,y);
         const auto index=core::RegionStore::pixel_index(x,y);
-        // Strategy C: one attempted client PUT per valid original command
-        // (quorum outcomes, forwards, repairs and reads never count here).
-        if(config_.strategy==Config::Strategy::C)
-            write_tracker_.record_put_attempt(key,std::chrono::steady_clock::now());
+        // Timestamp at EXECUTION time, never at queue time: the queued PUT
+        // must participate in the current committed placement and LWW order.
         const core::VersionedPixel pixel{color,lamport_clock_.tick(),config_.id};
+        if(replayed) {
+            ++put_buffer_replayed_;
+            std::cout << "[put-buffer] node=" << config_.id
+                      << " event=replay depth=" << pending_browser_puts_.size()
+                      << " gen=" << session_generation
+                      << " region=" << key << " index=" << index
+                      << " version=" << pixel.lamport << '\n';
+        }
         try {
-            const auto request=replicator_->put(key,index,pixel,[this,fd,key,index,pixel](bool ok,const std::string& error){
+            const auto request=replicator_->put(key,index,pixel,
+                [this,fd,session_generation,key,index,pixel,replayed]
+                (bool ok,const std::string& error){
                 if(ok) {
                     std::cout << "[ws-put] node=" << config_.id << " quorum=success region=" << key << " index=" << index << '\n';
+                    if(replayed) {
+                        ++put_buffer_replay_quorum_success_;
+                        std::cout << "[put-buffer] node=" << config_.id
+                                  << " event=quorum_ok gen=" << session_generation
+                                  << " region=" << key << '\n';
+                    }
                     announce_committed_pixel(key,index,pixel);
                 } else {
                     std::cerr << "[ws-put] node=" << config_.id << " quorum=failed region=" << key << " error=" << error << '\n';
-                    report_browser_error(fd,error);
+                    if(replayed) {
+                        ++put_buffer_replay_quorum_failed_;
+                        std::cout << "[put-buffer] node=" << config_.id
+                                  << " event=quorum_failed gen=" << session_generation
+                                  << " region=" << key
+                                  << " error=" << error << '\n';
+                    }
+                    report_browser_error_to_session(fd,session_generation,error);
                 }
             });
-            std::cout << "[ws-put] node=" << config_.id << " request=" << request
-                      << " x=" << x << " y=" << y << " region=" << key
-                      << " index=" << index << " color=" << color_to_hex(color)
-                      << " version=" << pixel.lamport << '\n';
-        }catch(const std::exception& e){report_browser_error(fd,e.what());}
+            if(replayed) {
+                std::cout << "[put-buffer] node=" << config_.id
+                          << " event=submitted request=" << request
+                          << " region=" << key << " index=" << index
+                          << " color=" << color_to_hex(color)
+                          << " version=" << pixel.lamport << '\n';
+            } else {
+                std::cout << "[ws-put] node=" << config_.id << " request=" << request
+                          << " x=" << x << " y=" << y << " region=" << key
+                          << " index=" << index << " color=" << color_to_hex(color)
+                          << " version=" << pixel.lamport << '\n';
+            }
+        }catch(const std::exception& e){
+            if(replayed)++put_buffer_replay_quorum_failed_;
+            report_browser_error_to_session(fd,session_generation,e.what());
+        }
+    }
+
+    void PeerNode::drain_browser_puts() {
+        if(pending_browser_puts_.empty())return;
+        // A queued PUT may execute only on a committed, fully released
+        // placement. Frozen, unadmitted and COMMIT-UNCERTAIN states fail
+        // closed; the queue survives until the next safe tick.
+        if(!placement_ready_ || frozen_ || phase_!=Phase::Idle || !replicator_)
+            return;
+        const auto now=std::chrono::steady_clock::now();
+        const auto oldest_age_ms=pending_browser_puts_.empty()?0:
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                now-pending_browser_puts_.front().enqueued_at).count();
+        std::size_t submitted=0;
+        std::size_t discarded=0;
+        while(!pending_browser_puts_.empty() &&
+              submitted<MAX_REPLAY_PER_TICK) {
+            // A callback (or a re-entrant path) may begin a new transition.
+            if(!placement_ready_ || frozen_ || phase_!=Phase::Idle)break;
+            PendingBrowserPut request=std::move(pending_browser_puts_.front());
+            pending_browser_puts_.pop_front();
+            if(!ws_server_ ||
+               !ws_server_->session_is_open(request.browser_fd,
+                                            request.session_generation)) {
+                ++put_buffer_discarded_disconnected_;
+                ++discarded;
+                std::cout << "[put-buffer] node=" << config_.id
+                          << " event=discard reason=disconnected"
+                          << " fd=" << request.browser_fd
+                          << " gen=" << request.session_generation
+                          << " depth=" << pending_browser_puts_.size() << '\n';
+                continue;
+            }
+            const auto waited_ms=std::chrono::duration_cast<
+                std::chrono::milliseconds>(now-request.enqueued_at).count();
+            std::cout << "[put-buffer] node=" << config_.id
+                      << " event=dequeue waited_ms=" << waited_ms
+                      << " gen=" << request.session_generation << '\n';
+            execute_browser_put(request.browser_fd,
+                                request.session_generation,
+                                request.x,request.y,request.color,
+                                /*replayed=*/true);
+            ++submitted;
+        }
+        std::cout << "[put-buffer] node=" << config_.id
+                  << " event=tick submitted=" << submitted
+                  << " discarded=" << discarded
+                  << " depth=" << pending_browser_puts_.size()
+                  << " oldest_age_ms=" << oldest_age_ms << '\n';
+    }
+
+    void PeerNode::handle_put(int fd,std::uint64_t session_generation,
+                              std::uint16_t x,std::uint16_t y,
+                              std::uint32_t color) {
+        // A joining/new/unadmitted gateway must not enqueue speculative
+        // writes: only an already committed peer may buffer during a
+        // placement transition.
+        if(!placement_ready_) {
+            report_browser_error(fd,"placement transition or join in progress");
+            return;
+        }
+        const bool needs_buffer=frozen_;
+        if(needs_buffer &&
+           !queue_browser_put(fd,session_generation,x,y,color)) {
+            ++put_buffer_full_rejected_;
+            std::cout << "[put-buffer] node=" << config_.id
+                      << " event=reject reason=full depth="
+                      << pending_browser_puts_.size() << '\n';
+            report_browser_error_to_session(fd,session_generation,
+                                            "PUT buffer full");
+            return;
+        }
+        // Strategy C: exactly ONE attempted client PUT per valid original
+        // command, counted at admission (enqueue included), never again at
+        // replay. Quorum outcomes, forwards and repairs never count here.
+        if(config_.strategy==Config::Strategy::C)
+            write_tracker_.record_put_attempt(
+                core::RegionStore::region_key(x,y),
+                std::chrono::steady_clock::now());
+        if(needs_buffer)return; // no tick, no quorum call, no ACK
+        execute_browser_put(fd,session_generation,x,y,color,
+                            /*replayed=*/false);
     }
 
     void PeerNode::handle_get_canvas(int fd) {

@@ -1,0 +1,12 @@
+run_id,time_s,op,region,success,latency_ms,error
+node8_boot2,6.5119,GET,13,true,0,
+node8_boot2,7.01328,GET,26,true,0,
+node8_boot2,7.5148,GET,34,true,0,
+node8_boot2,8.01624,GET,35,true,0,
+node8_boot2,8.51712,GET,36,true,0,
+node8_boot2,9.01877,GET,37,true,0,
+node8_boot2,9.51987,GET,38,true,0,
+node8_boot2,10.0215,GET,40,true,0,
+node8_boot2,10.5223,GET,41,true,0,
+node8_boot2,11.0236,GET,80,true,0,
+node8_boot2,11.5243,GET,81,true,0,

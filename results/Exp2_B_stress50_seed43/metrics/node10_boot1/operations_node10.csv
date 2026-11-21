@@ -1,0 +1,224 @@
+run_id,time_s,op,region,success,latency_ms,error
+node10_boot1,1.50705,GET,0,true,0,
+node10_boot1,2.00796,GET,1,true,0,
+node10_boot1,2.50858,GET,2,true,0,
+node10_boot1,3.00977,GET,3,true,1,
+node10_boot1,3.5109,GET,4,true,0,
+node10_boot1,4.01208,GET,5,true,0,
+node10_boot1,4.51368,GET,6,true,1,
+node10_boot1,5.01442,GET,7,true,1,
+node10_boot1,5.51523,GET,8,true,1,
+node10_boot1,6.01556,GET,9,true,1,
+node10_boot1,6.51641,GET,10,true,1,
+node10_boot1,7.01733,GET,11,true,1,
+node10_boot1,7.51809,GET,12,true,1,
+node10_boot1,8.02059,GET,14,true,0,
+node10_boot1,8.52352,GET,15,true,1,
+node10_boot1,9.02455,GET,16,true,1,
+node10_boot1,9.52625,GET,17,true,2,
+node10_boot1,10.0262,GET,18,true,0,
+node10_boot1,10.528,GET,19,true,1,
+node10_boot1,11.029,GET,21,true,0,
+node10_boot1,11.5301,GET,27,true,1,
+node10_boot1,12.0316,GET,28,true,1,
+node10_boot1,12.5316,GET,29,true,0,
+node10_boot1,13.0322,GET,30,true,1,
+node10_boot1,13.5326,GET,31,true,0,
+node10_boot1,14.0338,GET,32,true,0,
+node10_boot1,14.5346,GET,54,true,0,
+node10_boot1,15.0352,GET,55,true,0,
+node10_boot1,15.5366,GET,56,true,0,
+node10_boot1,16.0382,GET,57,true,1,
+node10_boot1,16.5388,GET,58,true,0,
+node10_boot1,17.0407,GET,59,true,1,
+node10_boot1,17.5414,GET,96,true,0,
+node10_boot1,18.0426,GET,97,true,1,
+node10_boot1,18.544,GET,98,true,1,
+node10_boot1,19.0446,GET,99,true,0,
+node10_boot1,19.5463,GET,100,true,1,
+node10_boot1,20.0485,GET,101,true,1,
+node10_boot1,20.5489,GET,138,true,1,
+node10_boot1,21.0506,GET,139,true,1,
+node10_boot1,21.5517,GET,140,true,1,
+node10_boot1,22.0526,GET,141,true,1,
+node10_boot1,22.5536,GET,142,true,0,
+node10_boot1,23.0562,GET,143,true,1,
+node10_boot1,23.5573,GET,224,true,0,
+node10_boot1,24.0583,GET,225,true,0,
+node10_boot1,24.5599,GET,226,true,1,
+node10_boot1,25.0609,GET,227,true,1,
+node10_boot1,25.5622,GET,228,true,0,
+node10_boot1,26.0633,GET,229,true,0,
+node10_boot1,29.0712,GET,13,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,29.5727,GET,22,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,30.0736,GET,23,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,30.5747,GET,24,true,1,complete_all merged 2/3 sources (1 failed)
+node10_boot1,31.0754,GET,25,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,31.5762,GET,26,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,32.0778,GET,42,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,32.5788,GET,43,true,1,complete_all merged 2/3 sources (1 failed)
+node10_boot1,33.0796,GET,44,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,33.5834,GET,45,true,0,
+node10_boot1,34.0848,GET,46,true,0,
+node10_boot1,34.587,GET,47,true,1,
+node10_boot1,35.0868,GET,48,true,0,
+node10_boot1,35.5885,GET,49,true,1,
+node10_boot1,36.0889,GET,50,true,1,
+node10_boot1,36.5901,GET,51,true,0,
+node10_boot1,37.0912,GET,52,true,1,
+node10_boot1,37.5923,GET,53,true,0,
+node10_boot1,38.0938,GET,85,true,0,
+node10_boot1,38.5947,GET,86,true,0,
+node10_boot1,39.0952,GET,87,true,1,
+node10_boot1,39.5959,GET,88,true,0,
+node10_boot1,40.0972,GET,89,true,0,
+node10_boot1,40.5975,GET,90,true,0,
+node10_boot1,41.0987,GET,91,true,1,
+node10_boot1,41.5996,GET,92,true,1,
+node10_boot1,42.1004,GET,93,true,0,
+node10_boot1,42.6011,GET,94,true,0,
+node10_boot1,43.1022,GET,95,true,1,
+node10_boot1,43.603,GET,128,true,1,
+node10_boot1,44.1049,GET,129,true,1,
+node10_boot1,44.6062,GET,130,true,1,
+node10_boot1,45.1063,GET,131,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,45.6075,GET,132,true,1,complete_all merged 2/3 sources (1 failed)
+node10_boot1,46.1085,GET,133,true,1,complete_all merged 2/3 sources (1 failed)
+node10_boot1,46.609,GET,134,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,47.1102,GET,135,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,47.6112,GET,136,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,48.1117,GET,137,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,48.6129,GET,213,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,49.114,GET,214,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,49.615,GET,215,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,50.1165,GET,216,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,50.6178,GET,217,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,51.1191,GET,218,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,51.6197,GET,219,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,52.1207,GET,220,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,52.6214,GET,221,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,53.1227,GET,222,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,53.6241,GET,223,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,189.43,GET,3,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,189.931,GET,4,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,190.433,GET,5,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,190.934,GET,9,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,191.435,GET,10,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,191.936,GET,14,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,192.438,GET,15,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,192.939,GET,16,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,193.44,GET,17,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,193.941,GET,27,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,194.443,GET,28,true,0,
+node10_boot1,194.944,GET,29,true,0,
+node10_boot1,195.445,GET,30,true,0,
+node10_boot1,195.946,GET,54,true,0,
+node10_boot1,196.447,GET,55,true,0,
+node10_boot1,196.948,GET,56,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,197.449,GET,96,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,197.95,GET,97,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,198.452,GET,98,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,198.953,GET,138,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,199.454,GET,139,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,199.955,GET,140,true,1,complete_all merged 2/3 sources (1 failed)
+node10_boot1,200.457,GET,224,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,200.958,GET,225,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,201.459,GET,226,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,219.495,GET,3,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,219.996,GET,4,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,220.498,GET,5,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,220.999,GET,9,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,221.501,GET,10,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,222.003,GET,14,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,222.505,GET,15,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,223.006,GET,16,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,223.508,GET,17,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,224.009,GET,27,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,224.513,GET,28,true,0,
+node10_boot1,225.014,GET,29,true,0,
+node10_boot1,225.515,GET,30,true,0,
+node10_boot1,226.016,GET,54,true,0,
+node10_boot1,226.517,GET,55,true,1,
+node10_boot1,227.018,GET,56,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,227.518,GET,96,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,228.019,GET,97,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,228.522,GET,98,true,1,complete_all merged 2/3 sources (1 failed)
+node10_boot1,229.023,GET,138,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,229.523,GET,139,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,230.024,GET,140,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,230.526,GET,224,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,231.027,GET,225,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,231.528,GET,226,true,0,complete_all merged 2/3 sources (1 failed)
+node10_boot1,681,GET,3,true,0,
+node10_boot1,681.501,GET,4,true,1,
+node10_boot1,682.002,GET,5,true,0,
+node10_boot1,682.503,GET,9,true,1,
+node10_boot1,683.003,GET,10,true,0,
+node10_boot1,683.506,GET,13,true,1,
+node10_boot1,684.007,GET,14,true,1,
+node10_boot1,684.508,GET,15,true,0,
+node10_boot1,685.009,GET,16,true,1,
+node10_boot1,685.51,GET,17,true,1,
+node10_boot1,686.011,GET,23,true,0,
+node10_boot1,686.512,GET,24,true,1,
+node10_boot1,687.013,GET,25,true,0,
+node10_boot1,687.514,GET,26,true,1,
+node10_boot1,688.015,GET,27,true,1,
+node10_boot1,688.516,GET,28,true,0,
+node10_boot1,689.017,GET,29,true,0,
+node10_boot1,689.519,GET,30,true,1,
+node10_boot1,690.021,GET,49,true,1,
+node10_boot1,690.521,GET,50,true,0,
+node10_boot1,691.023,GET,51,true,0,
+node10_boot1,691.525,GET,52,true,1,
+node10_boot1,692.026,GET,53,true,0,
+node10_boot1,692.528,GET,54,true,1,
+node10_boot1,693.029,GET,55,true,0,
+node10_boot1,693.53,GET,56,true,1,
+node10_boot1,694.031,GET,91,true,0,
+node10_boot1,694.531,GET,92,true,0,
+node10_boot1,695.033,GET,93,true,0,
+node10_boot1,695.534,GET,94,true,0,
+node10_boot1,696.035,GET,95,true,0,
+node10_boot1,696.537,GET,96,true,0,
+node10_boot1,697.039,GET,97,true,1,
+node10_boot1,697.54,GET,98,true,0,
+node10_boot1,698.041,GET,133,true,0,
+node10_boot1,698.542,GET,134,true,0,
+node10_boot1,699.045,GET,135,true,0,
+node10_boot1,699.547,GET,136,true,0,
+node10_boot1,700.048,GET,137,true,0,
+node10_boot1,700.549,GET,138,true,0,
+node10_boot1,701.05,GET,139,true,0,
+node10_boot1,701.553,GET,140,true,1,
+node10_boot1,702.055,GET,219,true,0,
+node10_boot1,702.556,GET,220,true,0,
+node10_boot1,703.057,GET,221,true,0,
+node10_boot1,703.559,GET,222,true,0,
+node10_boot1,704.059,GET,223,true,0,
+node10_boot1,704.561,GET,224,true,0,
+node10_boot1,705.061,GET,225,true,0,
+node10_boot1,705.563,GET,226,true,0,
+node10_boot1,711.081,GET,3,true,1,
+node10_boot1,711.582,GET,4,true,1,
+node10_boot1,712.083,GET,5,true,0,
+node10_boot1,712.584,GET,9,true,0,
+node10_boot1,713.088,GET,10,true,0,
+node10_boot1,713.59,GET,14,true,0,
+node10_boot1,714.091,GET,15,true,0,
+node10_boot1,714.592,GET,16,true,0,
+node10_boot1,715.096,GET,17,true,0,
+node10_boot1,715.598,GET,27,true,0,
+node10_boot1,716.1,GET,28,true,1,
+node10_boot1,716.601,GET,29,true,1,
+node10_boot1,717.103,GET,30,true,1,
+node10_boot1,717.603,GET,54,true,0,
+node10_boot1,718.104,GET,55,true,0,
+node10_boot1,718.606,GET,56,true,1,
+node10_boot1,719.107,GET,96,true,0,
+node10_boot1,719.609,GET,97,true,1,
+node10_boot1,720.11,GET,98,true,0,
+node10_boot1,720.611,GET,138,true,0,
+node10_boot1,721.112,GET,139,true,0,
+node10_boot1,721.614,GET,140,true,1,
+node10_boot1,722.116,GET,224,true,1,

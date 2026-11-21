@@ -1,0 +1,24 @@
+run_id,time_s,op,region,success,latency_ms,error
+node8_boot4,0.502065,GET,13,false,0,read quorum unavailable
+node8_boot4,1.00386,GET,13,true,0,
+node8_boot4,1.50361,GET,20,false,0,read quorum unavailable
+node8_boot4,2.00485,GET,20,false,0,read quorum unavailable
+node8_boot4,2.50533,GET,20,false,0,read quorum unavailable
+node8_boot4,3.00571,GET,20,false,0,read quorum unavailable
+node8_boot4,3.50736,GET,22,true,0,complete_all merged 2/3 sources (1 failed)
+node8_boot4,4.00926,GET,23,true,0,
+node8_boot4,4.51145,GET,24,true,1,
+node8_boot4,5.012,GET,25,true,0,
+node8_boot4,5.513,GET,26,true,0,
+node8_boot4,6.01396,GET,34,true,0,
+node8_boot4,6.51478,GET,35,true,0,
+node8_boot4,7.01581,GET,36,true,0,
+node8_boot4,7.51661,GET,37,true,0,
+node8_boot4,8.01811,GET,38,true,0,
+node8_boot4,8.51924,GET,39,true,0,
+node8_boot4,9.02091,GET,40,true,0,
+node8_boot4,9.52211,GET,41,true,0,
+node8_boot4,10.024,GET,42,true,1,
+node8_boot4,10.5248,GET,43,true,0,
+node8_boot4,11.026,GET,44,true,0,
+node8_boot4,11.5268,GET,45,true,0,

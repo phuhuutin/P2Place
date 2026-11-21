@@ -1,0 +1,3 @@
+run_id,time_s,op,region,success,latency_ms,error
+node8_boot33,2.00607,GET,13,true,0,
+node8_boot33,2.50611,GET,20,false,0,read quorum unavailable

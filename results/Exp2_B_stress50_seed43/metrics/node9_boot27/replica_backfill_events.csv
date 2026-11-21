@@ -1,0 +1,3 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,result,reason
+node9_boot27,4291874713751,9,3,10,4,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial
+node9_boot27,4292375318740,9,4,10,4,ok,complete_all merged 2/3 sources (1 failed) classification=complete_partial

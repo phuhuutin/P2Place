@@ -876,6 +876,9 @@ void PeerNode::on_placement_message(net::TcpConnection& conn,
         std::cout<<"[release-received] node="<<config_.id
                  <<" gen="<<placement_.epoch()<<" pending_removed=true\n";
         if(!placement_ready_) {
+            // This peer is no longer a committed member: its buffered PUTs
+            // must never replay under the new placement. Account them.
+            discard_all_browser_puts(/*membership_reset=*/true);
             std::cout<<"[membership] graceful departure completed; stopping peer\n";
             loop_.stop();
         }

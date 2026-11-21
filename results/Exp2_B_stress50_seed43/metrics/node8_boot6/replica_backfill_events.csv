@@ -1,0 +1,16 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,result,reason
+node8_boot6,3850376855377,8,13,10,2,ok,classification=complete
+node8_boot6,3850877672680,8,20,10,2,ok,classification=complete
+node8_boot6,3851378115268,8,22,10,2,ok,classification=complete
+node8_boot6,3851880095053,8,23,10,2,ok,classification=complete
+node8_boot6,3852380698604,8,24,10,2,ok,classification=complete
+node8_boot6,3852881346469,8,25,10,2,ok,classification=complete
+node8_boot6,3853382434931,8,26,10,2,ok,classification=complete
+node8_boot6,3853884219557,8,34,10,2,ok,classification=complete
+node8_boot6,3854385430164,8,35,10,2,ok,classification=complete
+node8_boot6,3854886560394,8,36,10,2,ok,classification=complete
+node8_boot6,3855387243098,8,37,10,2,ok,classification=complete
+node8_boot6,3855888856927,8,38,10,2,ok,classification=complete
+node8_boot6,3856389278411,8,39,10,2,ok,classification=complete
+node8_boot6,3856891412661,8,40,10,2,ok,classification=complete
+node8_boot6,3857393210288,8,41,10,2,ok,classification=complete

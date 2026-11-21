@@ -1,0 +1,5 @@
+run_id,time_s,op,region,success,latency_ms,error
+node9_boot9,1.00346,GET,3,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot9,1.50407,GET,4,true,1,complete_all merged 2/3 sources (1 failed)
+node9_boot9,2.00575,GET,5,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot9,2.50597,GET,9,true,0,complete_all merged 2/3 sources (1 failed)

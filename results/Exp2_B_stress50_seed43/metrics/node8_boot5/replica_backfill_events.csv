@@ -1,0 +1,10 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,result,reason
+node8_boot5,3830387239420,8,13,10,2,ok,classification=complete
+node8_boot5,3830888866379,8,20,10,2,ok,classification=complete
+node8_boot5,3831390037173,8,22,10,2,ok,classification=complete
+node8_boot5,3831891387301,8,23,10,2,ok,classification=complete
+node8_boot5,3832392242519,8,25,10,2,ok,classification=complete
+node8_boot5,3832894170840,8,34,10,2,ok,classification=complete
+node8_boot5,3833394980755,8,35,10,2,ok,classification=complete
+node8_boot5,3833895781769,8,36,10,2,ok,classification=complete
+node8_boot5,3834397432908,8,37,10,2,ok,classification=complete

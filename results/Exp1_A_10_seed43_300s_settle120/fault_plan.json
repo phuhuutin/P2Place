@@ -1,0 +1,42 @@
+[
+  {
+    "at_s": 48.0,
+    "action": "kill",
+    "node": 8
+  },
+  {
+    "at_s": 78.0,
+    "action": "restart",
+    "node": 8
+  },
+  {
+    "at_s": 114.0,
+    "action": "kill",
+    "node": 9
+  },
+  {
+    "at_s": 126.0,
+    "action": "kill",
+    "node": 10
+  },
+  {
+    "at_s": 159.0,
+    "action": "restart",
+    "node": 9
+  },
+  {
+    "at_s": 171.0,
+    "action": "restart",
+    "node": 10
+  },
+  {
+    "at_s": 207.0,
+    "action": "kill",
+    "node": 1
+  },
+  {
+    "at_s": 237.0,
+    "action": "restart",
+    "node": 1
+  }
+]

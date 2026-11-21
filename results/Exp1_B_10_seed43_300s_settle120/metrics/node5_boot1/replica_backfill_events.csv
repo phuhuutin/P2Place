@@ -1,0 +1,103 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,result,reason
+node5_boot1,1888929326236,5,0,5,1,ok,classification=empty_valid attempts=1
+node5_boot1,1890434759966,5,1,6,1,ok,classification=empty_valid attempts=1
+node5_boot1,1891940242228,5,2,7,1,ok,classification=empty_valid attempts=1
+node5_boot1,1893451205876,5,3,8,1,ok,classification=empty_valid attempts=1
+node5_boot1,1894959900441,5,4,9,1,ok,classification=empty_valid attempts=1
+node5_boot1,1896470991477,5,5,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1896973565728,5,6,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1897474931922,5,7,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1897976012930,5,8,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1898476284076,5,9,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1898976987219,5,10,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1899478602396,5,11,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1899979260905,5,12,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1900480752205,5,13,10,1,ok,classification=complete
+node5_boot1,1900981444333,5,14,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1901482721221,5,15,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1901986199039,5,16,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1902486561459,5,17,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1902987187894,5,18,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1903488859705,5,19,10,1,ok,classification=complete
+node5_boot1,1903989939959,5,20,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1904490544900,5,21,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1904992228996,5,22,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1905494803099,5,23,10,1,ok,classification=complete
+node5_boot1,1905995945221,5,24,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1906497505931,5,25,10,1,ok,classification=complete
+node5_boot1,1906999967894,5,26,10,1,ok,classification=complete
+node5_boot1,1907500018535,5,27,10,1,ok,classification=complete
+node5_boot1,1908001030074,5,28,10,1,ok,classification=complete
+node5_boot1,1908501701732,5,29,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1909002597584,5,30,10,1,ok,classification=complete
+node5_boot1,1909504056825,5,31,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1910005003872,5,32,10,1,ok,classification=complete
+node5_boot1,1910505353944,5,33,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1911007306860,5,43,10,1,ok,classification=complete
+node5_boot1,1911508723038,5,44,10,1,ok,classification=complete
+node5_boot1,1912008936856,5,45,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1912515050430,5,46,10,1,ok,classification=complete
+node5_boot1,1913017487892,5,47,10,1,ok,classification=complete
+node5_boot1,1913517563088,5,48,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1914018737270,5,49,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1914519551431,5,50,10,1,ok,classification=complete
+node5_boot1,1915021864496,5,51,10,1,ok,classification=complete
+node5_boot1,1915521925316,5,52,10,1,ok,classification=complete
+node5_boot1,1916022225854,5,53,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1916524781393,5,54,10,1,ok,classification=complete
+node5_boot1,1917023879391,5,55,10,1,ok,classification=complete
+node5_boot1,1917525970043,5,56,10,1,ok,classification=complete
+node5_boot1,1918026324466,5,57,10,1,ok,classification=complete
+node5_boot1,1918528346865,5,58,10,1,ok,classification=complete
+node5_boot1,1919029648179,5,59,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1919529971336,5,60,10,1,ok,classification=complete
+node5_boot1,1920030381338,5,61,10,1,ok,classification=complete
+node5_boot1,1920530744686,5,62,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1921031984788,5,63,10,1,ok,classification=complete
+node5_boot1,1921532853451,5,64,10,1,ok,classification=complete
+node5_boot1,1922033553550,5,65,10,1,ok,classification=complete
+node5_boot1,1922535217679,5,66,10,1,ok,classification=complete
+node5_boot1,1923036858494,5,67,10,1,ok,classification=complete
+node5_boot1,1923537633678,5,68,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1924039498584,5,69,10,1,ok,classification=complete
+node5_boot1,1924539716047,5,70,10,1,ok,classification=complete
+node5_boot1,1925040992261,5,71,10,1,ok,classification=complete
+node5_boot1,1925542313641,5,72,10,1,ok,classification=complete
+node5_boot1,1926043358290,5,73,10,1,ok,classification=complete
+node5_boot1,1926544883048,5,74,10,1,ok,classification=complete
+node5_boot1,1927045577035,5,75,10,1,ok,classification=complete
+node5_boot1,1927546533358,5,76,10,1,ok,classification=complete
+node5_boot1,1928047941694,5,170,10,1,ok,classification=complete
+node5_boot1,1928548263486,5,171,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1929049951111,5,172,10,1,ok,classification=complete
+node5_boot1,1929551046363,5,173,10,1,ok,classification=complete
+node5_boot1,1930052266292,5,174,10,1,ok,classification=complete
+node5_boot1,1930553399226,5,175,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1931055576367,5,176,10,1,ok,classification=complete
+node5_boot1,1931556990834,5,177,10,1,ok,classification=complete
+node5_boot1,1932058690057,5,178,10,1,ok,classification=complete
+node5_boot1,1932560151145,5,179,10,1,ok,classification=complete
+node5_boot1,1933061467490,5,180,10,1,ok,classification=complete
+node5_boot1,1933563408505,5,181,10,1,ok,classification=complete
+node5_boot1,1934064284691,5,182,10,1,ok,classification=complete
+node5_boot1,1934565872582,5,183,10,1,ok,classification=complete
+node5_boot1,1935066434080,5,184,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1935568505201,5,185,10,1,ok,classification=complete
+node5_boot1,1936069027711,5,186,10,1,ok,classification=complete
+node5_boot1,1936570138756,5,187,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1937071390395,5,188,10,1,ok,classification=complete
+node5_boot1,1937572593327,5,189,10,1,ok,classification=complete
+node5_boot1,1938073382540,5,190,10,1,ok,classification=complete
+node5_boot1,1938574767400,5,191,10,1,ok,classification=complete
+node5_boot1,1939075534735,5,192,10,1,ok,classification=complete
+node5_boot1,1939576380540,5,193,10,1,ok,classification=complete
+node5_boot1,1940077756560,5,194,10,1,ok,classification=complete
+node5_boot1,1940579077477,5,195,10,1,ok,classification=complete
+node5_boot1,1941079143346,5,196,10,1,ok,classification=complete
+node5_boot1,1941580580611,5,197,10,1,ok,classification=complete
+node5_boot1,1942081377775,5,198,10,1,ok,classification=complete
+node5_boot1,1942582980474,5,199,10,1,ok,classification=empty_valid attempts=1
+node5_boot1,1943084596450,5,200,10,1,ok,classification=complete
+node5_boot1,1943585687450,5,201,10,1,ok,classification=complete
+node5_boot1,1944086847580,5,202,10,1,ok,classification=complete
+node5_boot1,1944587086775,5,203,10,1,ok,classification=complete

@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -90,16 +91,28 @@ public:
         std::function<void(int fd, std::string_view json)>;
 
     /**
+     * @brief Handler invoked once when a browser session is torn down.
+     *
+     * The generation identifies the exact session instance that ended, so
+     * callers holding queued work keyed by (fd, generation) can discard it
+     * without accidentally touching a newer session that reused the fd.
+     */
+    using DisconnectHandler =
+        std::function<void(int fd, std::uint64_t generation)>;
+
+    /**
      * @brief Bind the WebSocket listener and register it with the
      *        event loop.
      * @param loop The event loop that will drive this server.
      * @param port TCP port for the browser listener.
      * @param on_command Handler for decoded JSON commands.
+     * @param on_disconnect Optional handler invoked when a session ends.
      */
     WebSocketServer(
         net::EventLoop& loop,
         std::uint16_t port,
-        CommandHandler on_command
+        CommandHandler on_command,
+        DisconnectHandler on_disconnect = {}
     );
 
     /**
@@ -125,10 +138,37 @@ public:
      * @brief Send JSON to one browser connection.
      * @param fd The destination browser connection.
      * @param json The JSON text to send.
+     * @return True when the frame was queued on a live, open session;
+     *         false when the session is gone or still handshaking.
      */
-    void send_to(int fd, std::string_view json);
+    bool send_to(int fd, std::string_view json);
+
+    /**
+     * @brief Stable identity of the live session on @p fd.
+     *
+     * Linux reuses descriptors, so an fd alone does not identify a browser.
+     * Each accepted session gets a process-unique generation. The value is
+     * absent when no session currently owns the fd.
+     * @param fd Browser connection descriptor.
+     * @return The current session generation, or std::nullopt.
+     */
+    [[nodiscard]] std::optional<std::uint64_t>
+    session_generation(int fd) const;
+
+    /**
+     * @brief True when @p fd still belongs to the exact @p generation
+     *        session and that session is open for WebSocket frames.
+     * @param fd Browser connection descriptor.
+     * @param generation Generation captured at command admission.
+     */
+    [[nodiscard]] bool session_is_open(
+        int fd,
+        std::uint64_t generation
+    ) const;
 
 private:
+    friend struct WebSocketServerTestAccess;
+
     /**
      * @brief Lifecycle of one browser connection.
      */
@@ -148,6 +188,9 @@ private:
         /** Current lifecycle state. */
         ConnectionState state =
             ConnectionState::Handshaking;
+
+        /** Process-unique identity of this session instance. */
+        std::uint64_t generation = 0;
 
         /** Used for HTTP handshake and WebSocket frames. */
         std::vector<std::uint8_t> input_buffer;
@@ -198,8 +241,9 @@ private:
      * @brief Encode and queue one server text frame.
      * @param fd The browser connection.
      * @param text The JSON text to send.
+     * @return True when queued on an open session.
      */
-    void send_text(int fd, std::string_view text);
+    bool send_text(int fd, std::string_view text);
 
     /** The owning event loop. */
     net::EventLoop& loop_;
@@ -207,6 +251,10 @@ private:
     net::TcpServer listener_;
     /** PeerNode's JSON command handler. */
     CommandHandler on_command_;
+    /** Session teardown notification (optional). */
+    DisconnectHandler on_disconnect_;
+    /** Source of process-unique session generations (0 = never issued). */
+    std::uint64_t next_session_generation_ = 0;
 
     /** fd -> per-browser session state. */
     std::unordered_map<int, BrowserSession> sessions_;

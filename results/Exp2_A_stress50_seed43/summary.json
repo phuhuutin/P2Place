@@ -1,0 +1,1299 @@
+{
+  "strategy": "A",
+  "seed": 43,
+  "duration_s": 600,
+  "nodes": 10,
+  "churn_profile": "stress50-spread",
+  "rate_target": 16.0,
+  "gateway_mode": "healthy",
+  "targeted_write_percent": 92.0,
+  "planned_faults": 120,
+  "executed_faults": [
+    {
+      "planned_at_s": 20,
+      "actual_at_s": 20.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 31,
+      "actual_at_s": 31.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 43,
+      "actual_at_s": 43.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 54,
+      "actual_at_s": 54.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 66,
+      "actual_at_s": 66.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 77,
+      "actual_at_s": 77.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 89,
+      "actual_at_s": 89.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 100,
+      "actual_at_s": 100.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 112,
+      "actual_at_s": 112.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 123,
+      "actual_at_s": 123.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 135,
+      "actual_at_s": 135.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 146,
+      "actual_at_s": 146.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 180,
+      "actual_at_s": 180.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 180,
+      "actual_at_s": 180.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 192,
+      "actual_at_s": 192.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 192,
+      "actual_at_s": 192.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 195,
+      "actual_at_s": 195.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 195,
+      "actual_at_s": 195.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 207,
+      "actual_at_s": 207.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 207,
+      "actual_at_s": 207.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 210,
+      "actual_at_s": 210.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 210,
+      "actual_at_s": 210.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 222,
+      "actual_at_s": 222.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 222,
+      "actual_at_s": 222.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 225,
+      "actual_at_s": 225.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 225,
+      "actual_at_s": 225.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 237,
+      "actual_at_s": 237.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 237,
+      "actual_at_s": 237.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 240,
+      "actual_at_s": 240.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 240,
+      "actual_at_s": 240.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 252,
+      "actual_at_s": 252.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 252,
+      "actual_at_s": 252.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 255,
+      "actual_at_s": 255.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 255,
+      "actual_at_s": 255.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 267,
+      "actual_at_s": 267.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 267,
+      "actual_at_s": 267.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 270,
+      "actual_at_s": 270.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 270,
+      "actual_at_s": 270.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 282,
+      "actual_at_s": 282.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 282,
+      "actual_at_s": 282.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 285,
+      "actual_at_s": 285.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 285,
+      "actual_at_s": 285.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 297,
+      "actual_at_s": 297.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 297,
+      "actual_at_s": 297.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 300,
+      "actual_at_s": 300.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 300,
+      "actual_at_s": 300.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 312,
+      "actual_at_s": 312.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 312,
+      "actual_at_s": 312.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 315,
+      "actual_at_s": 315.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 315,
+      "actual_at_s": 315.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 327,
+      "actual_at_s": 327.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 327,
+      "actual_at_s": 327.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 330,
+      "actual_at_s": 330.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 330,
+      "actual_at_s": 330.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 342,
+      "actual_at_s": 342.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 342,
+      "actual_at_s": 342.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 345,
+      "actual_at_s": 345.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 345,
+      "actual_at_s": 345.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 357,
+      "actual_at_s": 357.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 357,
+      "actual_at_s": 357.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 360,
+      "actual_at_s": 360.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 360,
+      "actual_at_s": 360.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 372,
+      "actual_at_s": 372.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 372,
+      "actual_at_s": 372.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 375,
+      "actual_at_s": 375.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 375,
+      "actual_at_s": 375.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 387,
+      "actual_at_s": 387.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 387,
+      "actual_at_s": 387.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 390,
+      "actual_at_s": 390.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 390,
+      "actual_at_s": 390.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 402,
+      "actual_at_s": 402.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 402,
+      "actual_at_s": 402.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 405,
+      "actual_at_s": 405.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 405,
+      "actual_at_s": 405.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 417,
+      "actual_at_s": 417.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 417,
+      "actual_at_s": 417.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 420,
+      "actual_at_s": 420.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 420,
+      "actual_at_s": 420.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 432,
+      "actual_at_s": 432.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 432,
+      "actual_at_s": 432.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 435,
+      "actual_at_s": 435.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 435,
+      "actual_at_s": 435.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 447,
+      "actual_at_s": 447.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 447,
+      "actual_at_s": 447.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 450,
+      "actual_at_s": 450.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 450,
+      "actual_at_s": 450.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 462,
+      "actual_at_s": 462.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 462,
+      "actual_at_s": 462.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 465,
+      "actual_at_s": 465.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 465,
+      "actual_at_s": 465.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 477,
+      "actual_at_s": 477.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 477,
+      "actual_at_s": 477.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 480,
+      "actual_at_s": 480.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 480,
+      "actual_at_s": 480.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 492,
+      "actual_at_s": 492.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 492,
+      "actual_at_s": 492.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 495,
+      "actual_at_s": 495.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 495,
+      "actual_at_s": 495.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 507,
+      "actual_at_s": 507.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 507,
+      "actual_at_s": 507.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 510,
+      "actual_at_s": 510.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 510,
+      "actual_at_s": 510.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 522,
+      "actual_at_s": 522.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 522,
+      "actual_at_s": 522.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 525,
+      "actual_at_s": 525.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 525,
+      "actual_at_s": 525.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 537,
+      "actual_at_s": 537.0,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 537,
+      "actual_at_s": 537.0,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 540,
+      "actual_at_s": 540.0,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 540,
+      "actual_at_s": 540.0,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 552,
+      "actual_at_s": 552.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 552,
+      "actual_at_s": 552.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 555,
+      "actual_at_s": 555.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 555,
+      "actual_at_s": 555.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 567,
+      "actual_at_s": 567.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 567,
+      "actual_at_s": 567.01,
+      "action": "restart",
+      "node": 9
+    },
+    {
+      "planned_at_s": 570,
+      "actual_at_s": 570.01,
+      "action": "kill",
+      "node": 8
+    },
+    {
+      "planned_at_s": 570,
+      "actual_at_s": 570.01,
+      "action": "kill",
+      "node": 9
+    },
+    {
+      "planned_at_s": 582,
+      "actual_at_s": 582.01,
+      "action": "restart",
+      "node": 8
+    },
+    {
+      "planned_at_s": 582,
+      "actual_at_s": 582.01,
+      "action": "restart",
+      "node": 9
+    }
+  ],
+  "startup_ok": true,
+  "targeted_regions": [
+    13,
+    22,
+    23,
+    24,
+    25,
+    26,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    222,
+    223
+  ],
+  "pixel_distribution": "balanced-round-robin-per-region",
+  "profile_hypothesis": "Strategy A expected ~50% write availability under idealized N3/W2 replica assumptions; outcomes are not forced and depend on cluster behavior.",
+  "targeted_unique_coordinate_capacity": 12800,
+  "time_base": {
+    "workload_start_monotonic_ns": 2988644459244,
+    "source": "time.monotonic_ns() / CLOCK_MONOTONIC"
+  },
+  "pre_double_failure_policy": null,
+  "by_phase_and_workload": {
+    "backfill/uniform": {
+      "attempts": 480,
+      "acked": 480,
+      "failed": 0,
+      "error_categories": {},
+      "success_pct": 100.0
+    },
+    "baseline/uniform": {
+      "attempts": 320,
+      "acked": 320,
+      "failed": 0,
+      "error_categories": {},
+      "success_pct": 100.0
+    },
+    "double_failure/targeted": {
+      "attempts": 4786,
+      "acked": 0,
+      "failed": 4786,
+      "error_categories": {
+        "quorum_or_replica": 4786
+      },
+      "success_pct": 0.0
+    },
+    "double_failure/uniform": {
+      "attempts": 1646,
+      "acked": 1324,
+      "failed": 322,
+      "error_categories": {
+        "quorum_or_replica": 322
+      },
+      "success_pct": 80.44
+    },
+    "recovery/uniform": {
+      "attempts": 288,
+      "acked": 275,
+      "failed": 13,
+      "error_categories": {
+        "quorum_or_replica": 13
+      },
+      "success_pct": 95.49
+    },
+    "training/uniform": {
+      "attempts": 2080,
+      "acked": 2080,
+      "failed": 0,
+      "error_categories": {},
+      "success_pct": 100.0
+    }
+  },
+  "verification_immediate": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 80,
+    "read_failures": [],
+    "examples": [
+      {
+        "reader": 1,
+        "x": 209,
+        "y": 83,
+        "expected": "#34E37B",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 225,
+        "y": 32,
+        "expected": "#135543",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 70,
+        "y": 53,
+        "expected": "#E89322",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 99,
+        "y": 138,
+        "expected": "#519264",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 30,
+        "y": 52,
+        "expected": "#9FFAE5",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 74,
+        "y": 54,
+        "expected": "#03712D",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 134,
+        "y": 17,
+        "expected": "#782853",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 150,
+        "y": 26,
+        "expected": "#80091B",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 148,
+        "y": 217,
+        "expected": "#4718CE",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 188,
+        "y": 86,
+        "expected": "#1CF718",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 152,
+        "y": 21,
+        "expected": "#1ED5DC",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 99,
+        "y": 131,
+        "expected": "#55A792",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 196,
+        "y": 95,
+        "expected": "#3F3C42",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 115,
+        "y": 21,
+        "expected": "#8065DA",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 7,
+        "y": 48,
+        "expected": "#91D93A",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 44,
+        "y": 63,
+        "expected": "#E30759",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 191,
+        "y": 95,
+        "expected": "#A6B486",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 118,
+        "y": 19,
+        "expected": "#A35904",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 95,
+        "y": 59,
+        "expected": "#9EE0BD",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 237,
+        "y": 42,
+        "expected": "#CD3E96",
+        "actual": null
+      }
+    ],
+    "elapsed_since_writes_s": 0.702
+  },
+  "verification_after_settle": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 6,
+    "read_failures": [],
+    "examples": [
+      {
+        "reader": 1,
+        "x": 202,
+        "y": 208,
+        "expected": "#1A43DF",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 207,
+        "y": 212,
+        "expected": "#BC8B7F",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 202,
+        "y": 208,
+        "expected": "#1A43DF",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 207,
+        "y": 212,
+        "expected": "#BC8B7F",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 202,
+        "y": 208,
+        "expected": "#1A43DF",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 207,
+        "y": 212,
+        "expected": "#BC8B7F",
+        "actual": null
+      }
+    ],
+    "elapsed_since_writes_s": 120.79
+  },
+  "verification": {
+    "sampled_pixels": 500,
+    "checked_nodes": [
+      1,
+      2,
+      3
+    ],
+    "missing": 6,
+    "read_failures": [],
+    "examples": [
+      {
+        "reader": 1,
+        "x": 202,
+        "y": 208,
+        "expected": "#1A43DF",
+        "actual": null
+      },
+      {
+        "reader": 1,
+        "x": 207,
+        "y": 212,
+        "expected": "#BC8B7F",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 202,
+        "y": 208,
+        "expected": "#1A43DF",
+        "actual": null
+      },
+      {
+        "reader": 2,
+        "x": 207,
+        "y": 212,
+        "expected": "#BC8B7F",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 202,
+        "y": 208,
+        "expected": "#1A43DF",
+        "actual": null
+      },
+      {
+        "reader": 3,
+        "x": 207,
+        "y": 212,
+        "expected": "#BC8B7F",
+        "actual": null
+      }
+    ],
+    "elapsed_since_writes_s": 120.79
+  },
+  "verification_comparison": {
+    "same_sample": true,
+    "requested_settle_s": 120.0,
+    "immediate_missing_comparisons": 80,
+    "followup_missing_comparisons": 6,
+    "net_mismatch_reduction": 74,
+    "note": "Counts are pixel-reader comparisons, not necessarily unique pixels. A reduction does not prove every copy converged."
+  },
+  "attempts": 9600,
+  "acked": 4479,
+  "failed": 5121,
+  "success_pct": 46.656,
+  "latency_ms_acked_avg": 2.12,
+  "stress50": {
+    "planned_double_outage_s": 324,
+    "predicted_fixed_n3_failure_exposure_pct": 49.68,
+    "attempts_during_planned_overlap": 5184,
+    "acked_during_planned_overlap": 324,
+    "targeted_during_planned_overlap": 4786,
+    "actual_overall_write_availability_pct": 46.656,
+    "limitation": "Expected failure exposure is a scheduling hypothesis, not guaranteed failures; actual port/cluster behavior may vary."
+  },
+  "final_placement": {
+    "1": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "2": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "3": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "4": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "5": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "6": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "7": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "8": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "9": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ],
+    "10": [
+      10,
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "replication_timeline": {
+    "enabled": true,
+    "complete": true,
+    "sample_interval_s": 1.0,
+    "initial_policy_time_s": -12.406185753,
+    "policy_changes": 0,
+    "placement_changes": 9,
+    "authority_changes": 1,
+    "conflicts": 0,
+    "missing_intervals_s": 0.0,
+    "metrics_dropped": 0,
+    "outputs": [
+      "region_replication_events.csv",
+      "placement_snapshots.jsonl",
+      "node_replication_timeline.csv",
+      "replication_summary.csv"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,event,classification,attempts
+node8_boot19,4081378426793,8,13,10,4,backfill_started,full_merge,1
+node8_boot19,4081379447237,8,13,10,4,backfill_completed,complete,1
+node8_boot19,4081879787668,8,20,10,4,backfill_started,full_merge,1
+node8_boot19,4081879895448,8,20,10,4,backfill_retry,retry,1
+node8_boot19,4082380534734,8,20,10,4,backfill_started,full_merge,2
+node8_boot19,4082380629362,8,20,10,4,backfill_retry,retry,2

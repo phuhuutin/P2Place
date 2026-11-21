@@ -1,0 +1,5 @@
+run_id,monotonic_ns,node_id,region,placement_gen,policy_epoch,result,reason
+node8_boot11,3960869866748,8,13,10,4,ok,classification=complete
+node8_boot11,3961369202094,8,20,10,4,failed,read quorum unavailable classification=retry attempts=1
+node8_boot11,3961869845366,8,20,10,4,failed,read quorum unavailable classification=retry attempts=2
+node8_boot11,3962371219347,8,20,10,4,failed,read quorum unavailable classification=retry attempts=3

@@ -8,11 +8,13 @@ namespace p2place::ui {
     WebSocketServer::WebSocketServer(
         net::EventLoop& loop,
         std::uint16_t port,
-        CommandHandler handler
+        CommandHandler handler,
+        DisconnectHandler disconnect_handler
     )
         : loop_(loop),
         listener_(port), // <-- TCP server starts listening HERE
-        on_command_(std::move(handler)) {
+        on_command_(std::move(handler)),
+        on_disconnect_(std::move(disconnect_handler)) {
 
         loop_.register_listener(
             listener_.fd(),
@@ -53,6 +55,10 @@ namespace p2place::ui {
                     );
                 }
 
+                // A fresh generation for every accepted session: fd numbers
+                // are reused by the kernel, session instances are not.
+                it->second.generation = ++next_session_generation_;
+
                 try {
                     // 2. Transfer socket ownership to EventLoop.
                     loop_.register_raw_connection(
@@ -83,11 +89,31 @@ namespace p2place::ui {
 
 
     void WebSocketServer::on_client_disconnect(int fd) {
+        const auto it = sessions_.find(fd);
+        const std::uint64_t generation =
+            it == sessions_.end() ? 0 : it->second.generation;
         sessions_.erase(fd);
 
         std::cerr
             << "[WebSocket] Client disconnected fd="
-            << fd << '\n';
+            << fd << " gen=" << generation << '\n';
+
+        if (on_disconnect_ && generation != 0) {
+            try {
+                on_disconnect_(fd, generation);
+            }
+            catch (const std::exception& e) {
+                // Session teardown bookkeeping must never break the loop.
+                std::cerr
+                    << "[WebSocket] Disconnect handler failed fd="
+                    << fd << ": " << e.what() << '\n';
+            }
+            catch (...) {
+                std::cerr
+                    << "[WebSocket] Disconnect handler failed fd="
+                    << fd << ": unknown exception\n";
+            }
+        }
     }
 
 
@@ -445,20 +471,20 @@ namespace p2place::ui {
     }
 
     
-    void WebSocketServer::send_text(
+    bool WebSocketServer::send_text(
         int fd,
         std::string_view text
     ) {
         auto it = sessions_.find(fd);
 
         if (it == sessions_.end()) {
-            return;
+            return false;
         }
 
         auto& session = it->second;
 
         if (session.state != ConnectionState::Open) {
-            return;
+            return false;
         }
 
         // Convert JSON text into bytes.
@@ -482,6 +508,7 @@ namespace p2place::ui {
 
         // Queue encoded WebSocket bytes through epoll.
         loop_.send_raw(fd, frame);
+        return true;
     }
 
 
@@ -549,11 +576,35 @@ namespace p2place::ui {
         }
     }
 
-    void WebSocketServer::send_to(
+    bool WebSocketServer::send_to(
         int fd,
         std::string_view json
     ) {
-        send_text(fd, json);
+        return send_text(fd, json);
+    }
+
+
+    std::optional<std::uint64_t>
+    WebSocketServer::session_generation(int fd) const {
+        const auto it = sessions_.find(fd);
+
+        if (it == sessions_.end()) {
+            return std::nullopt;
+        }
+
+        return it->second.generation;
+    }
+
+
+    bool WebSocketServer::session_is_open(
+        int fd,
+        std::uint64_t generation
+    ) const {
+        const auto it = sessions_.find(fd);
+
+        return it != sessions_.end() &&
+               it->second.generation == generation &&
+               it->second.state == ConnectionState::Open;
     }
 
 

@@ -1,0 +1,137 @@
+run_id,time_s,op,region,success,latency_ms,error
+node9_boot1,1.50888,GET,0,true,0,
+node9_boot1,3.0128,GET,1,true,1,
+node9_boot1,3.51403,GET,2,true,1,
+node9_boot1,4.01457,GET,3,true,1,
+node9_boot1,4.51669,GET,4,true,1,
+node9_boot1,5.01758,GET,5,true,1,
+node9_boot1,5.51856,GET,6,true,1,
+node9_boot1,6.01975,GET,7,true,1,
+node9_boot1,6.52105,GET,8,true,1,
+node9_boot1,7.02193,GET,9,true,0,
+node9_boot1,7.5224,GET,10,true,1,
+node9_boot1,8.02345,GET,13,true,1,
+node9_boot1,8.52467,GET,14,true,1,
+node9_boot1,9.02535,GET,15,true,1,
+node9_boot1,9.52619,GET,16,true,1,
+node9_boot1,10.0278,GET,17,true,0,
+node9_boot1,10.5292,GET,23,true,1,
+node9_boot1,11.0299,GET,24,true,1,
+node9_boot1,11.5309,GET,25,true,1,
+node9_boot1,12.0321,GET,26,true,0,
+node9_boot1,12.5334,GET,27,true,1,
+node9_boot1,13.0354,GET,28,true,1,
+node9_boot1,13.5371,GET,29,true,1,
+node9_boot1,14.0381,GET,30,true,0,
+node9_boot1,14.5402,GET,49,true,1,
+node9_boot1,15.0415,GET,50,true,1,
+node9_boot1,15.5435,GET,51,true,0,
+node9_boot1,16.0448,GET,52,true,1,
+node9_boot1,16.5467,GET,53,true,1,
+node9_boot1,17.0472,GET,54,true,0,
+node9_boot1,17.5487,GET,55,true,0,
+node9_boot1,18.05,GET,56,true,0,
+node9_boot1,18.5517,GET,91,true,1,
+node9_boot1,19.0536,GET,92,true,1,
+node9_boot1,19.5548,GET,93,true,1,
+node9_boot1,20.0562,GET,94,true,1,
+node9_boot1,20.557,GET,95,true,1,
+node9_boot1,21.0583,GET,96,true,1,
+node9_boot1,21.5592,GET,97,true,0,
+node9_boot1,22.0605,GET,98,true,1,
+node9_boot1,22.561,GET,133,true,0,
+node9_boot1,23.0616,GET,134,true,0,
+node9_boot1,23.5635,GET,135,true,1,complete_all merged 2/3 sources (1 failed)
+node9_boot1,24.0654,GET,135,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,24.5664,GET,135,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,25.07,GET,135,true,1,complete_all merged 2/3 sources (1 failed)
+node9_boot1,25.5702,GET,136,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,26.0714,GET,136,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,26.5724,GET,136,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,27.0733,GET,136,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,27.5737,GET,137,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,28.0748,GET,137,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,28.5759,GET,137,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,29.0772,GET,137,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,29.578,GET,138,true,0,
+node9_boot1,30.0792,GET,139,true,0,
+node9_boot1,30.5805,GET,20,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,31.0816,GET,22,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,31.5827,GET,34,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,32.0835,GET,35,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,32.5847,GET,13,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,33.0859,GET,36,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,33.587,GET,37,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,34.0875,GET,38,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,34.5888,GET,39,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,35.0904,GET,23,true,0,
+node9_boot1,35.5912,GET,40,true,0,
+node9_boot1,36.0918,GET,41,true,0,
+node9_boot1,36.5933,GET,42,true,0,
+node9_boot1,37.0944,GET,43,true,0,
+node9_boot1,37.5959,GET,24,true,0,
+node9_boot1,38.0973,GET,44,true,0,
+node9_boot1,38.5986,GET,45,true,0,
+node9_boot1,39.0994,GET,46,true,0,
+node9_boot1,39.6004,GET,47,true,1,
+node9_boot1,40.1019,GET,25,true,1,
+node9_boot1,40.6038,GET,48,true,1,
+node9_boot1,41.1049,GET,77,true,1,
+node9_boot1,41.6066,GET,78,true,1,
+node9_boot1,42.1083,GET,79,true,1,
+node9_boot1,42.61,GET,26,true,1,
+node9_boot1,43.1118,GET,80,true,1,
+node9_boot1,43.612,GET,81,true,0,
+node9_boot1,44.1137,GET,82,true,1,
+node9_boot1,44.6139,GET,83,true,0,
+node9_boot1,45.116,GET,49,true,1,
+node9_boot1,45.6163,GET,84,true,0,
+node9_boot1,46.1176,GET,85,true,0,
+node9_boot1,46.6181,GET,86,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,47.1196,GET,87,true,1,complete_all merged 2/3 sources (1 failed)
+node9_boot1,47.62,GET,50,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,48.1211,GET,88,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,48.6218,GET,89,true,1,complete_all merged 2/3 sources (1 failed)
+node9_boot1,49.123,GET,90,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,49.6232,GET,128,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,50.1246,GET,51,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,50.6261,GET,129,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,51.1271,GET,130,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,51.6286,GET,131,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,52.1295,GET,132,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,52.6302,GET,52,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,53.1313,GET,204,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,53.6319,GET,205,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,54.1325,GET,206,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,54.6334,GET,207,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,55.1364,GET,53,true,1,complete_all merged 2/3 sources (1 failed)
+node9_boot1,55.6363,GET,208,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,56.1374,GET,209,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,56.6379,GET,210,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,57.1393,GET,211,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,57.64,GET,91,true,0,complete_all merged 2/3 sources (1 failed)
+node9_boot1,58.1416,GET,212,true,0,
+node9_boot1,58.6425,GET,213,true,0,
+node9_boot1,59.144,GET,214,true,0,
+node9_boot1,59.6452,GET,215,true,0,
+node9_boot1,60.1468,GET,92,true,0,
+node9_boot1,60.6486,GET,216,true,0,
+node9_boot1,61.1502,GET,217,true,0,
+node9_boot1,61.6513,GET,218,true,0,
+node9_boot1,62.1524,GET,93,true,0,
+node9_boot1,62.6531,GET,94,true,0,
+node9_boot1,63.1546,GET,95,true,0,
+node9_boot1,63.6551,GET,133,true,0,
+node9_boot1,64.1568,GET,134,true,0,
+node9_boot1,64.6579,GET,135,true,0,
+node9_boot1,65.159,GET,136,true,0,
+node9_boot1,65.6598,GET,137,true,0,
+node9_boot1,66.161,GET,140,true,0,
+node9_boot1,66.6622,GET,219,true,0,
+node9_boot1,67.1634,GET,220,true,0,
+node9_boot1,67.6652,GET,221,true,0,
+node9_boot1,68.1656,GET,222,true,0,
+node9_boot1,68.6667,GET,223,true,0,
+node9_boot1,69.168,GET,224,true,0,
+node9_boot1,69.6696,GET,225,true,0,
+node9_boot1,70.1712,GET,226,true,0,
